@@ -1,2 +1,2 @@
-cpr_robot
+cpr-robot
 -DCATKIN_DEVEL_PREFIX=/home/conor/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/conor/catkin_ws/install -G Unix Makefiles

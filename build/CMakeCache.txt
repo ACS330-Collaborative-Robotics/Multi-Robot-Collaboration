@@ -807,10 +807,10 @@ control_msgs_DIR:PATH=/opt/ros/noetic/share/control_msgs/cmake
 cpp_common_DIR:PATH=/opt/ros/noetic/share/cpp_common/cmake
 
 //Value Computed by CMake
-cpr_robot_BINARY_DIR:STATIC=/home/conor/catkin_ws/build/cpr_robot
+cpr_robot_BINARY_DIR:STATIC=/home/conor/catkin_ws/build/cpr-robot
 
 //Value Computed by CMake
-cpr_robot_SOURCE_DIR:STATIC=/home/conor/catkin_ws/src/cpr_robot
+cpr_robot_SOURCE_DIR:STATIC=/home/conor/catkin_ws/src/cpr-robot
 
 //The directory containing a CMake configuration file for dynamic_reconfigure.
 dynamic_reconfigure_DIR:PATH=/opt/ros/noetic/share/dynamic_reconfigure/cmake
