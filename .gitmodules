@@ -1,0 +1,3 @@
+[submodule "src/cpr_robot"]
+	path = src/cpr_robot
+	url = https://github.com/CPR-Robots/cpr_robot.git
