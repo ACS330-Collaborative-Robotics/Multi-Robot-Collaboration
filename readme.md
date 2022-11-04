@@ -1,13 +1,14 @@
 # ACS330 Collaborative Robotics - Group 1
 
 This repository contains:
- - ROS Driver for Mover6
- - Gazebo Simulation of System
+- ROS Driver for Mover6
+- Gazebo Simulation of System
 
 ## Useful Links
 
 - [CPR Robots Driver Repo](https://github.com/CPR-Robots/cpr_robot)
 - [ROS Wiki](http://wiki.ros.org/Documentation)
+- CPR Robots Docs - /src/cpr-robot/doc/html/index.html
 
 ### Gazebo Tutorials
 
