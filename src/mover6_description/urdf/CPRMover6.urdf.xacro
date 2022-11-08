@@ -4,6 +4,14 @@
 <!-- URDF file for the Commonplace Robotics Mover4 robot arm -->
 <!-- Version 1.1 from Oct. 04th, 2016. -->
 
+  <!-- Used for fixing robot to Gazebo 'base_link' -->
+  <link name="world"/>
+
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
 <!-- Default Inertial -->
   <xacro:macro name="default_inertial" params="z_value mass">
     <inertial>
