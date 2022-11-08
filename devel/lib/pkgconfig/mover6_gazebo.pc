@@ -1,8 +1,0 @@
-prefix=/home/conor/catkin_ws/devel
-
-Name: mover6_gazebo
-Description: Description of mover6_gazebo
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

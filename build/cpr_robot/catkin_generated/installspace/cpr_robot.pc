@@ -1,8 +1,0 @@
-prefix=/home/conor/catkin_ws/install
-
-Name: cpr_robot
-Description: Description of cpr_robot
-Version: 0.0.0
-Cflags: -I${prefix}/include
-Libs: -L${prefix}/lib 
-Requires: roscpp std_msgs sensor_msgs control_msgs rviz
