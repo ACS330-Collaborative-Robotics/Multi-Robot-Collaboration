@@ -132,10 +132,6 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/conor/catkin_ws/build/gtest/cmake_install.cmake")
   include("/home/conor/catkin_ws/build/mover6_description/cmake_install.cmake")
-  include("/home/conor/catkin_ws/build/rrbot_control/cmake_install.cmake")
-  include("/home/conor/catkin_ws/build/rrbot_description/cmake_install.cmake")
-  include("/home/conor/catkin_ws/build/rrbot_gazebo/cmake_install.cmake")
-  include("/home/conor/catkin_ws/build/gazebo_tutorials/cmake_install.cmake")
   include("/home/conor/catkin_ws/build/mover6_gazebo/cmake_install.cmake")
   include("/home/conor/catkin_ws/build/cpr-robot/cmake_install.cmake")
 
