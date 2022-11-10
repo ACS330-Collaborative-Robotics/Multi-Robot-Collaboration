@@ -5,6 +5,8 @@
         <!-- more default parameters can be changed here -->
     </include>
 
+    <arg name="paused" value="true"/>
+
     <!-- Convert an xacro and put on parameter server -->
     <param name="robot_description" command="$(find xacro)/xacro $(find mover6_description)/urdf/CPRMover6.urdf.xacro" />
 
