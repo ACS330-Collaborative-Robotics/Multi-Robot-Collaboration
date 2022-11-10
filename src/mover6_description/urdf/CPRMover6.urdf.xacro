@@ -33,7 +33,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint0Coll.dae" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint0Coll.dae" scale="0.001 0.001 0.001"/>
         </geometry>
     </collision>
     <xacro:default_inertial z_value="0" mass="1"/>
@@ -43,13 +43,13 @@
     <visual>
 	  <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint1.dae"  scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint1.dae"  scale="0.001 0.001 0.001"/>
         </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint1Coll.dae" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint1Coll.dae" scale="0.001 0.001 0.001"/>
         </geometry>
     </collision>
     <xacro:default_inertial z_value="0" mass="1"/>
@@ -59,13 +59,13 @@
     <visual>
 	  <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint2.dae"  scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint2.dae"  scale="0.001 0.001 0.001"/>
         </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint2Coll.dae" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint2Coll.dae" scale="0.001 0.001 0.001"/>
         </geometry>
     </collision>
     <xacro:default_inertial z_value="0" mass="1"/>
@@ -75,13 +75,13 @@
     <visual>
 	  <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint3.dae"  scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint3.dae"  scale="0.001 0.001 0.001"/>
         </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint3Coll.dae" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint3Coll.dae" scale="0.001 0.001 0.001"/>
         </geometry>
     </collision>
     <xacro:default_inertial z_value="0" mass="1"/>
@@ -91,13 +91,13 @@
     <visual>
 	  <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint4.dae"  scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint4.dae"  scale="0.001 0.001 0.001"/>
         </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint4Coll.dae" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint4Coll.dae" scale="0.001 0.001 0.001"/>
         </geometry>
     </collision>
     <xacro:default_inertial z_value="0" mass="1"/>
@@ -107,13 +107,13 @@
     <visual>
 	  <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint5.dae"  scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint5.dae"  scale="0.001 0.001 0.001"/>
         </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint5Coll.dae" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint5Coll.dae" scale="0.001 0.001 0.001"/>
         </geometry>
     </collision>
     <xacro:default_inertial z_value="0" mass="1"/>
@@ -123,13 +123,13 @@
     <visual>
 	  <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint6.dae"  scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint6.dae"  scale="0.001 0.001 0.001"/>
         </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-          <mesh filename="package://cpr_robot/robots/CPRMover6/Joint6Coll.dae" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://mover6_description/meshes/Joint6Coll.dae" scale="0.001 0.001 0.001"/>
         </geometry>
     </collision>
     <xacro:default_inertial z_value="0" mass="1"/>
@@ -189,5 +189,70 @@
     <limit effort="100" velocity="30"/>
     <joint_properties damping="0.0" friction="0.0"/>
   </joint>
-</robot>
 
+  <transmission name="tran1">
+<type>transmission_interface/SimpleTransmission</type>
+<joint name="joint1">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+</joint>
+<actuator name="motor1">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+</actuator>
+</transmission>
+
+<transmission name="tran2">
+<type>transmission_interface/SimpleTransmission</type>
+<joint name="joint2">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+</joint>
+<actuator name="motor2">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+</actuator>
+</transmission>
+
+<transmission name="tran3">
+<type>transmission_interface/SimpleTransmission</type>
+<joint name="joint3">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+</joint>
+<actuator name="motor3">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+</actuator>
+</transmission>
+
+<transmission name="tran4">
+<type>transmission_interface/SimpleTransmission</type>
+<joint name="joint4">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+</joint>
+<actuator name="motor4">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+</actuator>
+</transmission>
+
+<transmission name="tran5">
+<type>transmission_interface/SimpleTransmission</type>
+<joint name="joint5">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+</joint>
+<actuator name="motor5">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+</actuator>
+</transmission>
+
+<transmission name="tran6">
+<type>transmission_interface/SimpleTransmission</type>
+<joint name="joint6">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+</joint>
+<actuator name="motor6">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+</actuator>
+</transmission>
+</robot>
