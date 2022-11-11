@@ -1,1 +1,1 @@
-roslaunch mover6_gazebo mover6.launch
+roslaunch mover6_gazebo mover6_gazebo.launch
