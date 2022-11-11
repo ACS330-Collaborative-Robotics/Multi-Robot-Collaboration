@@ -13,16 +13,12 @@ def talker():
             rospy.Publisher('/mover6/joint6_position_controller/command', Float64, queue_size=10)]
 
     rospy.init_node('talker', anonymous=True)
-    rate = rospy.Rate(0.5) # T = 2s
+    rate = rospy.Rate(1/10)
 
     while not rospy.is_shutdown():
-        pos = random.random()*4 - 2
-        rospy.loginfo(pos)
-        pub[0].publish(pos)
-        
-        pos = 0;
-        for i in range(1, 6):
-            rospy.loginfo(pos)
+        for i in range(6):
+            pos = random.randint(-180, 180) * 3.14/180
+            rospy.loginfo("Joint no: " + str(i+1) + " to " + str(pos))
             pub[i].publish(pos)
 
         rate.sleep()
