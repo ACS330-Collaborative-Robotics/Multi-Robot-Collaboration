@@ -245,15 +245,22 @@
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
-    
+
 	<transmission name="tran6">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="joint6">
 			<hardwareInterface>EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor6">
-			<hardwareInterface>EffortJointInterface</hardwareInterface>
+		    <hardwareInterface>EffortJointInterface</hardwareInterface>
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
+
+
+    <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <robotNamespace>/mover6</robotNamespace>
+    </plugin>
+    </gazebo>
 </robot>
