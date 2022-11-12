@@ -12,14 +12,23 @@ def talker():
             rospy.Publisher('/mover6/joint5_position_controller/command', Float64, queue_size=10),
             rospy.Publisher('/mover6/joint6_position_controller/command', Float64, queue_size=10)]
 
+    limits = [[-130, 130], [-50, 60], [-110, 75], [-140, 140], [-70, 60], [-120, 120]]
+    points = 9
+
     rospy.init_node('talker', anonymous=True)
-    rate = rospy.Rate(1/10)
+    T_period = 2
+    rate = rospy.Rate(1/T_period)
+
+    currentPoint = 0
 
     while not rospy.is_shutdown():
-        for i in range(6):
-            pos = random.randint(-180, 180) * 3.14/180
-            rospy.loginfo("Joint no: " + str(i+1) + " to " + str(pos))
-            pub[i].publish(pos)
+        for joint in range(6):
+            pos = (currentPoint*(limits[joint][1] - limits[joint][0])/(points-1) + limits[joint][0])*3.14/180
+
+            rospy.loginfo("Joint no: " + str(joint+1) + " to " + str(round(pos, 2)))
+            pub[joint].publish(pos)
+
+        currentPoint = (currentPoint + 1) % points
 
         rate.sleep()
 
