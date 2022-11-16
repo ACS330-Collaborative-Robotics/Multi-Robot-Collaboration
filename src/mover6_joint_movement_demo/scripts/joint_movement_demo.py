@@ -15,7 +15,7 @@ def talker():
     limits = [[-130, 130], [-50, 60], [-110, 75], [-140, 140], [-70, 60], [-120, 120]]
     points = 9
 
-    rospy.init_node('talker', anonymous=True)
+    rospy.init_node('joint_movement_demo')
     T_period = 2
     rate = rospy.Rate(1/T_period)
 

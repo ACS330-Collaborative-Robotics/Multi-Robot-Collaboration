@@ -12,14 +12,14 @@ This repository contains:
 
 2. Only the `src` and build scripts are stored in the GH Repo so now build the `build` and `devel` folder by running `./build_sim.sh`. **NOTE: `cpr-robot` package is not built with this script to reduce build time.** To build `cpr-robot`, delete `build` and `devel` and run `catkin_make`.
 
-3. Each node is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs** feature in your Terminal program. Each node has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
+3. Each node is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each node (usually) has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
 
 | Nickname | Node Name(s) | Description | Startup Script |
 | - | - | - | - |
 | ROS Core | roscore | ROS Core required for ROS to Function | `roscore` |
 | Gazebo Simulation | gazebo, gazebo_gui, spawn_urdf | Launches Gazebo and spawns a mover6 robot | `./run_sim.sh` |
 | Sim Robot Joint Controller | robot_state_publisher, mover6/controller_spawner | Starts the listener node for Sim Robot Joint Positions | `./run_sim_control.sh` |
-| Joint Position Movement Demo | talker_xxxx | Moves the mover6 joint's through the full range of motion via joint position | `/run_sim_python_demo.sh` |
+| Joint Position Movement Demo | joint_movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
 
 
 ### Mover6 Dashboard with RViz
