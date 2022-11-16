@@ -1,0 +1,3 @@
+<launch>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find block_controller)/urdf/block.urdf -urdf -z 1 -model block" />
+</launch>
