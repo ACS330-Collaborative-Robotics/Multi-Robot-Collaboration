@@ -164,7 +164,7 @@ include_directories(
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-catkin_install_python(PROGRAMS scripts/joint_pos_movement.py scripts/listener.py
+catkin_install_python(PROGRAMS scripts/joint_pos_movement.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
