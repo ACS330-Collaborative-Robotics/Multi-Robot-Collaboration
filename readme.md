@@ -37,6 +37,7 @@ roslaunch cpr_robot CPRMover6.launch
 - [CPR Robots Driver Repo](https://github.com/CPR-Robots/cpr_robot)
 - [ROS Wiki](http://wiki.ros.org/Documentation)
 - CPR Robots Docs - /src/cpr-robot/doc/html/index.html
+- [UR5 ROS Gazebo](https://github.com/lihuang3/ur5_ROS-Gazebo)
 
 ### Gazebo Tutorials
 
