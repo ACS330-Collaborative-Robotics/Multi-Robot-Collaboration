@@ -2,10 +2,7 @@
 
 import rospy
 from std_msgs.msg import String
-import sys
-sys.path.append("~/catkin_ws/src/assignment_selection/scripts")
-
-from randomBlockLoaclGen import randLocals
+import random
 
 def arena_locals():
     pub = rospy.Publisher('areanLocals', String, queue_size=10)
@@ -17,6 +14,17 @@ def arena_locals():
         rospy.loginfo(loacation_str)
         pub.publish(loacation_str)
         rate.sleep()
+
+def randLocals(blocks,robots):
+    # This files generates random locations for the blocks and the robots and puts them in a list of list
+    # its inputs are the number of blocks
+    # the number of robots
+
+    output = []
+
+    for i in range(blocks+robots):
+        output.append([random.randint(0,999)/10**2,random.randint(0,999)/10**2])
+    return output
 
 if __name__ == '__main__':
     try:
