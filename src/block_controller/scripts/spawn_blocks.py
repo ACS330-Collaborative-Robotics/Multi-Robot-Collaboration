@@ -27,9 +27,9 @@ def spawner():
 
         # quaternion roation w x y z
         pos.orientation.w = 1
-        pos.orientation.x = random()
-        pos.orientation.y = random()
-        pos.orientation.z = 0
+        pos.orientation.x = 0 # Roll
+        pos.orientation.y = 0 # Lengthway vertically
+        pos.orientation.z = 2*random() - 1 # Flat rotation
         
         #urdf_spawner(model_name, model_xml, model_namespace, Pose initial_pose, reference_frame)
         print(urdf_spawner("block" + str(block_num), urdf, "blocks", pos, "world"))
