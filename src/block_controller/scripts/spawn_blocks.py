@@ -19,20 +19,20 @@ def spawner():
     urdf = f.read()
 
     pos = Pose()
-    for block_num in range(5):
+    for block_num in range(100):
         # position x y z
         pos.position.x = 2*random() - 1
         pos.position.y = 2*random() - 1
-        pos.position.z = 0.50
+        pos.position.z = 0.01
 
         # quaternion roation w x y z
-        pos.orientation.w = 1
-        pos.orientation.x = 0 # Roll
+        pos.orientation.w = 2*random() - 1
+        pos.orientation.x = 0 # a - Roll
         pos.orientation.y = 0 # Lengthway vertically
         pos.orientation.z = 2*random() - 1 # Flat rotation
         
         #urdf_spawner(model_name, model_xml, model_namespace, Pose initial_pose, reference_frame)
-        print(urdf_spawner("block" + str(block_num), urdf, "blocks", pos, "world"))
+        print(urdf_spawner("block"  + str(block_num), urdf, "blocks", pos, "world"))
         
 if __name__ == '__main__':
     try:
