@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-# http://docs.ros.org/en/noetic/api/gazebo_msgs/html/index-msg.html
+# Name: Random block spawner from URDF
+# Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
 from gazebo_msgs.srv import SpawnModel
@@ -10,16 +11,19 @@ from pathlib import Path
 from random import random
 
 def spawner():
-    rospy.init_node('block_spawner')
+    # Setup Node
+    rospy.init_node('block_spawner') 
 
+    # Setup URDF spawner service
     rospy.wait_for_service('gazebo/spawn_urdf_model')
     urdf_spawner = rospy.ServiceProxy('gazebo/spawn_urdf_model', SpawnModel)
 
+    # Open URDF
     f = open(str(Path.cwd()) + '/src/block_controller/urdf/block.urdf')
     urdf = f.read()
 
-    pos = Pose()
-    for block_num in range(5):
+    pos = Pose() # Pose object to be filled randomly
+    for block_num in range(10):
         # position x y z
         pos.position.x = 2*random() - 1
         pos.position.y = 2*random() - 1
