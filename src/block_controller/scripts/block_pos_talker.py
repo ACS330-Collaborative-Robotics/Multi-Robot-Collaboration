@@ -4,6 +4,7 @@ import rospy
 from gazebo_msgs.msg import ModelStates
 from gazebo_msgs.srv import GetModelState
 from block_controller.msg import Block, Blocks
+from math import atan2, asin
 
 def talker():
     rospy.Subscriber("/gazebo/model_states", ModelStates, callback)
@@ -29,6 +30,15 @@ def callback(data):
         blocks[block_num].x = data.pose.position.x
         blocks[block_num].y = data.pose.position.y
         blocks[block_num].z = data.pose.position.z
+
+        w = data.pose.orientation.w
+        x = data.pose.orientation.x
+        y = data.pose.orientation.y
+        z = data.pose.orientation.z
+
+        blocks[block_num].a = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z) # Pitch - a
+        blocks[block_num].b = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z) # Roll - b
+        blocks[block_num].c = asin(2*x*y + 2*z*w) # Yaw - c
 
     rospy.sleep(5)
 
