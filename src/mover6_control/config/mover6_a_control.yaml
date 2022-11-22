@@ -1,4 +1,4 @@
-mover6:
+mover6_a:
   # Publish all joint states -----------------------------------
   joint_state_controller:
     type: joint_state_controller/JointStateController
