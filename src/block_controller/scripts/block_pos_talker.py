@@ -3,7 +3,6 @@
 import rospy
 from gazebo_msgs.msg import ModelStates
 from gazebo_msgs.srv import GetModelState
-from pprint import pprint
 from block_controller.msg import Block, Blocks
 
 def talker():
@@ -15,13 +14,21 @@ def talker():
 
 
 def callback(data):
-    len = 0;
+    block_names = []
     for model_name in data.name:
         if "block" in model_name:
             rospy.loginfo(model_name)
-            rospy.loginfo(specific_block_pos(model_name))
-            len += 1
+            block_names.append(model_name)
     rospy.loginfo("\n\n-------------------------------------------")
+
+    blocks = [Block for i in range(len(block_names))]
+    for block_num in range(len(block_names)):
+        data = specific_block_pos(block_names[block_num]) # GetModelState
+        #rospy.loginfo(data)
+        blocks[block_num].block_number = int(block_names[block_num][-1])
+        blocks[block_num].x = data.pose.position.x
+        blocks[block_num].y = data.pose.position.y
+        blocks[block_num].z = data.pose.position.z
 
     rospy.sleep(5)
 
