@@ -19,7 +19,9 @@ This repository contains:
 | ROS Core | roscore | ROS Core required for ROS to Function | `roscore` |
 | Gazebo Simulation | gazebo, gazebo_gui, spawn_urdf | Launches Gazebo and spawns a mover6 robot | `./run_sim.sh` |
 | Sim Robot Joint Controller | robot_state_publisher, mover6/controller_spawner | Starts the listener node for Sim Robot Joint Positions | `./run_sim_control.sh` |
+| Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
 | Joint Position Movement Demo | joint_movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
+| Block Spawner | block_spawner | Randomly generate a large number of blocks at random rotations in the workspace | `rosrun block_controller spawn_blocks.py` |
 
 
 ### Mover6 Dashboard with RViz
@@ -37,6 +39,8 @@ roslaunch cpr_robot CPRMover6.launch
 - [CPR Robots Driver Repo](https://github.com/CPR-Robots/cpr_robot)
 - [ROS Wiki](http://wiki.ros.org/Documentation)
 - CPR Robots Docs - /src/cpr-robot/doc/html/index.html
+- [UR5 ROS Gazebo](https://github.com/lihuang3/ur5_ROS-Gazebo)
+- [Gazebo Message Docs](http://docs.ros.org/en/noetic/api/gazebo_msgs/html/index-msg.html)
 
 ### Gazebo Tutorials
 
@@ -46,6 +50,8 @@ roslaunch cpr_robot CPRMover6.launch
 - [ROS plugin](https://classic.gazebosim.org/tutorials?tut=ros_plugins&cat=connect_ros)
 - [Convert xacro to URDF](https://www.oreilly.com/library/view/mastering-ros-for/9781788478953/d04a8d45-b84b-4c3e-ad03-eb158fe5f451.xhtml)
 - [ROS Control](https://classic.gazebosim.org/tutorials?tut=ros_control)
+- [Creating and Spawning Custom URDF Objects in Simulation](http://wiki.ros.org/simulator_gazebo/Tutorials/SpawningObjectInSimulation)
+- [Manipulate and interact with simulation and simulated objects](http://wiki.ros.org/simulator_gazebo/Tutorials/Gazebo_ROS_API)
 
 ## Fixes
 
