@@ -25,23 +25,29 @@ def callback(data):
             #rospy.loginfo(model_name)
             block_names.append(model_name)
 
-    blocks = [Block for i in range(len(block_names))]
+    blocks = []
+
     for block_num in range(len(block_names)):
+        block = Block()
+
         data = specific_block_pos(block_names[block_num]) # GetModelState
         #rospy.loginfo(data)
-        blocks[block_num].block_number = int(block_names[block_num][-1])
-        blocks[block_num].x = data.pose.position.x
-        blocks[block_num].y = data.pose.position.y
-        blocks[block_num].z = data.pose.position.z
+
+        block.block_number = int(block_names[block_num][-1])
+        block.x = data.pose.position.x
+        block.y = data.pose.position.y
+        block.z = data.pose.position.z
 
         w = data.pose.orientation.w
         x = data.pose.orientation.x
         y = data.pose.orientation.y
         z = data.pose.orientation.z
 
-        blocks[block_num].a = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z) # Pitch - a
-        blocks[block_num].b = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z) # Roll - b
-        blocks[block_num].c = asin(2*x*y + 2*z*w) # Yaw - c
+        block.a = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z) # Pitch - a
+        block.b = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z) # Roll - b
+        block.c = asin(2*x*y + 2*z*w) # Yaw - c
+
+        blocks.append(block)
 
     pub.publish(blocks)
 
