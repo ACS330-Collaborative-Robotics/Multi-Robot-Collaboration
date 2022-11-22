@@ -7,20 +7,23 @@ from block_controller.msg import Block, Blocks
 from math import atan2, asin
 
 def talker():
+    rospy.init_node('block_pos_talker')
+
     rospy.Subscriber("/gazebo/model_states", ModelStates, callback)
 
     pub = rospy.Publisher('/blocks_pos', Blocks, queue_size=10)
 
-    rospy.init_node('block_pos_talker')
+    rospy.spin()
 
 
 def callback(data):
+    pub = rospy.Publisher('/blocks_pos', Blocks, queue_size=10)
+
     block_names = []
     for model_name in data.name:
         if "block" in model_name:
             rospy.loginfo(model_name)
             block_names.append(model_name)
-    rospy.loginfo("\n\n-------------------------------------------")
 
     blocks = [Block for i in range(len(block_names))]
     for block_num in range(len(block_names)):
@@ -39,6 +42,8 @@ def callback(data):
         blocks[block_num].a = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z) # Pitch - a
         blocks[block_num].b = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z) # Roll - b
         blocks[block_num].c = asin(2*x*y + 2*z*w) # Yaw - c
+
+        pub.publish(blocks)
 
     rospy.sleep(5)
 
