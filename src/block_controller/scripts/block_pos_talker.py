@@ -22,7 +22,7 @@ def callback(data):
     block_names = []
     for model_name in data.name:
         if "block" in model_name:
-            rospy.loginfo(model_name)
+            #rospy.loginfo(model_name)
             block_names.append(model_name)
 
     blocks = [Block for i in range(len(block_names))]
@@ -43,7 +43,7 @@ def callback(data):
         blocks[block_num].b = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z) # Roll - b
         blocks[block_num].c = asin(2*x*y + 2*z*w) # Yaw - c
 
-        pub.publish(blocks)
+    pub.publish(blocks)
 
     rospy.sleep(5)
 
