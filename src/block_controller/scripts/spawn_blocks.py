@@ -19,7 +19,7 @@ def spawner():
     urdf = f.read()
 
     pos = Pose()
-    for block_num in range(100):
+    for block_num in range(5):
         # position x y z
         pos.position.x = 2*random() - 1
         pos.position.y = 2*random() - 1
