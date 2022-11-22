@@ -11,6 +11,9 @@
     <param name="robot_description" command="$(find xacro)/xacro $(find mover6_description)/urdf/CPRMover6.urdf.xacro" />
 
     <!-- Spawn a robot into Gazebo -->
-    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model mover6" />
+    <node name="spawn_urdf_1" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model mover6_a" />
+
+    <!-- Spawn a robot into Gazebo -->
+    <node name="spawn_urdf_2" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -y 0.5 -urdf -model mover6_b" />
 
 </launch>
