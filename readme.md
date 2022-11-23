@@ -72,3 +72,7 @@ pico .bashrc # Or open this text file in a text editor
 source /opt/ros/noetic/setup.bash
 source ~/catkin_ws/devel/setup.bash
 ```
+
+**Failed to launch joint_position_controller**
+
+Need to install ros-control and ros-controllers using: `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
