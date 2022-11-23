@@ -38,12 +38,30 @@ weights = [0.25 0.25 0.25 1 1 1];
 
 initialGuess = mover6.homeConfiguration;
 
-[configSoln, solnInfo] = ik('link6', tform, weights, initialGuess);
+[configSoln, solnInfo] = ik('link6', tform, weights, initialGuess)
 disp(solnInfo.Status)
 
 show(mover6, configSoln)
 
 [j1, j2, j3, j4, j5, j6] = configSoln.JointPosition;
+joints = [j1, j2, j3, j4, j5, j6];
+
+joint_limits = deg2rad([-130 130; -50, 60; -110 75; -140 140; -70 60; -120 120]);
+
+for j = 1:6
+    if joints(j) < joint_limits(j, 1)
+        joints(j) = joint_limits(j, 1);
+    elseif joints(j) > joint_limits(j, 2)
+        joints(j) = joint_limits(j, 2);
+    end % if
+end %for
+
+j1 = joints(1);
+j2 = joints(2);
+j3 = joints(3);
+j4 = joints(4);
+j5 = joints(5);
+j6 = joints(6);
 
 end
 
