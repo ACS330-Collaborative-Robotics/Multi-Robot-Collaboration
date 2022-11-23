@@ -26,10 +26,10 @@ def spawner():
     for block_num in range(20):
         # position x y z
         # square around origin of width and height, x_range and y_range respectively
-        x_range = 1
+        x_range = 0.5
         y_range = 1
 
-        pos.position.x = x_range*random() - x_range/2
+        pos.position.x = x_range*random()
         pos.position.y = y_range*random() - y_range/2
         pos.position.z = 0.01
 
