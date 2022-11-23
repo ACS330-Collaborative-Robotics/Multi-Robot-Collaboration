@@ -14,11 +14,11 @@ y = sumresp.Pose.Position.Y;
 z = sumresp.Pose.Position.Z + 0.2;
 
 a = deg2rad(0); % Yaw
-b = deg2rad(0); % Pitch
+b = deg2rad(180); % Pitch
 c = deg2rad(0); % Roll
 
 [j1, j2, j3, j4, j5, j6] = inverse_kinematics(x,y,z,a,b,c);
-joints_pos = [j1, j2, j3, j4, 0, 0];
+joints_pos = [j1, j2, j3, j4, j5, j6];
 joints_pos_deg = rad2deg(joints)
 
 pub = [rospublisher('/mover6_a/joint1_position_controller/command', 'std_msgs/Float64')
