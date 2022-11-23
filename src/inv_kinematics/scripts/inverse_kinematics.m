@@ -6,8 +6,6 @@ function [j1, j2, j3, j4, j5, j6] = inverse_kinematics(x, y, z, a, b, c)
 
 mover6 = importrobot('CPMOVER6.urdf');
 
-
-
 a_tform = [cos(a) -sin(a) 0 0;
            sin(a) cos(a) 0 0;
            0 0 1 0;
@@ -23,7 +21,8 @@ c_tform = [1 0 0 0;
            0 sin(c) cos(c) 0;
            0 0 0 1];
 
-abc_tform = a_tform*b_tform*c_tform;
+%abc_tform = a_tform*b_tform*c_tform;
+abc_tform = eye(4);
 
 xyz_tform = [1 0 0 x; 0 1 0 y; 0 0 1 z; 0 0 0 1];
 
@@ -37,6 +36,7 @@ weights = [0.25 0.25 0.25 1 1 1];
 initialGuess = mover6.homeConfiguration;
 
 [configSoln, solnInfo] = ik('link6', tform, weights, initialGuess);
+disp(solnInfo.Status)
 
 show(mover6, configSoln)
 

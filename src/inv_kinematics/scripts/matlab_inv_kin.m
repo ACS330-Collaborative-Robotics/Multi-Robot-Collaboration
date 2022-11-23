@@ -1,5 +1,3 @@
-function matlab_inv_kin
-
 tic
 
 mover6 = importrobot('CPMOVER6.urdf')
