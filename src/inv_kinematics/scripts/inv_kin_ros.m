@@ -1,7 +1,7 @@
 rosshutdown
 rosinit
 
-sub = rossubscriber('/command_pos', 'inv_kinematics/ArmPos', 'DataFormat','struct');
+sub = rossubscriber('/command_pos', 'gazebo_msgs/ModelState', 'DataFormat','struct');
 
 listening = 1;
 while listening
@@ -10,15 +10,15 @@ while listening
     
     % IF a response is recieved from the subscriber
     if status
-        x = response.X;
-        y = response.Y;
-        z = response.Z;
+        x = response.Pose.Position.X;
+        y = response.Pose.Position.Y;
+        z = response.Pose.Position.Z;
         
-        a = response.A; % Yaw
-        b = response.B; % Pitch
-        c = response.C; % Roll
+        a = response.Pose.Orientation.X; % Yaw
+        b = response.Pose.Orientation.Y; % Pitch
+        c = response.Pose.Orientation.Z; % Roll
 
-        ns = response.RobotNamespace;
+        ns = response.ModelName;
         
         [j1, j2, j3, j4, j5, j6] = inverse_kinematics(x,y,z,a,b,c);
         joints_pos = [j1, j2, j3, j4, j5, j6];
