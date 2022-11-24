@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-# license removed for brevity
+
+# Name: Move all robots joint's through full range of motion
+# Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
+
 import rospy
 from std_msgs.msg import Float64
 import random
