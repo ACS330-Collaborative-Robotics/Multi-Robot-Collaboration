@@ -5,7 +5,6 @@
 
 import rospy
 from std_msgs.msg import Float64
-import random
 
 def talker():
     robot_namespaces = ["mover6_a", "mover6_b"]
