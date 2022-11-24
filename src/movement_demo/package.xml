@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>mover6_joint_movement_demo</name>
+  <name>movement_demo</name>
   <version>0.0.0</version>
-  <description>The sim_control_test package</description>
+  <description>The movement_demo package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
