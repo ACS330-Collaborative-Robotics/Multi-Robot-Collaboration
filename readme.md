@@ -61,10 +61,6 @@ roslaunch cpr_robot CPRMover6.launch
 
 `htop` and kill `gzserver` 
 
-**ROS hasnt been setup properly**
-
-run `source devel/setup.bash`
-
 **Setup not done properly**
 
 ```bash
