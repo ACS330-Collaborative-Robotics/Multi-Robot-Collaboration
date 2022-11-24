@@ -13,8 +13,8 @@ def choose_block():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
     rospy.init_node('blockSelector', anonymous=True)
-    rate = rospy.Rate(0.5) # 10hz
-    pub = [rospy.Publisher("/mover6_a/nextBlock", String , queue_size=2), rospy.Publisher("/mover6_b/nextBlock", String , queue_size=2)]
+    rate = rospy.Rate(0.5)
+    pub = [rospy.Publisher("/mover6_a/next_block", String , queue_size=2), rospy.Publisher("/mover6_b/next_block", String , queue_size=2)]
     # pub = rospy.Publisher("/mover6_a/nextblock(block1)", std_msgs , queue_size=2)
 
     # Making array of block names
@@ -49,9 +49,11 @@ def choose_block():
         for j in range(len(pub)):
             try:
                 pub[j].publish(goCollect[j][i])
+                rospy.loginfo(robot_namespaces[j] + " " + goCollect[j][i])
             except:
                 pass
-        rate.sleep()
+
+            rate.sleep()
 
     
 
