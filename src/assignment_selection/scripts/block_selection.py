@@ -12,22 +12,35 @@ def choose_block():
 
     # pub = rospy.Publisher("/mover6_a/nextblock(block1)", std_msgs , queue_size=2)
 
-    #Making array of block names
+    # Making array of block names
     blockNames = []
-    for i in range(1,21):
+    for i in range(1,21): 
         temp = "block"+str(i)
         blockNames.append(temp)
 
+    # Getting distance from each robot to blocks and sellecting the smallest
     roboColect = []
-
     for blockName in blockNames:     
         reldist = []
         for robot in robot_namespaces:
             temp =  specific_block_pos(blockName, robot)
             reldist.append(math.sqrt(temp[0]**2+temp[1]**2+temp[2]**2))
-        roboColect.append(blockName, reldist.index(min(reldist)))
-    print(roboColect)
-        
+        roboColect.append(blockName, reldist.index(min(reldist)), min(reldist))
+    
+    # Ordering list on nearest
+    sorted(roboColect,key=itemgetter(2))
+    
+    # Splitting into seperate lists
+
+    goCollect = []
+    for i in range(len(robot_namespaces)):
+        goCollect.append([])
+        for nextBlock in roboColect:
+            if nextBlock[1] == i:
+                goCollect[i].append(nextBlock[0])
+
+    print(goCollect)
+
 
 
     
