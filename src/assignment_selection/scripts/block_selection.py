@@ -5,10 +5,15 @@
 
 import rospy
 import math
+from gazebo_msgs.srv import GetModelState
+from operator import itemgetter
+from std_msgs.msg import String
 
 def choose_block():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
+    rospy.init_node('blockSelector', anonymous=True)
+    rate = rospy.Rate(0.5) # 10hz
 
     # pub = rospy.Publisher("/mover6_a/nextblock(block1)", std_msgs , queue_size=2)
 
@@ -25,7 +30,7 @@ def choose_block():
         for robot in robot_namespaces:
             temp =  specific_block_pos(blockName, robot)
             reldist.append(math.sqrt(temp[0]**2+temp[1]**2+temp[2]**2))
-        roboColect.append(blockName, reldist.index(min(reldist)), min(reldist))
+        roboColect.append([blockName, reldist.index(min(reldist)), min(reldist)])
     
     # Ordering list on nearest
     sorted(roboColect,key=itemgetter(2))
@@ -38,10 +43,20 @@ def choose_block():
         for nextBlock in roboColect:
             if nextBlock[1] == i:
                 goCollect[i].append(nextBlock[0])
+    
 
-    print(goCollect)
-
-
+    for i in range(max(len(x) for x in goCollect)):
+        try:
+            temp = "/"+"mover6_a"+"/"+goCollect[0][i]
+            pub = rospy.Publisher(temp, String , queue_size=2)    
+        except:
+            pass
+        try:
+            temp = "/"+"mover6_b"+"/"+goCollect[1][i]
+            pub = rospy.Publisher(temp, String , queue_size=2)
+        except:
+            pass
+        rate.sleep()
 
     
 
