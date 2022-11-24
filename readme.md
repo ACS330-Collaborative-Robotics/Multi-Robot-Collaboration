@@ -19,8 +19,10 @@ This repository contains:
 | ROS Core | roscore | ROS Core required for ROS to Function | `roscore` |
 | Gazebo Simulation | gazebo, gazebo_gui, spawn_urdf | Launches Gazebo and spawns a mover6 robot | `./run_sim.sh` |
 | Sim Robot Joint Controller | robot_state_publisher, mover6/controller_spawner | Starts the listener node for Sim Robot Joint Positions | `./run_sim_control.sh` |
+| Inverse kinematics | matlab_global_node_29460 | Listen on `/command_pos` for xyz coords and publish inverse kinematics to relevant joint position controller | `inv_kin_ros` - Requires `sudo apt install python3.9 python3.9-venv` and path set in MATLAB in `preferences>ROS Toolbox>Open ROS Toolbox Prefences`. Then ROS message generation using `rosgenmsg` in `/src` in MATLAB. |
 | Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
 | Joint Position Movement Demo | joint_movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
+| Kinematics Movement Demo | joint_movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
 | Block Spawner | block_spawner | Randomly generate a large number of blocks at random rotations in the workspace | `rosrun block_controller spawn_blocks.py` |
 
 
@@ -58,10 +60,6 @@ roslaunch cpr_robot CPRMover6.launch
 **Gazebo not launching properly**
 
 `htop` and kill `gzserver` 
-
-**ROS hasnt been setup properly**
-
-run `source devel/setup.bash`
 
 **Setup not done properly**
 
