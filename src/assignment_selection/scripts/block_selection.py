@@ -4,6 +4,7 @@
 # Author: TomRichards (tomtommrichards@gmail.com)
 
 import rospy
+import math
 
 def choose_block():
     # Define robot namespaces being used - also defines number of robots
@@ -17,7 +18,17 @@ def choose_block():
         temp = "block"+str(i)
         blockNames.append(temp)
 
-    print(blockNames)
+    roboColect = []
+
+    for blockName in blockNames:     
+        reldist = []
+        for robot in robot_namespaces:
+            temp =  specific_block_pos(blockName, robot)
+            reldist.append(math.sqrt(temp[0]**2+temp[1]**2+temp[2]**2))
+        roboColect.append(blockName, reldist.index(min(reldist)))
+    print(roboColect)
+        
+
 
     
 
