@@ -19,7 +19,7 @@ def choose_block():
 
     # Making array of block names
     blockNames = []
-    for i in range(1,21): 
+    for i in range(20): 
         temp = "block"+str(i)
         blockNames.append(temp)
 
@@ -55,10 +55,6 @@ def choose_block():
 
             rate.sleep()
 
-    
-
-
-
 def specific_block_pos(specific_model_name, reference_model_name):
     # Use service to get position of specific block named
     rospy.wait_for_service('gazebo/get_model_state')
@@ -67,7 +63,6 @@ def specific_block_pos(specific_model_name, reference_model_name):
 
     # Return ModelState object with position relative to world 
     return [data.x, data.y, data.z]
-
 
 if __name__ == '__main__':
     try:
