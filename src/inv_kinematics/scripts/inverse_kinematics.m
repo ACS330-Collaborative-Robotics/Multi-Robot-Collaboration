@@ -1,4 +1,4 @@
-function [j1, j2, j3, j4, j5, j6] = inverse_kinematics(x, y, z, a, b, c)
+function joints = inverse_kinematics(x, y, z, a, b, c)
 %INVERSE_KINEMATICS Inverse kinematics of 6DOF Mover6 Manipulator
 %   Function loads CPRMover6.urdf then computes the inverse kinematics using
 %   iterative method.
@@ -62,10 +62,13 @@ initialGuess = mover6.homeConfiguration;
 disp(solnInfo.Status)
 
 % Display plot of robot position
-show(mover6, configSoln)
+%show(mover6, configSoln)
 
 % Output final joint positions
-[j1, j2, j3, j4, j5, j6] = configSoln.JointPosition;
+joints = zeros(1,6);
+for i = 1:6
+    joints(i) = configSoln(i).JointPosition;
+end % for
 
 end
 

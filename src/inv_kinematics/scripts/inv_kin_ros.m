@@ -20,8 +20,7 @@ while listening
 
         ns = response.ModelName;
         
-        [j1, j2, j3, j4, j5, j6] = inverse_kinematics(x,y,z,a,b,c);
-        joints_pos = [j1, j2, j3, j4, j5, j6];
+        joints_pos = inverse_kinematics(x,y,z,a,b,c);
         
         % Setup publishers for relevant robot using robot namespace
         pub = [rospublisher(append(ns,'/joint1_position_controller/command'), 'std_msgs/Float64')
