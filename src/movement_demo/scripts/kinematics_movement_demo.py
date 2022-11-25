@@ -31,7 +31,7 @@ def talker():
         # Alternate between the two robots
         for robot_num in range(len(robot_namespaces)):
             # Select random block
-            block = "block" + str(randint(1,20))
+            block = "block" + str(randint(0,19))
 
             # Fetch block position relative to chosen robot
             xyz_pos = specific_block_pos(block, robot_namespaces[robot_num])
