@@ -1,0 +1,380 @@
+[
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  /usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd_ccd.c -o build/glnxa64/ccd_ccd.o",
+    "file": "/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd_ccd.c",
+    "output": "build/glnxa64/ccd_ccd.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  /usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd_mpr.c -o build/glnxa64/ccd_mpr.o",
+    "file": "/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd_mpr.c",
+    "output": "build/glnxa64/ccd_mpr.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  /usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd_polytope.c -o build/glnxa64/ccd_polytope.o",
+    "file": "/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd_polytope.c",
+    "output": "build/glnxa64/ccd_polytope.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  /usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd_vec3.c -o build/glnxa64/ccd_vec3.o",
+    "file": "/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd_vec3.c",
+    "output": "build/glnxa64/ccd_vec3.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "g++ -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c++11 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  /usr/local/MATLAB/R2022b/toolbox/shared/robotics/robotcore/builtins/libsrc/collisioncodegen/collisioncodegen_CollisionGeometry.cpp -o build/glnxa64/collisioncodegen_CollisionGeometry.o",
+    "file": "/usr/local/MATLAB/R2022b/toolbox/shared/robotics/robotcore/builtins/libsrc/collisioncodegen/collisioncodegen_CollisionGeometry.cpp",
+    "output": "build/glnxa64/collisioncodegen_CollisionGeometry.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "g++ -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c++11 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  /usr/local/MATLAB/R2022b/toolbox/shared/robotics/robotcore/builtins/libsrc/collisioncodegen/collisioncodegen_api.cpp -o build/glnxa64/collisioncodegen_api.o",
+    "file": "/usr/local/MATLAB/R2022b/toolbox/shared/robotics/robotcore/builtins/libsrc/collisioncodegen/collisioncodegen_api.cpp",
+    "output": "build/glnxa64/collisioncodegen_api.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "g++ -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c++11 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  /usr/local/MATLAB/R2022b/toolbox/shared/robotics/robotcore/builtins/libsrc/collisioncodegen/collisioncodegen_ccdExtensions.cpp -o build/glnxa64/collisioncodegen_ccdExtensions.o",
+    "file": "/usr/local/MATLAB/R2022b/toolbox/shared/robotics/robotcore/builtins/libsrc/collisioncodegen/collisioncodegen_ccdExtensions.cpp",
+    "output": "build/glnxa64/collisioncodegen_ccdExtensions.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "g++ -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11 -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c++11 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  /usr/local/MATLAB/R2022b/toolbox/shared/robotics/robotcore/builtins/libsrc/collisioncodegen/collisioncodegen_checkCollision.cpp -o build/glnxa64/collisioncodegen_checkCollision.o",
+    "file": "/usr/local/MATLAB/R2022b/toolbox/shared/robotics/robotcore/builtins/libsrc/collisioncodegen/collisioncodegen_checkCollision.cpp",
+    "output": "build/glnxa64/collisioncodegen_checkCollision.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  inverse_kinematics_data.c -o build/glnxa64/inverse_kinematics_data.o",
+    "file": "inverse_kinematics_data.c",
+    "output": "build/glnxa64/inverse_kinematics_data.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  rt_nonfinite.c -o build/glnxa64/rt_nonfinite.o",
+    "file": "rt_nonfinite.c",
+    "output": "build/glnxa64/rt_nonfinite.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  inverse_kinematics_initialize.c -o build/glnxa64/inverse_kinematics_initialize.o",
+    "file": "inverse_kinematics_initialize.c",
+    "output": "build/glnxa64/inverse_kinematics_initialize.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  inverse_kinematics_terminate.c -o build/glnxa64/inverse_kinematics_terminate.o",
+    "file": "inverse_kinematics_terminate.c",
+    "output": "build/glnxa64/inverse_kinematics_terminate.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  inverse_kinematics.c -o build/glnxa64/inverse_kinematics.o",
+    "file": "inverse_kinematics.c",
+    "output": "build/glnxa64/inverse_kinematics.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  RigidBodyTree.c -o build/glnxa64/RigidBodyTree.o",
+    "file": "RigidBodyTree.c",
+    "output": "build/glnxa64/RigidBodyTree.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  RigidBody.c -o build/glnxa64/RigidBody.o",
+    "file": "RigidBody.c",
+    "output": "build/glnxa64/RigidBody.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  CollisionSet.c -o build/glnxa64/CollisionSet.o",
+    "file": "CollisionSet.c",
+    "output": "build/glnxa64/CollisionSet.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  rigidBodyJoint.c -o build/glnxa64/rigidBodyJoint.o",
+    "file": "rigidBodyJoint.c",
+    "output": "build/glnxa64/rigidBodyJoint.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  inverseKinematics.c -o build/glnxa64/inverseKinematics.o",
+    "file": "inverseKinematics.c",
+    "output": "build/glnxa64/inverseKinematics.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  validatestring.c -o build/glnxa64/validatestring.o",
+    "file": "validatestring.c",
+    "output": "build/glnxa64/validatestring.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  warning.c -o build/glnxa64/warning.o",
+    "file": "warning.c",
+    "output": "build/glnxa64/warning.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  repmat.c -o build/glnxa64/repmat.o",
+    "file": "repmat.c",
+    "output": "build/glnxa64/repmat.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  SystemCore.c -o build/glnxa64/SystemCore.o",
+    "file": "SystemCore.c",
+    "output": "build/glnxa64/SystemCore.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  eye.c -o build/glnxa64/eye.o",
+    "file": "eye.c",
+    "output": "build/glnxa64/eye.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  norm.c -o build/glnxa64/norm.o",
+    "file": "norm.c",
+    "output": "build/glnxa64/norm.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  all.c -o build/glnxa64/all.o",
+    "file": "all.c",
+    "output": "build/glnxa64/all.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  find.c -o build/glnxa64/find.o",
+    "file": "find.c",
+    "output": "build/glnxa64/find.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  indexShapeCheck.c -o build/glnxa64/indexShapeCheck.o",
+    "file": "indexShapeCheck.c",
+    "output": "build/glnxa64/indexShapeCheck.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  NLPSolverInterface.c -o build/glnxa64/NLPSolverInterface.o",
+    "file": "NLPSolverInterface.c",
+    "output": "build/glnxa64/NLPSolverInterface.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  tic.c -o build/glnxa64/tic.o",
+    "file": "tic.c",
+    "output": "build/glnxa64/tic.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  DampedBFGSwGradientProjection.c -o build/glnxa64/DampedBFGSwGradientProjection.o",
+    "file": "DampedBFGSwGradientProjection.c",
+    "output": "build/glnxa64/DampedBFGSwGradientProjection.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  IKHelpers.c -o build/glnxa64/IKHelpers.o",
+    "file": "IKHelpers.c",
+    "output": "build/glnxa64/IKHelpers.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  normalizeRows.c -o build/glnxa64/normalizeRows.o",
+    "file": "normalizeRows.c",
+    "output": "build/glnxa64/normalizeRows.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  mtimes.c -o build/glnxa64/mtimes.o",
+    "file": "mtimes.c",
+    "output": "build/glnxa64/mtimes.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  xzsvdc.c -o build/glnxa64/xzsvdc.o",
+    "file": "xzsvdc.c",
+    "output": "build/glnxa64/xzsvdc.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  xnrm2.c -o build/glnxa64/xnrm2.o",
+    "file": "xnrm2.c",
+    "output": "build/glnxa64/xnrm2.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  xdotc.c -o build/glnxa64/xdotc.o",
+    "file": "xdotc.c",
+    "output": "build/glnxa64/xdotc.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  eml_mtimes_helper.c -o build/glnxa64/eml_mtimes_helper.o",
+    "file": "eml_mtimes_helper.c",
+    "output": "build/glnxa64/eml_mtimes_helper.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  toc.c -o build/glnxa64/toc.o",
+    "file": "toc.c",
+    "output": "build/glnxa64/toc.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  mldivide.c -o build/glnxa64/mldivide.o",
+    "file": "mldivide.c",
+    "output": "build/glnxa64/mldivide.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  qrsolve.c -o build/glnxa64/qrsolve.o",
+    "file": "qrsolve.c",
+    "output": "build/glnxa64/qrsolve.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  inv.c -o build/glnxa64/inv.o",
+    "file": "inv.c",
+    "output": "build/glnxa64/inv.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  diag.c -o build/glnxa64/diag.o",
+    "file": "diag.c",
+    "output": "build/glnxa64/diag.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  assertCompatibleDims.c -o build/glnxa64/assertCompatibleDims.o",
+    "file": "assertCompatibleDims.c",
+    "output": "build/glnxa64/assertCompatibleDims.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  any.c -o build/glnxa64/any.o",
+    "file": "any.c",
+    "output": "build/glnxa64/any.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  isPositiveDefinite.c -o build/glnxa64/isPositiveDefinite.o",
+    "file": "isPositiveDefinite.c",
+    "output": "build/glnxa64/isPositiveDefinite.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  abs.c -o build/glnxa64/abs.o",
+    "file": "abs.c",
+    "output": "build/glnxa64/abs.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  handle.c -o build/glnxa64/handle.o",
+    "file": "handle.c",
+    "output": "build/glnxa64/handle.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  interface/_coder_inverse_kinematics_api.c -o build/glnxa64/_coder_inverse_kinematics_api.o",
+    "file": "interface/_coder_inverse_kinematics_api.c",
+    "output": "build/glnxa64/_coder_inverse_kinematics_api.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  interface/_coder_inverse_kinematics_mex.c -o build/glnxa64/_coder_inverse_kinematics_mex.o",
+    "file": "interface/_coder_inverse_kinematics_mex.c",
+    "output": "build/glnxa64/_coder_inverse_kinematics_mex.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  strcmp.c -o build/glnxa64/strcmp.o",
+    "file": "strcmp.c",
+    "output": "build/glnxa64/strcmp.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  eml_int_forloop_overflow_check.c -o build/glnxa64/eml_int_forloop_overflow_check.o",
+    "file": "eml_int_forloop_overflow_check.c",
+    "output": "build/glnxa64/eml_int_forloop_overflow_check.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  sumMatrixIncludeNaN.c -o build/glnxa64/sumMatrixIncludeNaN.o",
+    "file": "sumMatrixIncludeNaN.c",
+    "output": "build/glnxa64/sumMatrixIncludeNaN.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  sqrt.c -o build/glnxa64/sqrt.o",
+    "file": "sqrt.c",
+    "output": "build/glnxa64/sqrt.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  xscal.c -o build/glnxa64/xscal.o",
+    "file": "xscal.c",
+    "output": "build/glnxa64/xscal.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  xaxpy.c -o build/glnxa64/xaxpy.o",
+    "file": "xaxpy.c",
+    "output": "build/glnxa64/xaxpy.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  xrot.c -o build/glnxa64/xrot.o",
+    "file": "xrot.c",
+    "output": "build/glnxa64/xrot.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  xswap.c -o build/glnxa64/xswap.o",
+    "file": "xswap.c",
+    "output": "build/glnxa64/xswap.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  sqrt1.c -o build/glnxa64/sqrt1.o",
+    "file": "sqrt1.c",
+    "output": "build/glnxa64/sqrt1.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  div.c -o build/glnxa64/div.o",
+    "file": "div.c",
+    "output": "build/glnxa64/div.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  inverse_kinematics_emxutil.c -o build/glnxa64/inverse_kinematics_emxutil.o",
+    "file": "inverse_kinematics_emxutil.c",
+    "output": "build/glnxa64/inverse_kinematics_emxutil.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  inverse_kinematics_mexutil.c -o build/glnxa64/inverse_kinematics_mexutil.o",
+    "file": "inverse_kinematics_mexutil.c",
+    "output": "build/glnxa64/inverse_kinematics_mexutil.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  interface/_coder_inverse_kinematics_info.c -o build/glnxa64/_coder_inverse_kinematics_info.o",
+    "file": "interface/_coder_inverse_kinematics_info.c",
+    "output": "build/glnxa64/_coder_inverse_kinematics_info.o"
+  },
+  {
+    "directory": "/home/conor/catkin_ws/src/inv_kinematics/scripts/codegen/mex/inverse_kinematics",
+    "command": "/usr/bin/gcc -fexceptions -fPIC -fno-omit-frame-pointer -pthread -D_GNU_SOURCE -DMATLAB_MEX_FILE  -O2 -fwrapv -DNDEBUG -std=c99 -I \".\" -I \"/home/conor/catkin_ws/src/inv_kinematics/scripts\" -I \"/usr/local/MATLAB/R2022b/extern/include/shared_robotics\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src\" -I \"/usr/local/MATLAB/R2022b/toolbox/shared/robotics/externalDependency/libccd/src/ccd\" -I \"./interface\" -I \"/usr/local/MATLAB/R2022b/extern/include\" -I \".\" -Dccd_EXPORTS -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE -DMW_HAVE_LAPACK_DECLS -DMODEL=inverse_kinematics_mex -c  /usr/local/MATLAB/R2022b/extern/version/c_mexapi_version.c -o build/glnxa64/c_mexapi_version.o",
+    "file": "/usr/local/MATLAB/R2022b/extern/version/c_mexapi_version.c",
+    "output": "build/glnxa64/c_mexapi_version.o"
+  }
+]
