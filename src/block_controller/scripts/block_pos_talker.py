@@ -45,7 +45,7 @@ def callback(data):
         data = specific_block_pos(block_names[block_num]) # GetModelState
         #rospy.loginfo(data)
 
-        block.block_number = int(block_names[block_num][-1]) # Block number
+        block.block_number = int(block_names[block_num].replace("block", "")) # Block number
 
         # Position x y z
         block.x = data.pose.position.x
