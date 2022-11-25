@@ -9,6 +9,7 @@ project(inv_kinematics)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  roscpp
   std_msgs
 )
 
@@ -202,3 +203,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(inv_kin_srv scripts/inv_kin_srv.cpp)
+target_link_libraries(inv_kin_srv ${catkin_LIBRARIES})
