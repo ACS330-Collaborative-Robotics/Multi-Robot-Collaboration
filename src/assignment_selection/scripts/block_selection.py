@@ -41,7 +41,7 @@ def choose_block():
     while blockData is None:
         rospy.loginfo("Waiting for data.")
         rate.sleep()
-    rospy.login("Got block data,")
+    rospy.loginfo("Got block data,")
 
     # Iterate through blockData and retrieve list of block names
     blockNames = []

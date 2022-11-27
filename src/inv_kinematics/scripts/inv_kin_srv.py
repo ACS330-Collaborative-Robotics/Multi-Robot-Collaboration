@@ -9,6 +9,8 @@ from math import cos, sin
 
 from inv_kinematics.srv import InvKin
 
+from std_msgs.msg import Float64
+
 def service(req):
     x = req.state.pose.position.x
     y = req.state.pose.position.y
@@ -25,15 +27,19 @@ def service(req):
     ab_tform = np.dot(a_tform, b_tform)
 
     target_orientation = np.dot(ab_tform, c_tform)
-    print(target_orientation)
+    #print(target_orientation)
 
     joints = chain.inverse_kinematics(target_position, target_orientation, orientation_mode="all")
-    print(joints)
+    #print(joints)
 
-    cartesian_position = chain.forward_kinematics(joints)
-    print(cartesian_position)
+    #cartesian_position = chain.forward_kinematics(joints)
+    #print(cartesian_position)
 
-    return joints
+    for joint_num in range(len(joints)):
+        pub = rospy.Publisher(req.state.model_name + "/joint" + str(joint_num) + "_position_controller/command", Float64, queue_size=10)
+        pub.publish(joints[joint_num])
+
+    return True
 
 def main():
     rospy.init_node('inverse_kinematics_server')

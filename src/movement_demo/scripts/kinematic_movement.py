@@ -8,13 +8,15 @@ from gazebo_msgs.srv import GetModelState
 from random import randint
 from gazebo_msgs.msg import ModelState
 from std_msgs.msg import String
+from inv_kinematics.srv import InvKin
 
 def main():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
 
-    # Setup publisher on topic /command_pos used for both bots
-    pub = rospy.Publisher("/command_pos", ModelState, queue_size=2)
+    # Setup inverse_kinematics service
+    rospy.wait_for_service('inverse_kinematics')
+    inv_kin = rospy.ServiceProxy('inverse_kinematics', InvKin)
 
     # Setup subscriber callbacks 
     rospy.Subscriber("/mover6_a/next_block", String, mover6_a_callback)
@@ -24,21 +26,16 @@ def main():
     rospy.init_node('kinematic_movement')
 
     rospy.spin()
-
+    
 def talker(robot_name_space, block_name):
     # Setup inverse_kinematics service
     rospy.wait_for_service('inverse_kinematics')
-    inv_kin = rospy.ServiceProxy('inverse_kinematics', ModelState)
-
-    print("Service setup.")
+    inv_kin = rospy.ServiceProxy('inverse_kinematics', InvKin)
 
     # Set fixed rotation
     a = 0
     b = 3.14 # End effector points downwards
     c = 0
-
-    # Select random block
-    block = "block" + str(randint(1,20))
 
     # Fetch block position relative to chosen robot
     xyz_pos = specific_block_pos(block_name, robot_name_space)
@@ -57,7 +54,7 @@ def talker(robot_name_space, block_name):
 
     # Call inverse_kinematics service and log ArmPos
     inv_kin(arm_pos)
-    rospy.loginfo(robot_name_space + " " + block)
+    rospy.loginfo(robot_name_space + " " + block_name)
 
 def mover6_a_callback(data):
     talker("mover6_a", data.data)
