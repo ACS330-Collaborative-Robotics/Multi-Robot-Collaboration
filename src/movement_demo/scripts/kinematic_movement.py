@@ -26,7 +26,11 @@ def main():
     rospy.spin()
 
 def talker(robot_name_space, block_name):
-    pub = rospy.Publisher("/command_pos", ModelState, queue_size=2)
+    # Setup inverse_kinematics service
+    rospy.wait_for_service('inverse_kinematics')
+    inv_kin = rospy.ServiceProxy('inverse_kinematics', ModelState)
+
+    print("Service setup.")
 
     # Set fixed rotation
     a = 0
@@ -51,8 +55,8 @@ def talker(robot_name_space, block_name):
     arm_pos.pose.orientation.y = b
     arm_pos.pose.orientation.z = c
 
-    # Publish and log ArmPos
-    pub.publish(arm_pos)
+    # Call inverse_kinematics service and log ArmPos
+    inv_kin(arm_pos)
     rospy.loginfo(robot_name_space + " " + block)
 
 def mover6_a_callback(data):
