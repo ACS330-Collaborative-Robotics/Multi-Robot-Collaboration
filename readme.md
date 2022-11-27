@@ -14,17 +14,26 @@ This repository contains:
 
 3. Each node is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each node (usually) has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
 
-| Nickname | Node Name(s) | Description | Startup Script |
+#### Core nodes (In initial startup order)
+
+| Nickname | Package | Description | Startup Script |
 | - | - | - | - |
 | ROS Core | roscore | ROS Core required for ROS to Function | `roscore` |
-| Gazebo Simulation | gazebo, gazebo_gui, spawn_urdf | Launches Gazebo and spawns a mover6 robot | `./run_sim.sh` |
-| Sim Robot Joint Controller | robot_state_publisher, mover6/controller_spawner | Starts the listener node for Sim Robot Joint Positions | `./run_sim_control.sh` |
-| Inverse kinematics | matlab_global_node_29460 | Listen on `/command_pos` for xyz coords and publish inverse kinematics to relevant joint position controller | `inv_kin_ros` - Requires `sudo apt install python3.9 python3.9-venv` and path set in MATLAB in `preferences>ROS Toolbox>Open ROS Toolbox Prefences`. Then ROS message generation using `rosgenmsg` in `/src` in MATLAB. |
+| Gazebo Simulation | mover6_gazebo | Launches Gazebo and spawns a mover6 robot | `./run_sim.sh` |
+| Sim Robot Joint Controller | mover6_control | Starts the listener node for Sim Robot Joint Positions | `./run_sim_control.sh` |
+| Block Spawner | | To be run on startup, see  Block Spawner below.| |
+| Inverse kinematics | matlab_global_node_XXXXX | Listen on `/command_pos` for xyz coords and publish inverse kinematics to relevant joint position controller | `inv_kin_ros` in MATLAB |
+| Kinematic Movement | movement_demo | Listens on `robot_namespace/next_block` for block names to move to, then calls inverse kinematic movement. | `rosrun movement_demo kinematic_movement.py` | 
+| Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
 | Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
-| Joint Position Movement Demo | joint_movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
-| Kinematics Movement Demo | joint_movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
-| Block Spawner | block_spawner | Randomly generate a large number of blocks at random rotations in the workspace | `rosrun block_controller spawn_blocks.py` |
 
+#### Additional nodes
+
+| Nickname | Package | Description | Startup Script |
+| - | - | - | - |
+| Block Spawner | block_controller | Randomly generate a large number of blocks at random rotations in the workspace | `rosrun block_controller spawn_blocks.py` |
+| Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
+| Kinematics Movement Demo | movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
 
 ### Mover6 Dashboard with RViz
 
@@ -74,3 +83,7 @@ source ~/catkin_ws/devel/setup.bash
 **Failed to launch joint_position_controller**
 
 Need to install ros-control and ros-controllers using: `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
+
+**MATLAB not setup for ROS**
+
+Requires `sudo apt install python3.9 python3.9-venv` and path set in MATLAB in `preferences>ROS Toolbox>Open ROS Toolbox Prefences`.
