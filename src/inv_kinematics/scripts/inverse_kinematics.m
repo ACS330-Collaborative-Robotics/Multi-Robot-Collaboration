@@ -18,7 +18,7 @@ function [j1, j2, j3, j4, j5, j6] = inverse_kinematics(x, y, z, a, b, c)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Import URDF and setup RigidBodyTree
-mover6 = importrobot('CPMOVER6.urdf');
+mover6 = importrobot('CPRMOVER6.urdf');
 
 % Setup rotation matrices - source: http://msl.cs.uiuc.edu/planning/node102.html
 a_tform = [cos(a) -sin(a) 0 0;

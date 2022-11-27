@@ -7,7 +7,7 @@ c = deg2rad(0); % rot about x
 
 [j1 j2 j3 j4 j5 j6] = inverse_kinematics(x,y,z,a,b,c)
 
-mover6 = importrobot('CPMOVER6.urdf');
+mover6 = importrobot('CPRMOVER6.urdf');
 
 config = homeConfiguration(mover6)
 
