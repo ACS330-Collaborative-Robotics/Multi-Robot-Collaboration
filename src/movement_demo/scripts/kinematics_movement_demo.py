@@ -7,13 +7,15 @@ import rospy
 from gazebo_msgs.srv import GetModelState
 from random import randint
 from gazebo_msgs.msg import ModelState
+from inv_kinematics.srv import InvKin
 
 def talker():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
 
-    # Setup publisher on topic /command_pos used for both bots
-    pub = rospy.Publisher("/command_pos", ModelState, queue_size=2)
+    # Setup inverse_kinematics service
+    rospy.wait_for_service('inverse_kinematics')
+    inv_kin = rospy.ServiceProxy('inverse_kinematics', InvKin)
 
     # Initialise ROS node
     rospy.init_node('joint_movement_demo')
@@ -49,7 +51,7 @@ def talker():
             arm_pos.pose.orientation.z = c
 
             # Publish and log ArmPos
-            pub.publish(arm_pos)
+            inv_kin(arm_pos)
             rospy.loginfo(robot_namespaces[robot_num] + " " + block)
 
             # Sleep until time period has passed
