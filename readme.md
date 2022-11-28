@@ -48,18 +48,25 @@ roslaunch cpr_robot CPRMover6.launch
 
 ## ROS Information
 
+Robot Namespaces - `robot_ns = ["mover6_a", "mover6_b]`
+Robot Joints - `1 -> 6`
+
 ### Topics
 
 | Nickname | Name | Data Format | Python Data Format Import | Publishers | Subscribers |
 | - | - | - | - | - | - |
-| Block Positions | `/blocks_pos` | Blocks | `from block_controller.msg import Block, Blocks` | `block_controller block_pos_talker.py` | `assignment_selection block_selection.py` |
-| Gazebo Model States (All Models) | `/gazebo/model_states` | ModelStates | `from gazebo_msgs.msg import ModelStates` | Gazebo | `block_controller block_pos_talker.py` | 
+| Block Positions | `/blocks_pos` | `block_controller Blocks` | `from block_controller.msg import Block, Blocks` | `block_controller block_pos_talker.py` | `assignment_selection block_selection.py` |
+| Gazebo Model States (All Models) | `/gazebo/model_states` | `gazebo_msgs ModelStates` | `from gazebo_msgs.msg import ModelStates` | Gazebo | `block_controller block_pos_talker.py` | 
+| Next block to pick | `robot_ns/next_block` | `std_msgs Strings` | `from std_msgs.msg import String` | `assignment_selection block_selection.py` | `movement_demo kinematic_movement.py` |
+| Gazebo Joint Position Controller | `robot_ns/jointX_position_controller/command` | `from std_msgs.msg import Float64` | `inv_kinematics inv_kin_srv.py`, `movement_demo joint_movement_demo.py`, `inv_kin_ros.m` | Gazebo |
 
 ### Services
 
 | Nickname | Name | Location | Python Import | Input Format | Response Format |
-| - | - | - | - | - |
+| - | - | - | - | - | - |
 | Specific Model Position | `gazebo/get_model_state'` | Gazebo | `from gazebo_msgs.srv import GetModelState` | `string model_name`, `string relative_entity_name` | `gazebo_msgs ModelState` |
+| URDF Spawner | `gazebo/spawn_urdf_model` | Gazebo | `from gazebo_msgs.srv import SpawnModel` | `gazebo_msgs SpawnModel` | `bool success`, `string status_message` |
+| ikpy Inverse Kinematics | `inverse_kinematics` | `inv_kinematics inv_kin_srv.py` | `from inv_kinematics.srv import InvKin` | `gazebo_msgs ModelState` | `bool success` |
 
 ## Useful Links
 
