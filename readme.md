@@ -6,7 +6,7 @@ This repository contains:
 
 ## How to build
 
-### Gazebo simulation
+### ROS/Gazebo simulation
 
 1. Navigate to `~/catkin_ws` in Terminal and clone this GitHub repo with `git clone https://github.com/ACS330-Collaborative-Robotics/Gazebo_Sim.git`
 
@@ -45,6 +45,21 @@ catkin_make
 catkin_make install
 roslaunch cpr_robot CPRMover6.launch
 ```
+
+## ROS Information
+
+### Topics
+
+| Nickname | Name | Data Format | Python Data Format Import | Publishers | Subscribers |
+| - | - | - | - | - | - |
+| Block Positions | `/blocks_pos` | Blocks | `from block_controller.msg import Block, Blocks` | `block_controller block_pos_talker.py` | `assignment_selection block_selection.py` |
+| Gazebo Model States (All Models) | `/gazebo/model_states` | ModelStates | `from gazebo_msgs.msg import ModelStates` | Gazebo | `block_controller block_pos_talker.py` | 
+
+### Services
+
+| Nickname | Name | Location | Python Import | Input Format | Response Format |
+| - | - | - | - | - |
+| Specific Model Position | `gazebo/get_model_state'` | Gazebo | `from gazebo_msgs.srv import GetModelState` | `string model_name`, `string relative_entity_name` | `gazebo_msgs ModelState` |
 
 ## Useful Links
 
