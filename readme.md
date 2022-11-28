@@ -49,6 +49,7 @@ roslaunch cpr_robot CPRMover6.launch
 ## ROS Information
 
 Robot Namespaces - `robot_ns = ["mover6_a", "mover6_b]`
+
 Robot Joints - `1 -> 6`
 
 ### Topics
