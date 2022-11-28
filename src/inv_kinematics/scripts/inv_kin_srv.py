@@ -47,7 +47,7 @@ def main():
 
     # Setup inverse kinematics object as global variable so service can use it
     global chain
-    chain = ikpy.chain.Chain.from_urdf_file(Path.cwd().as_posix() + "/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
+    chain = ikpy.chain.Chain.from_urdf_file(Path.home().as_posix() + "/catkin_ws/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
     
     rospy.spin()
 
