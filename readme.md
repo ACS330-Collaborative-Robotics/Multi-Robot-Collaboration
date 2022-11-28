@@ -48,7 +48,7 @@ Robot Joints - `1 -> 6`
 | Block Spawner | | To be run on startup, see  Block Spawner below.| |
 | Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
 | Inverse kinematics | inv_kinematics | Runs service `inverse-kinematics` and publish inverse kinematics to relevant joint position controller | `rosrun inv_kinematics inv_kin_srv.py` |
-| Kinematic Movement | movement_demo | Listens on `robot_namespace/next_block` for block names to move to, then calls inverse kinematic movement. | `rosrun movement_demo kinematic_movement.py` | 
+| Kinematic Movement | movement_demo | Listens on `robot_namespace/next_block` for block names to move to, then calls inverse kinematic movement. | `rosrun movement_demo basic_kinematic_movement.py` | 
 | Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
 
 ### Additional nodes
@@ -66,7 +66,7 @@ Robot Joints - `1 -> 6`
 | - | - | - | - | - | - |
 | Block Positions | `/blocks_pos` | `block_controller Blocks` | `from block_controller.msg import Block, Blocks` | `block_controller block_pos_talker.py` | `assignment_selection block_selection.py` |
 | Gazebo Model States (All Models) | `/gazebo/model_states` | `gazebo_msgs ModelStates` | `from gazebo_msgs.msg import ModelStates` | Gazebo | `block_controller block_pos_talker.py` | 
-| Next block to pick | `robot_ns/next_block` | `std_msgs Strings` | `from std_msgs.msg import String` | `assignment_selection block_selection.py` | `movement_demo kinematic_movement.py` |
+| Next block to pick | `robot_ns/next_block` | `std_msgs Strings` | `from std_msgs.msg import String` | `assignment_selection block_selection.py` | `movement_demo basic_kinematic_movement.py` |
 | Gazebo Joint Position Controller | `robot_ns/jointX_position_controller/command` | `from std_msgs.msg import Float64` | `inv_kinematics inv_kin_srv.py`, `movement_demo joint_movement_demo.py`, `inv_kin_ros.m` | Gazebo |
 
 ### Services

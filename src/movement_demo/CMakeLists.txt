@@ -167,7 +167,7 @@ include_directories(
 catkin_install_python(PROGRAMS 
   scripts/joint_movement_demo.py
   scripts/kinematics_movement_demo.py
-  scripts/kinematic_movement.py
+  scripts/basic_kinematic_movement.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
