@@ -6,7 +6,7 @@ This repository contains:
 
 ## How to build
 
-### Gazebo simulation
+### ROS/Gazebo simulation
 
 1. Navigate to `~/catkin_ws` in Terminal and clone this GitHub repo with `git clone https://github.com/ACS330-Collaborative-Robotics/Gazebo_Sim.git`
 
@@ -14,27 +14,13 @@ This repository contains:
 
 3. Each node is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each node (usually) has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
 
-#### Core nodes (In initial startup order)
+#### Startup Instructions
 
-| Nickname | Package | Description | Startup Script |
-| - | - | - | - |
-| ROS Core | roscore | ROS Core required for ROS to Function | `roscore` |
-| Gazebo Simulation | mover6_gazebo | Launches Gazebo and spawns a mover6 robot | `./run_sim.sh` |
-| Sim Robot Joint Controller | mover6_control | Starts the listener node for Sim Robot Joint Positions | `./run_sim_control.sh` |
-| Block Spawner | | To be run on startup, see  Block Spawner below.| |
-| Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
-| Inverse kinematics | inv_kinematics | Runs service `inverse-kinematics` and publish inverse kinematics to relevant joint position controller | `rosrun inv_kinematics inv_kin_srv.py` |
-| Kinematic Movement | movement_demo | Listens on `robot_namespace/next_block` for block names to move to, then calls inverse kinematic movement. | `rosrun movement_demo kinematic_movement.py` | 
-| Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
+Run each of the following in its own terminal tab, after running `cd ~/catkin_ws`.
 
-#### Additional nodes
-
-| Nickname | Package | Description | Startup Script |
-| - | - | - | - |
-| Block Spawner | block_controller | Randomly generate a large number of blocks at random rotations in the workspace | `rosrun block_controller spawn_blocks.py` |
-| Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
-| Kinematics Movement Demo | movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
-| Old Inverse kinematics (Depreciated) | matlab_global_node_XXXXX | Listen on `/command_pos` for xyz coords and publish inverse kinematics to relevant joint position controller | `inv_kin_ros` in MATLAB |
+ - `roscore` - ROS Core
+ - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
+ - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
 
 ### Mover6 Dashboard with RViz
 
@@ -45,6 +31,52 @@ catkin_make
 catkin_make install
 roslaunch cpr_robot CPRMover6.launch
 ```
+
+## ROS Information
+
+Robot Namespaces - `robot_ns = ["mover6_a", "mover6_b]`
+
+Robot Joints - `1 -> 6`
+
+### Core nodes
+
+| Nickname | Package | Description | Startup Script |
+| - | - | - | - |
+| `./run_sim.sh` |  |  |  |
+| ROS Core | roscore | ROS Core required for ROS to Function | `roscore` |
+| Gazebo Simulation | mover6_gazebo | Launches Gazebo and spawns a mover6 robot | `./run_sim.sh` |
+| Sim Robot Joint Controller | mover6_control | Starts the listener node for Sim Robot Joint Positions | `./run_sim_control.sh` |
+| Block Spawner | block_controller | Randomly generate a large number of blocks at random rotations in the workspace | `rosrun block_controller spawn_blocks.py` |
+| `./run_demo.sh` |  |  |  |
+| Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
+| Inverse kinematics | inv_kinematics | Runs service `inverse-kinematics` and publish inverse kinematics to relevant joint position controller | `rosrun inv_kinematics inv_kin_srv.py` |
+| Kinematic Movement | movement_demo | Listens on `robot_namespace/next_block` for block names to move to, then calls inverse kinematic movement. | `rosrun movement_demo basic_kinematic_movement.py` | 
+| Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
+
+### Additional nodes
+
+| Nickname | Package | Description | Startup Script |
+| - | - | - | - |
+| Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
+| Kinematics Movement Demo | movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
+| Old Inverse kinematics (Depreciated) | matlab_global_node_XXXXX | Listen on `/command_pos` for xyz coords and publish inverse kinematics to relevant joint position controller | `inv_kin_ros` in MATLAB |
+
+### Topics
+
+| Nickname | Name | Data Format | Python Data Format Import | Publishers | Subscribers |
+| - | - | - | - | - | - |
+| Block Positions | `/blocks_pos` | `block_controller Blocks` | `from block_controller.msg import Block, Blocks` | `block_controller block_pos_talker.py` | `assignment_selection block_selection.py` |
+| Gazebo Model States (All Models) | `/gazebo/model_states` | `gazebo_msgs ModelStates` | `from gazebo_msgs.msg import ModelStates` | Gazebo | `block_controller block_pos_talker.py` | 
+| Next block to pick | `robot_ns/next_block` | `std_msgs Strings` | `from std_msgs.msg import String` | `assignment_selection block_selection.py` | `movement_demo basic_kinematic_movement.py` |
+| Gazebo Joint Position Controller | `robot_ns/jointX_position_controller/command` | `from std_msgs.msg import Float64` | `inv_kinematics inv_kin_srv.py`, `movement_demo joint_movement_demo.py`, `inv_kin_ros.m` | Gazebo |
+
+### Services
+
+| Nickname | Name | Location | Python Import | Input Format | Response Format |
+| - | - | - | - | - | - |
+| Specific Model Position | `gazebo/get_model_state'` | Gazebo | `from gazebo_msgs.srv import GetModelState` | `string model_name`, `string relative_entity_name` | `gazebo_msgs ModelState` |
+| URDF Spawner | `gazebo/spawn_urdf_model` | Gazebo | `from gazebo_msgs.srv import SpawnModel` | `gazebo_msgs SpawnModel` | `bool success`, `string status_message` |
+| ikpy Inverse Kinematics | `inverse_kinematics` | `inv_kinematics inv_kin_srv.py` | `from inv_kinematics.srv import InvKin` | `gazebo_msgs ModelState` | `bool success` |
 
 ## Useful Links
 

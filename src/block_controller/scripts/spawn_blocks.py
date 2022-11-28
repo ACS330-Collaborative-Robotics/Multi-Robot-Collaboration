@@ -19,7 +19,7 @@ def spawner():
     urdf_spawner = rospy.ServiceProxy('gazebo/spawn_urdf_model', SpawnModel)
 
     # Open URDF
-    f = open(str(Path.cwd()) + '/src/block_controller/urdf/block.urdf')
+    f = open(str(Path.home()) + '/catkin_ws/src/block_controller/urdf/block.urdf')
     urdf = f.read()
 
     pos = Pose() # Pose object to be filled randomly

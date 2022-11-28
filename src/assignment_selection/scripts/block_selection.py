@@ -35,51 +35,53 @@ def choose_block():
     # Set Loop rate
     rate = rospy.Rate(0.5)
 
-    ## Making array of block names ##
+    # Loop Selection until script is terminated
+    while not rospy.is_shutdown():
+        ## Making array of block names ##
 
-    # Wait for blockData to read in by subscriber
-    while blockData is None:
-        rospy.loginfo("Waiting for data.")
-        rate.sleep()
-    rospy.loginfo("Got block data,")
-
-    # Iterate through blockData and retrieve list of block names
-    blockNames = []
-    for block_num in range(len(blockData.block_data)):
-        blockNames.append("block" + str(blockData.block_data[block_num].block_number))
-    rospy.loginfo("Block list built.")
-
-    # Getting distance from each robot to blocks and sellecting the smallest
-    roboColect = []
-    for blockName in blockNames:     
-        reldist = []
-        for robot in robot_namespaces:
-            temp =  specific_block_pos(blockName, robot)
-            reldist.append(math.sqrt(temp[0]**2+temp[1]**2+temp[2]**2))
-        roboColect.append([blockName, reldist.index(min(reldist)), min(reldist)])
-    
-    # Ordering list on nearest
-    sorted(roboColect,key=itemgetter(2))
-    
-    # Splitting into seperate lists
-    goCollect = []
-    for i in range(len(robot_namespaces)):
-        goCollect.append([])
-        for nextBlock in roboColect:
-            if nextBlock[1] == i:
-                goCollect[i].append(nextBlock[0])
-    rospy.loginfo("Block selection complete. Beginnning publishing.")
-
-    # Publish assignments
-    for i in range(max(len(x) for x in goCollect)):
-        for j in range(len(pub)):
-            try:
-                pub[j].publish(goCollect[j][i])
-                rospy.loginfo(robot_namespaces[j] + " " + goCollect[j][i])
-            except:
-                pass
-
+        # Wait for blockData to read in by subscriber
+        while blockData is None:
+            rospy.loginfo("Waiting for data.")
             rate.sleep()
+        rospy.loginfo("Got block data,")
+
+        # Iterate through blockData and retrieve list of block names
+        blockNames = []
+        for block_num in range(len(blockData.block_data)):
+            blockNames.append("block" + str(blockData.block_data[block_num].block_number))
+        rospy.loginfo("Block list built.")
+
+        # Getting distance from each robot to blocks and sellecting the smallest
+        roboColect = []
+        for blockName in blockNames:     
+            reldist = []
+            for robot in robot_namespaces:
+                temp =  specific_block_pos(blockName, robot)
+                reldist.append(math.sqrt(temp[0]**2+temp[1]**2+temp[2]**2))
+            roboColect.append([blockName, reldist.index(min(reldist)), min(reldist)])
+        
+        # Ordering list on nearest
+        sorted(roboColect,key=itemgetter(2))
+        
+        # Splitting into seperate lists
+        goCollect = []
+        for i in range(len(robot_namespaces)):
+            goCollect.append([])
+            for nextBlock in roboColect:
+                if nextBlock[1] == i:
+                    goCollect[i].append(nextBlock[0])
+        rospy.loginfo("Block selection complete. Beginnning publishing.")
+
+        # Publish assignments
+        for i in range(max(len(x) for x in goCollect)):
+            for j in range(len(pub)):
+                try:
+                    pub[j].publish(goCollect[j][i])
+                    rospy.loginfo(robot_namespaces[j] + " " + goCollect[j][i])
+                except:
+                    pass
+
+                rate.sleep()
 
 def specific_block_pos(specific_model_name, reference_model_name):
     # Use service to get position of specific block named

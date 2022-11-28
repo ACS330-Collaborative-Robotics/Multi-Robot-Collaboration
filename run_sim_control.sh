@@ -1,1 +1,0 @@
-roslaunch mover6_control mover6_control.launch
