@@ -42,10 +42,12 @@ Robot Joints - `1 -> 6`
 
 | Nickname | Package | Description | Startup Script |
 | - | - | - | - |
+| `./run_sim.sh` |  |  |  |
 | ROS Core | roscore | ROS Core required for ROS to Function | `roscore` |
 | Gazebo Simulation | mover6_gazebo | Launches Gazebo and spawns a mover6 robot | `./run_sim.sh` |
 | Sim Robot Joint Controller | mover6_control | Starts the listener node for Sim Robot Joint Positions | `./run_sim_control.sh` |
-| Block Spawner | | To be run on startup, see  Block Spawner below.| |
+| Block Spawner | block_controller | Randomly generate a large number of blocks at random rotations in the workspace | `rosrun block_controller spawn_blocks.py` |
+| `./run_demo.sh` |  |  |  |
 | Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
 | Inverse kinematics | inv_kinematics | Runs service `inverse-kinematics` and publish inverse kinematics to relevant joint position controller | `rosrun inv_kinematics inv_kin_srv.py` |
 | Kinematic Movement | movement_demo | Listens on `robot_namespace/next_block` for block names to move to, then calls inverse kinematic movement. | `rosrun movement_demo basic_kinematic_movement.py` | 
@@ -55,7 +57,6 @@ Robot Joints - `1 -> 6`
 
 | Nickname | Package | Description | Startup Script |
 | - | - | - | - |
-| Block Spawner | block_controller | Randomly generate a large number of blocks at random rotations in the workspace | `rosrun block_controller spawn_blocks.py` |
 | Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
 | Kinematics Movement Demo | movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
 | Old Inverse kinematics (Depreciated) | matlab_global_node_XXXXX | Listen on `/command_pos` for xyz coords and publish inverse kinematics to relevant joint position controller | `inv_kin_ros` in MATLAB |
