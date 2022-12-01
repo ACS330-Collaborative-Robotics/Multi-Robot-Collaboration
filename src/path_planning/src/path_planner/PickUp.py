@@ -14,6 +14,7 @@ class PickUp:
         """
         pose = self.serv_helper.getBlockPos(block_name)
 
+        print("\nGet Pos")
         print(pose)
         
         # Move 5cm above block
@@ -24,6 +25,7 @@ class PickUp:
         pose.orientation.y = 3.14
         pose.orientation.z = 0
 
+        print("\nUpdated pos")
         print(pose)
 
         if self.movement.move(pose):

@@ -11,6 +11,10 @@ class Movement:
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
+        
+        print("\nMovement")
+        print(pos)
+
         self.serv_helper.move(pos)
 
         return True #TODO: Implement zone checks
