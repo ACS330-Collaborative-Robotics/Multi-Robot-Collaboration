@@ -4,11 +4,15 @@
 # Author: Tom Richards (tomtommrichards@gmail.com), Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
-import math
+
 from gazebo_msgs.srv import GetModelState
-from operator import itemgetter
-from std_msgs.msg import String
 from block_controller.msg import Blocks
+from path_planning.srv import PathPlan
+from std_msgs.msg import String
+from geometry_msgs.msg import Pose
+
+import math
+from operator import itemgetter
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -24,10 +28,9 @@ def choose_block():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
     
-    # Setup publishers for each robot
-    pub = []
-    for robot in robot_namespaces:
-        pub.append(rospy.Publisher(robot + "/next_block", String , queue_size=2))
+    # Setup path_planner service
+    rospy.wait_for_service('path_planner')
+    path_service = rospy.ServiceProxy('path_planner', PathPlan)
 
     # Declare ROS Node name
     rospy.init_node('block_selector')
@@ -74,9 +77,19 @@ def choose_block():
 
         # Publish assignments
         for i in range(max(len(x) for x in goCollect)):
-            for j in range(len(pub)):
+            for j in range(len(robot_namespaces)):
                 try:
-                    pub[j].publish(goCollect[j][i])
+                    pathObj = PathPlan()
+
+                    pathObj.block_name = goCollect[j][i]
+                    pathObj.robot_name = robot_namespaces[j]
+                    pathObj.end_pos = Pose()
+
+                    print(pathObj.robot_name)
+                    print(pathObj.block_name)
+                    print(pathObj.end_pos)
+
+                    path_service(pathObj)
                     rospy.loginfo(robot_namespaces[j] + " " + goCollect[j][i])
                 except:
                     pass
