@@ -2,7 +2,7 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 class PickUp:
-    def __init__(self, ik):
+    def __init__(self, serv_helper):
         pass
     
     def pick(self, block_name):
