@@ -1,9 +1,9 @@
 # Name: Pick Down Class Definition
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
-from PickUp import PickUp
+from path_planner import PickUp
 
-class PickDown(PickUp):
+class PickDown(PickUp.PickUp):
     def __init__(self, ik):
         super().__init__(ik)
 
