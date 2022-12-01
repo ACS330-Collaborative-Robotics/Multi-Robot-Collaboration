@@ -1,11 +1,11 @@
 # Name: Pick Down Class Definition
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
-import PickUp
+from PickUp import PickUp
 
 class PickDown(PickUp):
-    def __init__():
-        pass
-    
-    def pick(block_name):
+    def __init__(self, ik):
+        super().__init__(ik)
+
+    def pick(self, block_name, end_pos):
         pass

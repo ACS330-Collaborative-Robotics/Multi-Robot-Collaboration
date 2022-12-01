@@ -2,8 +2,8 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 class InvKin:
-    def __init__(robot_ns):
+    def __init__(self, robot_ns):
         pass
 
-    def move(pos):
+    def move(self, pos):
         pass

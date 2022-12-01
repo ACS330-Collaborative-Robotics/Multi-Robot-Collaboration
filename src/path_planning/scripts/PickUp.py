@@ -2,14 +2,14 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 class PickUp:
-    def __init__():
+    def __init__(self, ik):
         pass
     
-    def pick(block_name):
+    def pick(self, block_name):
         pass
 
-    def position(pos):
+    def position(self, pos):
         pass
 
-    def moveGripper(state):
+    def moveGripper(self, state):
         pass

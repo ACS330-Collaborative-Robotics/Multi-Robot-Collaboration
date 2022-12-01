@@ -1,9 +1,9 @@
 # Name: Movement Class Definition
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
-class PickUp:
-    def __init__():
+class Movement:
+    def __init__(self, ik):
         pass
     
-    def move(pos):
+    def move(self, pos):
         pass
