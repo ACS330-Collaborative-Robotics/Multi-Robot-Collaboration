@@ -15,10 +15,13 @@ class PathPlanner:
         # Setup Inverse Kinematics Object
         self.serv_helper = ServiceHelper.ServiceHelper(self.robot_ns)
 
-        # Setup Planning Objects with IK object
-        self.pickUp = PickUp.PickUp(self.serv_helper)
-        self.pickDown = PickDown.PickDown(self.serv_helper)
+        # Setup Movement Object
         self.movement = Movement.Movement(self.serv_helper)
+
+        # Setup PickUp/Down Objects with Service Helper and Movement
+        self.pickUp = PickUp.PickUp(self.serv_helper, self.movement)
+        self.pickDown = PickDown.PickDown(self.serv_helper, self.movement)
+
 
     def pathPlan(self) -> bool:
         """ Plan and excute a complete block movement.

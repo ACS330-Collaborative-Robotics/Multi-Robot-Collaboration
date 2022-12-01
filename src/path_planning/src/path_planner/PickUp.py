@@ -2,10 +2,16 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 class PickUp:
-    def __init__(self, serv_helper):
+    def __init__(self, serv_helper, movement):
         self.serv_helper = serv_helper
+        self.movement = movement
     
     def pick(self, block_name):
+        """ Pick up specified block
+
+        INPUT: block_name
+        OUTPUT: bool Success
+        """
         pose = self.serv_helper.getBlockPos(block_name)
 
         print(pose)
@@ -20,10 +26,8 @@ class PickUp:
 
         print(pose)
 
-        self.position(pose)
-
-    def position(self, pos):
-        self.serv_helper.move(pos)
+        if self.movement.move(pose):
+            print("Succesfully positioned above block.")
 
     def moveGripper(self, state):
         pass
