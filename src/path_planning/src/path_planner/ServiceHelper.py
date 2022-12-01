@@ -3,32 +3,57 @@
 
 import rospy
 
+from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import GetModelState
 from geometry_msgs.msg import Pose
+from inv_kinematics.srv import InvKin
 
 from math import atan2, asin
 
 class ServiceHelper:
     def __init__(self, robot_ns):
-        pass
+        self.robot_ns = robot_ns
 
-    def move(self, pos):
-        pass
+        # Setup inverse_kinematics service
+        rospy.wait_for_service('inverse_kinematics')
+        self.inv_kin = rospy.ServiceProxy('inverse_kinematics', InvKin)
 
-    def getBlockPos(self, specific_model_name:str, reference_model_name:str) -> Pose:
-        """ Get block position relative to specified model.
+        # Setup get_model_state service
+        rospy.wait_for_service('gazebo/get_model_state')
+        self.model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
 
-        INPUT: string specific_model_name, string reference model_name
+    def move(self, pos:Pose):
+        """ Move arm to specified position.
+
+        INPUT: geometry_msgs Pose() - Orientation in Euler angles not quaternions
+
+        Uses inverse_kinematics service.
+        """
+
+        rospy.wait_for_service('inverse_kinematics')
+
+        # Initialise and fill ArmPos object
+        arm_pos = ModelState()
+        arm_pos.model_name = self.robot_ns
+
+        arm_pos.pose = pos
+
+        # Call inverse_kinematics service and log ArmPos
+        self.inv_kin(arm_pos)
+
+    def getBlockPos(self, specific_model_name:str) -> Pose:
+        """ Get block position relative to current robot arm
+
+        INPUT: string specific_model_name
         OUTPUT: gazebo_msgs Pose() - Orientation in Euler angles not quaternions
 
         Uses gazebo/get_model_state service.
         """
-        # Use service to get position of specific block named
+
         rospy.wait_for_service('gazebo/get_model_state')
-        model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
 
         # Extract Pose() object
-        data = model_state_service(specific_model_name, reference_model_name).pose
+        data = self.model_state_service(specific_model_name, self.robot_ns).pose
         
         # Get quaternion rotation data
         w = data.orientation.w

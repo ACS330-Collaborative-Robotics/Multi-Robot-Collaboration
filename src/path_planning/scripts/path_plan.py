@@ -10,7 +10,7 @@ from path_planner import PathPlanner
 
 def main():
     robot_ns = "mover6_a"
-    block_name = "block0"
+    block_name = "block19"
     end_pos = Pose()
 
     pathPlanner = PathPlanner.PathPlanner(robot_ns, block_name, end_pos)
