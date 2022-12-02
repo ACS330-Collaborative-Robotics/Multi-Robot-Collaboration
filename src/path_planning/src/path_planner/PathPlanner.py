@@ -33,7 +33,8 @@ class PathPlanner:
         self.pickUp.pick(self.target_block)
 
         # Move arm
-        #self.movement.move(self.end_pos)
+        #TODO: Convert from world frame to robot frame
+        self.movement.move(self.end_pos)
 
         # Put down block
         self.pickDown.pick(self.target_block, self.end_pos)
