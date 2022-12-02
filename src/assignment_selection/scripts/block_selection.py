@@ -87,13 +87,15 @@ def choose_block():
                     
                     try:
                         success = path_service(block_name, end_pos, robot_name)
+
+                        if success:
+                            rospy.loginfo("Block Selection - " + robot_namespaces[j] + " to " + goCollect[j][i])
+                        else:
+                            rospy.loginfo("Block Selection - Service call returned False.")
                     except rospy.ServiceException as e:
                         rospy.loginfo("Block Selection - Service call failed: %s"%e)
 
-                    if success:
-                        rospy.loginfo("Block Selection - " + robot_namespaces[j] + " to " + goCollect[j][i])
-                    else:
-                        rospy.loginfo("Block Selection - Service call returned False.")
+                    
 
                 rate.sleep()
 
