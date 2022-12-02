@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# license removed for brevity
 import rospy
 from std_msgs.msg import Float64MultiArray
 
@@ -20,8 +19,7 @@ def talker():
     mover6_a_zone.data = [corner_a1, corner_a2, corner_a3, corner_a4]
     mover6_b_zone.data = [corner_b1, corner_b2, corner_b3, corner_b4]
    
-    pub.publish(mover6_a_zone)
-    pub.publish(mover6_b_zone)
+    pub.publish(mover6_a_zone, mover6_b_zone)
 
 if __name__ == '__main__':
     try:
