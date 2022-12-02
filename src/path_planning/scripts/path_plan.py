@@ -11,12 +11,10 @@ from path_planning.srv import PathPlan
 from path_planner import PathPlanner
 
 def path_plan(req):
-    robot_ns = req.robot_name
-    block_name = req.block_name
-    end_pos = req.end_pos
+    # Initialise PathPlanner object
+    pathPlanner = PathPlanner.PathPlanner(req.robot_name, req.block_name, req.end_pos)
 
-    pathPlanner = PathPlanner.PathPlanner(robot_ns, block_name, end_pos)
-
+    # Run Path planner and return state
     return pathPlanner.pathPlan()
 
 def main():
