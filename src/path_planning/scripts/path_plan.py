@@ -11,16 +11,13 @@ from path_planning.srv import PathPlan
 from path_planner import PathPlanner
 
 def path_plan(req):
-    print(req)
     robot_ns = req.robot_name
     block_name = req.block_name
     end_pos = req.end_pos
 
     pathPlanner = PathPlanner.PathPlanner(robot_ns, block_name, end_pos)
 
-    pathPlanner.pathPlan()
-
-    return True
+    return pathPlanner.pathPlan()
 
 def main():
     rospy.init_node('path_planner_server')

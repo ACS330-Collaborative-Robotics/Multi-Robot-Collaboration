@@ -1,5 +1,5 @@
-std_msgs/String block_name
+string block_name
 geometry_msgs/Pose end_pos
-std_msgs/String robot_name
+string robot_name
 ---
 bool success

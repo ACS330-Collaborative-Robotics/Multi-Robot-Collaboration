@@ -44,15 +44,15 @@ def choose_block():
 
         # Wait for blockData to read in by subscriber
         while blockData is None:
-            rospy.loginfo("Waiting for data.")
+            rospy.loginfo("Block Selection - Waiting for data.")
             rate.sleep()
-        rospy.loginfo("Got block data,")
+        rospy.loginfo("Block Selection - Got block data,")
 
         # Iterate through blockData and retrieve list of block names
         blockNames = []
         for block_num in range(len(blockData.block_data)):
             blockNames.append("block" + str(blockData.block_data[block_num].block_number))
-        rospy.loginfo("Block list built.")
+        rospy.loginfo("Block Selection - Block list built.")
 
         # Getting distance from each robot to blocks and sellecting the smallest
         roboColect = []
@@ -73,26 +73,27 @@ def choose_block():
             for nextBlock in roboColect:
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
-        rospy.loginfo("Block selection complete. Beginnning publishing.")
+        rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
 
         # Publish assignments
         for i in range(max(len(x) for x in goCollect)):
             for j in range(len(robot_namespaces)):
-                try:
-                    pathObj = PathPlan()
+                if i < len(goCollect[j]):
+                    block_name = str(goCollect[j][i])
 
-                    pathObj.block_name = goCollect[j][i]
-                    pathObj.robot_name = robot_namespaces[j]
-                    pathObj.end_pos = Pose()
+                    end_pos = Pose()
 
-                    print(pathObj.robot_name)
-                    print(pathObj.block_name)
-                    print(pathObj.end_pos)
+                    robot_name = str(robot_namespaces[j])
+                    
+                    try:
+                        success = path_service(block_name, end_pos, robot_name)
+                    except rospy.ServiceException as e:
+                        rospy.loginfo("Block Selection - Service call failed: %s"%e)
 
-                    path_service(pathObj)
-                    rospy.loginfo(robot_namespaces[j] + " " + goCollect[j][i])
-                except:
-                    pass
+                    if success:
+                        rospy.loginfo("Block Selection - " + robot_namespaces[j] + " to " + goCollect[j][i])
+                    else:
+                        rospy.loginfo("Block Selection - Service call returned False.")
 
                 rate.sleep()
 

@@ -38,9 +38,6 @@ class ServiceHelper:
 
         arm_pos.pose = pos
 
-        print("\nInv Kin")
-        print(arm_pos)
-
         # Call inverse_kinematics service and log ArmPos
         self.inv_kin(arm_pos)
 
