@@ -2,10 +2,13 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
+import tf2_ros
+import tf_conversions
 
 from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import GetModelState
 from geometry_msgs.msg import Pose
+from tf2_geometry_msgs import PoseStamped
 from inv_kinematics.srv import InvKin
 
 from math import atan2, asin
@@ -21,6 +24,10 @@ class ServiceHelper:
         # Setup get_model_state service
         rospy.wait_for_service('gazebo/get_model_state')
         self.model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
+
+        # Setup tf2
+        self.tfBuffer = tf2_ros.Buffer()
+        self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
     def move(self, pos:Pose):
         """ Move arm to specified position.
@@ -68,3 +75,28 @@ class ServiceHelper:
         data.orientation.w = 0
 
         return data
+
+    def frameConverter(self, target_frame:str, reference_frame:str, goal_pose:Pose) -> Pose:
+        # Setup time stamped pose object
+        start_pose = PoseStamped()
+        start_pose.pose = goal_pose
+
+        start_pose.header.frame_id = reference_frame
+        start_pose.header.stamp = rospy.get_rostime()
+
+        print(start_pose)
+        
+        # Convert from world frame to robot frame using tf2
+        rate = rospy.Rate(10.0)
+        while not rospy.is_shutdown():
+            try:
+                new_pose = self.tfBuffer.transform(start_pose, target_frame+"_base")
+                break
+            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                rate.sleep()
+                print("Failed")
+                continue
+    
+        print(new_pose)
+
+        return new_pose.pose
