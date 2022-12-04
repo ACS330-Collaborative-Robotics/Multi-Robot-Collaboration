@@ -1,0 +1,5 @@
+string block_name
+geometry_msgs/Pose end_pos
+string robot_name
+---
+bool success
