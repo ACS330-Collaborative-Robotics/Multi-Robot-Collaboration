@@ -14,6 +14,8 @@ class Movement:
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
 
+        pos_robot_frame = self.serv_helper.frameConverter(self.serv_helper.robot_ns, "world", pos)
+
         self.serv_helper.move(pos)
         
         #TODO: Force wait until robot has reached desired position. Temp fix:

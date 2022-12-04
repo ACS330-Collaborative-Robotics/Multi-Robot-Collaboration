@@ -30,14 +30,14 @@ class PathPlanner:
         OUTPUT: bool Success
         """
         # Pick up block
-        #self.pickUp.pick(self.target_block)
+        self.pickUp.pick(self.target_block)
 
         # Move arm
         #TODO: Convert from world frame to robot frame
         print("Finding transform")
-        end_pos_robot_frame = self.serv_helper.frameConverter(self.robot_ns, "world", self.end_pos)
+        #end_pos_robot_frame = self.serv_helper.frameConverter(self.robot_ns, "world", self.end_pos)
 
-        self.movement.move(end_pos_robot_frame)
+        #self.movement.move(end_pos_robot_frame)
 
         # Put down block
         #self.pickDown.pick(self.target_block, self.end_pos)

@@ -60,7 +60,7 @@ class ServiceHelper:
         rospy.wait_for_service('gazebo/get_model_state')
 
         # Extract Pose() object
-        data = self.model_state_service(specific_model_name, self.robot_ns).pose
+        data = self.model_state_service(specific_model_name, "world").pose
         
         # Get quaternion rotation data
         w = data.orientation.w
@@ -79,13 +79,20 @@ class ServiceHelper:
     def frameConverter(self, target_frame:str, reference_frame:str, goal_pose:Pose) -> Pose:
         # Setup time stamped pose object
         start_pose = PoseStamped()
-        start_pose.pose = goal_pose
+        start_pose.pose.position = goal_pose.position
+
+        q = tf_conversions.transformations.quaternion_from_euler(goal_pose.orientation.x, goal_pose.orientation.y, goal_pose.orientation.z)
+
+        goal_pose.orientation.x = q[0]
+        goal_pose.orientation.y = q[1]
+        goal_pose.orientation.z = q[2]
+        goal_pose.orientation.w = q[3]
 
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
 
         print(start_pose)
-        
+
         # Convert from world frame to robot frame using tf2
         rate = rospy.Rate(10.0)
         while not rospy.is_shutdown():
