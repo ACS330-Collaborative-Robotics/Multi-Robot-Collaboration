@@ -1,2 +1,3 @@
+int64 zone_number
 Float64MultiArray mover6_a_zone
 Float64MultiArray mover6_b_zone
