@@ -99,7 +99,6 @@ add_executable(BasicMovement
   src/BasicMovement.cpp) 
 target_link_libraries(BasicMovement ${catkin_LIBRARIES})
 
-
 add_executable(GoalMovementMover6 
   src/GoalMovementMover6.cpp) 
 target_link_libraries(GoalMovementMover6 ${catkin_LIBRARIES})
