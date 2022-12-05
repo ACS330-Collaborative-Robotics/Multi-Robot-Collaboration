@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
-#include "control_msgs/JointJog.h"
-#include string
+#include "control_msgs/JointJog.h"#
 
+#include <string>
 #include <sstream>
 /* Create node */
 int main(int argc, char **argv) {
