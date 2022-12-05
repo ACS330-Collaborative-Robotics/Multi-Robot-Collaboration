@@ -26,7 +26,8 @@ int main(int argc, char **argv) {
 				ROS_INFO("Setting up positive message");
 				control_msgs::JointJog msg_start;
 				std::stringstream ss;
-				ss << "joint"+i;
+				String temp = "joint"+i
+				ss << temp;
 
 				msg_start.joint_names.push_back(ss.str());
 				msg_start.velocities.push_back(0.5);
@@ -41,7 +42,8 @@ int main(int argc, char **argv) {
 				ROS_INFO("Setting up  negative message");
 				control_msgs::JointJog msg_start;
 				std::stringstream ss;
-				ss << "joint"+i;
+				String temp = "joint"+i
+				ss << temp;
 
 				msg_start.joint_names.push_back(ss.str());
 				msg_start.velocities.push_back(-0.5);
@@ -61,7 +63,8 @@ int main(int argc, char **argv) {
 				ROS_INFO("Setting up stop message");
 				control_msgs::JointJog msg_stop;
 				std::stringstream ss;
-				ss << "joint"+i;
+				String temp = "joint"+i
+				ss << temp;
 
 				msg_stop.joint_names.push_back(ss.str());
 				msg_stop.velocities.push_back(0);
