@@ -120,7 +120,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-catkin_install_python(PROGRAMS scripts/arena_locals.py
+catkin_install_python(PROGRAMS 
+  scripts/block_selection.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

@@ -1,14 +1,25 @@
 <launch>
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
-    <rosparam file="$(find mover6_control)/config/mover6_control.yaml" command="load"/>
+    <rosparam file="$(find mover6_control)/config/mover6_a_control.yaml" command="load"/>
 
     <!-- load the controllers -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/mover6" args="joint1_position_controller joint2_position_controller joint3_position_controller joint4_position_controller joint5_position_controller joint6_position_controller joint_state_controller"/>
+    <node name="controller_spawner_a" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/mover6_a" args="joint1_position_controller joint2_position_controller joint3_position_controller joint4_position_controller joint5_position_controller joint6_position_controller joint_state_controller"/>
 
     <!-- convert joint states to TF transforms for rviz, etc -->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
-    <remap from="/joint_states" to="/mover6/joint_states" />
+    <node name="robot_state_publisher_a" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <remap from="/joint_states" to="/mover6_a/joint_states" />
+    </node>
+
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <rosparam file="$(find mover6_control)/config/mover6_b_control.yaml" command="load"/>
+
+    <!-- load the controllers -->
+    <node name="controller_spawner_b" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/mover6_b" args="joint1_position_controller joint2_position_controller joint3_position_controller joint4_position_controller joint5_position_controller joint6_position_controller joint_state_controller"/>
+
+    <!-- convert joint states to TF transforms for rviz, etc -->
+    <node name="robot_state_publisher_b" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <remap from="/joint_states" to="/mover6_b/joint_states" />
     </node>
 
 </launch>

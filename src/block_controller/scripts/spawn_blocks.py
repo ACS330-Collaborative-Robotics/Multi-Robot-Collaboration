@@ -19,14 +19,18 @@ def spawner():
     urdf_spawner = rospy.ServiceProxy('gazebo/spawn_urdf_model', SpawnModel)
 
     # Open URDF
-    f = open(str(Path.cwd()) + '/src/block_controller/urdf/block.urdf')
+    f = open(str(Path.home()) + '/catkin_ws/src/block_controller/urdf/block.urdf')
     urdf = f.read()
 
     pos = Pose() # Pose object to be filled randomly
-    for block_num in range(10):
+    for block_num in range(20):
         # position x y z
-        pos.position.x = 2*random() - 1
-        pos.position.y = 2*random() - 1
+        # square around origin of width and height, x_range and y_range respectively
+        x_range = 0.4
+        y_range = 1
+
+        pos.position.x = x_range*random()
+        pos.position.y = y_range*random() - y_range/2
         pos.position.z = 0.01
 
         # quaternion roation w x y z
