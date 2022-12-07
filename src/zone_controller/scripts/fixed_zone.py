@@ -33,17 +33,22 @@ def talker():
     zone_data = [[corner_a1, corner_a2, corner_a3, corner_a4], [corner_b1, corner_b2, corner_b3, corner_b4]]
 
     robot_namespaces = ["mover6_a", "mover6_b"]
+    
+    r = rospy.Rate(1)
         
-    zones = []
-    for robot_num in range(len(robot_namespaces)):
-        zone = Zone()
-        zone.zone_name = robot_namespaces[robot_num] + "_zone"
+    while not(rospy.is_shutdown()):
+        zones = []
+        for robot_num in range(len(robot_namespaces)):
+            zone = Zone()
+            zone.zone_name = robot_namespaces[robot_num] + "_zone"
 
-        zone.zone_coords = zone_data[robot_num]
+            zone.zone_coords = zone_data[robot_num]
 
-        zones.append(zone)
+            zones.append(zone)
 
-    pub.publish(zones)
+        pub.publish(zones)
+
+        r.sleep()
 
 if __name__ == '__main__':
     try:

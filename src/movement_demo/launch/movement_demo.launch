@@ -3,4 +3,5 @@
   <node name="inverse_kinematics_server" pkg="inv_kinematics" type="inv_kin_srv.py" output="screen"/>
   <node name="kinematic_movement" pkg="movement_demo" type="basic_kinematic_movement.py" output="screen"/>
   <node name="block_selector" pkg="assignment_selection" type="block_selection.py" output="screen"/>
+  <node name="zone_publisher" pkg="zone_controller" type="fixed_zone.py" output="screen"/>
 </launch>
