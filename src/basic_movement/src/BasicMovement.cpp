@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 	/* Create publisher to attach to JointJog */
 	ros::Publisher chatter_pub = n.advertise<control_msgs::JointJog>("/JointJog",1);
 	
-	ros::Rate loop_rate(5);
+	ros::Rate loop_rate(10);
 	
 	int counter = 0;
 	double armspedtemp = 0.5;
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 		
 		ros::Duration(5.0).sleep();
 
-		for (int i=1;i<6;i++){
+		for (int i=0;i<6;i++){
 			if(counter%2==1 || counter%2==0) {
 				ROS_INFO("Setting up stop message");
 				control_msgs::JointJog msg_stop;

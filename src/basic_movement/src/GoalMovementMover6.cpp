@@ -4,6 +4,9 @@
 #include "sensor_msgs/JointState.h"
 
 #include <sstream>
+#include <iostream>
+#include <stdio.h>
+
 /* Create node */
 float joint1, joint2, joint3, joint4, joint5, joint6;
 bool know_states;
@@ -51,38 +54,43 @@ int main(int argc, char **argv) {
 
 	int counter = 0;
 
+	const char* joints[6]
+        = { "joint1", "joint2", "joint3", "joint4", "joint5", "joint6" };
+
 	ros::Duration(2.0).sleep();
 	while(ros::ok()) {
 		if(know_states) {
 			float joint1_demand=0.9;
 
-			if(abs(joint1_demand-joint1)>0.04) {
+			for (int i=0;i<6;i++){
+				if(abs(joint1_demand-joint1)>0.04) {
 
-				ROS_INFO("Setting message");
-				control_msgs::JointJog msg_start;
-				std::stringstream ss;
-				ss << "joint1";
+					ROS_INFO("Setting message Go to set point");
+					control_msgs::JointJog msg_start;
+					std::stringstream ss;
+					ss << joints[i];
 
-				msg_start.joint_names.push_back(ss.str());
-				msg_start.velocities.push_back(0.25*(joint1_demand-joint1)/abs(joint1_demand-joint1));
-				msg_start.duration=5; //Unfortunately duration isn't implemented...
+					msg_start.joint_names.push_back(ss.str());
+					msg_start.velocities.push_back(0.25*(joint1_demand-joint1)/abs(joint1_demand-joint1));
+					msg_start.duration=5; //Unfortunately duration isn't implemented...
 
-				ROS_INFO("Sending message");
-				chatter_pub.publish(msg_start);
-			}
-			if(abs(joint1_demand-joint1)<0.04) {
+					ROS_INFO("Sending message");
+					chatter_pub.publish(msg_start);
+				}
+				if(abs(joint1_demand-joint1)<0.04) {
 
-				ROS_INFO("Setting message");
-				control_msgs::JointJog msg_start;
-				std::stringstream ss;
-				ss << "joint1";
+					ROS_INFO("Setting message Stay Still");
+					control_msgs::JointJog msg_start;
+					std::stringstream ss;
+					ss << joints[i];
 
-				msg_start.joint_names.push_back(ss.str());
-				msg_start.velocities.push_back(0);
-				msg_start.duration=5; //Unfortunately duration isn't implemented...
+					msg_start.joint_names.push_back(ss.str());
+					msg_start.velocities.push_back(0);
+					msg_start.duration=5; //Unfortunately duration isn't implemented...
 
-				ROS_INFO("Sending message");
-				chatter_pub.publish(msg_start);
+					ROS_INFO("Sending message");
+					chatter_pub.publish(msg_start);
+				}
 			}
 		}
 
