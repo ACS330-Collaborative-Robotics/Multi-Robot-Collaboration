@@ -11,16 +11,24 @@ def talker():
     rospy.init_node('zone_publisher', anonymous=True)
 
     # mover6_a co-ordinates
-    corner_a1 = [-0.5, -0.5]
-    corner_a2 = [0.5, 0]
-    corner_a3 = [0, 0.5]
-    corner_a4 = [0.5, 0.5]
+    corner_a1 = Coord()
+    corner_a1.coordinate = [-0.5, -0.5]
+    corner_a2 = Coord()
+    corner_a2.coordinate = [0.5, 0]
+    corner_a3 = Coord()
+    corner_a3.coordinate = [0, 0.5]
+    corner_a4 = Coord()
+    corner_a4.coordinate = [0.5, 0.5]
 
     # mover6_b co-ordinates
-    corner_b1 = [0, 0.5]
-    corner_b2 = [-0.5, 0.5]
-    corner_b3 = [0.5, -0.5]
-    corner_b4 = [0.5, 0]
+    corner_b1 = Coord()
+    corner_b1.coordinate = [0, 0.5]
+    corner_b2 = Coord()
+    corner_b2.coordinate = [-0.5, 0.5]
+    corner_b3 = Coord()
+    corner_b3.coordinate = [0.5, -0.5]
+    corner_b4 = Coord()
+    corner_b4.coordinate = [0.5, 0]
 
     zone_data = [[corner_a1, corner_a2, corner_a3, corner_a4], [corner_b1, corner_b2, corner_b3, corner_b4]]
 
