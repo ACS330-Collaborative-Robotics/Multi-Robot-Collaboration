@@ -76,13 +76,13 @@ int main(int argc, char **argv) {
 					ss << joints[i];
 
 					msg_start.joint_names.push_back(ss.str());
-					msg_start.velocities.push_back(0.25*(joint1_demand-joint1)/abs(joint1_demand-joint1));
+					msg_start.velocities.push_back(0.25*(joint1_demand-jointpos[i])/abs(joint1_demand-jointpos[i]));
 					msg_start.duration=5; //Unfortunately duration isn't implemented...
 
 					ROS_INFO("Sending message");
 					chatter_pub.publish(msg_start);
 				}
-				if(abs(joint1_demand-joint1)<0.04) {
+				if(abs(joint1_demand-jointpos[i])<0.04) {
 
 					ROS_INFO("Setting message Stay Still");
 					control_msgs::JointJog msg_start;
