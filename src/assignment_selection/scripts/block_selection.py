@@ -4,11 +4,15 @@
 # Author: Tom Richards (tomtommrichards@gmail.com), Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
-import math
+
 from gazebo_msgs.srv import GetModelState
-from operator import itemgetter
-from std_msgs.msg import String
 from block_controller.msg import Blocks
+from path_planning.srv import PathPlan
+from std_msgs.msg import String
+from geometry_msgs.msg import Pose
+
+import math
+from operator import itemgetter
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -24,10 +28,9 @@ def choose_block():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
     
-    # Setup publishers for each robot
-    pub = []
-    for robot in robot_namespaces:
-        pub.append(rospy.Publisher(robot + "/next_block", String , queue_size=2))
+    # Setup path_planner service
+    rospy.wait_for_service('path_planner')
+    path_service = rospy.ServiceProxy('path_planner', PathPlan)
 
     # Declare ROS Node name
     rospy.init_node('block_selector')
@@ -41,15 +44,15 @@ def choose_block():
 
         # Wait for blockData to read in by subscriber
         while blockData is None:
-            rospy.loginfo("Waiting for data.")
+            rospy.loginfo("Block Selection - Waiting for data.")
             rate.sleep()
-        rospy.loginfo("Got block data,")
+        rospy.loginfo("Block Selection - Got block data,")
 
         # Iterate through blockData and retrieve list of block names
         blockNames = []
         for block_num in range(len(blockData.block_data)):
             blockNames.append("block" + str(blockData.block_data[block_num].block_number))
-        rospy.loginfo("Block list built.")
+        rospy.loginfo("Block Selection - Block list built.")
 
         # Getting distance from each robot to blocks and sellecting the smallest
         roboColect = []
@@ -70,16 +73,38 @@ def choose_block():
             for nextBlock in roboColect:
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
-        rospy.loginfo("Block selection complete. Beginnning publishing.")
+        rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
 
         # Publish assignments
         for i in range(max(len(x) for x in goCollect)):
-            for j in range(len(pub)):
-                try:
-                    pub[j].publish(goCollect[j][i])
-                    rospy.loginfo(robot_namespaces[j] + " " + goCollect[j][i])
-                except:
-                    pass
+            for j in range(len(robot_namespaces)):
+                if i < len(goCollect[j]):
+                    # Set End Position
+                    block_name = str(goCollect[j][i])
+
+                    end_pos = Pose()
+                    end_pos.position.x = 0.3
+                    end_pos.position.z = 0.3
+                    end_pos.orientation.y = 1
+
+                    if j == 0:
+                        end_pos.position.y = -0.3
+                    else:
+                        end_pos.position.y = 0.3
+
+                    robot_name = str(robot_namespaces[j])
+                    
+                    try:
+                        success = path_service(block_name, end_pos, robot_name)
+
+                        if success:
+                            rospy.loginfo("Block Selection - " + robot_namespaces[j] + " to " + goCollect[j][i])
+                        else:
+                            rospy.loginfo("Block Selection - Service call returned False.")
+                    except rospy.ServiceException as e:
+                        rospy.loginfo("Block Selection - Service call failed: %s"%e)
+
+                    
 
                 rate.sleep()
 
