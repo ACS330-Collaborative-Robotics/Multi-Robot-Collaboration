@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 		if(know_states) {
 			float joint1_demand=0.9;
 			float jointpos[6] = {joint1, joint2, joint3, joint4, joint5, joint6}; 
-			for (int i=0;i<1;i++){
+			for (int i=0;i<6;i++){
 				if(abs(joint1_demand-jointpos[i])>0.04) {
 
 					ROS_INFO("Setting message Go to set point");
