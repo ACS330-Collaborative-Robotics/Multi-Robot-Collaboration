@@ -9,37 +9,34 @@
 
 /* Create node */
 float joint1, joint2, joint3, joint4, joint5, joint6;
-float jointpos[6];
 bool know_states;
 
 void jointsCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 	int i=0;
-	float* jointpos[6] = {}; 
-
 	for(std::vector<double>::const_iterator it = msg->position.begin(); it != msg->position.end(); ++it) {
 		if(i==0) {
 			joint1=*it;
-			*jointpos[i]=joint1;
+			//*jointpos[i]=joint1;
 		}
 		if(i==1) {
 			joint2=*it;
-			*jointpos[i]=joint2;
+			//*jointpos[i]=joint2;
 		}
 		if(i==2) {
 			joint3=*it;
-			*jointpos[i]=joint3;
+			//*jointpos[i]=joint3;
 		}
 		if(i==3) {
 			joint4=*it;
-			*jointpos[i]=joint4;
+			//*jointpos[i]=joint4;
 		}
 		if(i==4) {
 			joint5=*it;
-			*jointpos[i]=joint5;
+			//*jointpos[i]=joint5;
 		}
 		if(i==5) {
 			joint6=*it;
-			*jointpos[i]=joint6;
+			//*jointpos[i]=joint6;
 		}
 		i++;
 	}
@@ -69,7 +66,8 @@ int main(int argc, char **argv) {
 	while(ros::ok()) {
 		if(know_states) {
 			float joint1_demand=0.9;
-			for (int i=0;i<6;i++){
+			float jointpos[6] = {joint1, joint2, joint3, joint4, joint5, joint6}; 
+			for (int i=0;i<1;i++){
 				if(abs(joint1_demand-jointpos[i])>0.04) {
 
 					ROS_INFO("Setting message Go to set point");
@@ -78,13 +76,13 @@ int main(int argc, char **argv) {
 					ss << joints[i];
 
 					msg_start.joint_names.push_back(ss.str());
-					msg_start.velocities.push_back(0.25*(joint1_demand-jointpos[i])/abs(joint1_demand-jointpos[i]));
+					msg_start.velocities.push_back(0.25*(joint1_demand-joint1)/abs(joint1_demand-joint1));
 					msg_start.duration=5; //Unfortunately duration isn't implemented...
 
 					ROS_INFO("Sending message");
 					chatter_pub.publish(msg_start);
 				}
-				if(abs(joint1_demand-jointpos[i])<0.04) {
+				if(abs(joint1_demand-joint1)<0.04) {
 
 					ROS_INFO("Setting message Stay Still");
 					control_msgs::JointJog msg_start;
