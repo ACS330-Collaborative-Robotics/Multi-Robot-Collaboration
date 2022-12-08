@@ -7,6 +7,12 @@
 #include <iostream>
 #include <stdio.h>
 
+// TODO:
+// Imploment listener for where to go
+// implemnt a is this robot moving
+// 
+
+
 /* Create node */
 float joint1, joint2, joint3, joint4, joint5, joint6;
 bool know_states;
@@ -65,11 +71,11 @@ int main(int argc, char **argv) {
 	ros::Duration(2.0).sleep();
 	while(ros::ok()) {
 		if(know_states) {
-			float joint1_demand=0.5;
+			float joint_demands[6]= {0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
 			float joint_gains[6] = {0.25, 0.25, 0.25, 0.25, 0.25, 0.1};
 			float jointpos[6] = {joint1, joint2, joint3, joint4, joint5, joint6}; 
 			for (int i=0;i<6;i++){
-				if(abs(joint1_demand-jointpos[i])>0.04) {
+				if(abs(joint_demands[i]-jointpos[i])>0.04) {
 
 					ROS_INFO("Setting message Go to set point");
 					control_msgs::JointJog msg_start;
@@ -77,13 +83,13 @@ int main(int argc, char **argv) {
 					ss << joints[i];
 
 					msg_start.joint_names.push_back(ss.str());
-					msg_start.velocities.push_back(joint_gains[i]*(joint1_demand-jointpos[i])/abs(joint1_demand-jointpos[i]));
+					msg_start.velocities.push_back(joint_gains[i]*(joint_demands[i]-jointpos[i])/abs(joint_demands[i]-jointpos[i]));
 					msg_start.duration=5; //Unfortunately duration isn't implemented...
 
 					ROS_INFO("Sending message");
 					chatter_pub.publish(msg_start);
 				}
-				if(abs(joint1_demand-jointpos[i])<0.04) {
+				if(abs(joint_demands[i]-jointpos[i])<0.04) {
 
 					ROS_INFO("Setting message Stay Still");
 					control_msgs::JointJog msg_start;
