@@ -65,7 +65,8 @@ int main(int argc, char **argv) {
 	ros::Duration(2.0).sleep();
 	while(ros::ok()) {
 		if(know_states) {
-			float joint1_demand=0.9;
+			float joint1_demand=0.5;
+			float joint_gains[6] = {0.25, 0.25, 0.25, 0.25, 0.25, 0.1};
 			float jointpos[6] = {joint1, joint2, joint3, joint4, joint5, joint6}; 
 			for (int i=0;i<6;i++){
 				if(abs(joint1_demand-jointpos[i])>0.04) {
@@ -76,7 +77,7 @@ int main(int argc, char **argv) {
 					ss << joints[i];
 
 					msg_start.joint_names.push_back(ss.str());
-					msg_start.velocities.push_back(0.25*(joint1_demand-jointpos[i])/abs(joint1_demand-jointpos[i]));
+					msg_start.velocities.push_back(joint_gains[i]*(joint1_demand-jointpos[i])/abs(joint1_demand-jointpos[i]));
 					msg_start.duration=5; //Unfortunately duration isn't implemented...
 
 					ROS_INFO("Sending message");

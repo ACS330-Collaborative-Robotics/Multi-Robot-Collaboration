@@ -1,0 +1,2 @@
+catkin_make
+rosrun basic_movement GoalMovementMover6
