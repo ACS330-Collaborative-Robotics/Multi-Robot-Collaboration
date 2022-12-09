@@ -13,8 +13,9 @@ def talker():
     rate = rospy.Rate(0.5) # 10hz
     while not rospy.is_shutdown():
         joint_angles = posistions = [round(random.uniform(-2.269,2.269), 3), round(random.uniform(-0.873,1.047), 3), round(random.uniform(-1.920,1.309), 3), round(random.uniform(-2.443,2.443), 3), round(random.uniform(-1.221,1.047), 3), round(random.uniform(-2.094,2.094), 3)]
-        rospy.loginfo(joint_angles)
-        pub.publish(joint_angles)
+        tempString = ','.join(map(str,joint_angles))
+        rospy.loginfo(tempString)
+        pub.publish(tempString)
         rate.sleep()
 
 if __name__ == '__main__':

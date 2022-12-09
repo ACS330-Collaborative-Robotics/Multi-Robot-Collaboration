@@ -106,5 +106,6 @@ target_link_libraries(GoalMovementMover6 ${catkin_LIBRARIES})
 
 catkin_install_python(PROGRAMS 
   scripts/NewJointANgles.py
+  scripts/listener.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

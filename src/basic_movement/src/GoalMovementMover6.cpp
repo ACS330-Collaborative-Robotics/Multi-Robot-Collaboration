@@ -46,7 +46,7 @@ void jointsCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 	ROS_INFO("Received State %f\t%f\t%f\t%f\t%f\t%f", joint1, joint2, joint3, joint4, joint5, joint6);
 }
 
-void listenerJointAngles(const std_msgs::String::ConstPtr& msg){
+void listenerJointAngles(const std_msgs::Float32MultiArray::ConstPtr& msg){
 	int i=0;
 	for(std::vector<float>::const_iterator it = msg->data.begin(); it != msg->data.end(); ++it) {
 		if(i==0) {
