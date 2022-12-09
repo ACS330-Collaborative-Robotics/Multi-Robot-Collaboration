@@ -6,7 +6,7 @@ import time
 import argparse
 import apriltag
 
-#open camera and aruco detection
+#open camera
 cap = cv2.VideoCapture(0) # assigning camera (devices webcam) to variable
 
 #reading/detecting for apriltags while camera is open
