@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-
-## listend to anounced values and splits them up
-
 import rospy
 from std_msgs.msg import String
 from basic_movement.msg import Joints
 
 def callback(data):
-    #rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data)
-    rospy.loginfo("Hello World")
-
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    
 def listener():
 
     # In ROS, nodes are uniquely named. If two nodes with the same
@@ -19,7 +15,7 @@ def listener():
     # run simultaneously.
     rospy.init_node('listener', anonymous=True)
 
-    rospy.Subscriber('/mover6_a/physical/joint_angles', Joints, callback)
+    rospy.Subscriber("/mover6_a/physical/joint_angles", Joints, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
