@@ -2,10 +2,12 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
+import tf2_ros
 
 from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import GetModelState
 from geometry_msgs.msg import Pose
+from tf2_geometry_msgs import PoseStamped
 from inv_kinematics.srv import InvKin
 
 from math import atan2, asin
@@ -21,6 +23,10 @@ class ServiceHelper:
         # Setup get_model_state service
         rospy.wait_for_service('gazebo/get_model_state')
         self.model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
+
+        # Setup tf2
+        self.tfBuffer = tf2_ros.Buffer()
+        self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
     def move(self, pos:Pose):
         """ Move arm to specified position.
@@ -53,18 +59,27 @@ class ServiceHelper:
         rospy.wait_for_service('gazebo/get_model_state')
 
         # Extract Pose() object
-        data = self.model_state_service(specific_model_name, self.robot_ns).pose
-        
-        # Get quaternion rotation data
-        w = data.orientation.w
-        x = data.orientation.x
-        y = data.orientation.y
-        z = data.orientation.z
-
-        # Convert quaternion to pitch, roll, yaw
-        data.orientation.x = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z) # Pitch - a
-        data.orientation.y = atan2(2*y*w - 2*x*z, 1 - 2*y*y - 2*z*z) # Roll - b
-        data.orientation.z = asin(2*x*y + 2*z*w) # Yaw - c
-        data.orientation.w = 0
+        data = self.model_state_service(specific_model_name, "world").pose
 
         return data
+
+    def frameConverter(self, target_frame:str, reference_frame:str, goal_pose:Pose) -> Pose:
+        # Setup time stamped pose object
+        start_pose = PoseStamped()
+        start_pose.pose = goal_pose
+
+        start_pose.header.frame_id = reference_frame
+        start_pose.header.stamp = rospy.get_rostime()
+
+        # Convert from world frame to robot frame using tf2
+        rate = rospy.Rate(10.0)
+        while not rospy.is_shutdown():
+            try:
+                new_pose = self.tfBuffer.transform(start_pose, target_frame+"_base")
+                break
+            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                rate.sleep()
+                print("Failed")
+                continue
+
+        return new_pose.pose

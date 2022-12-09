@@ -79,9 +79,18 @@ def choose_block():
         for i in range(max(len(x) for x in goCollect)):
             for j in range(len(robot_namespaces)):
                 if i < len(goCollect[j]):
+                    # Set End Position
                     block_name = str(goCollect[j][i])
 
                     end_pos = Pose()
+                    end_pos.position.x = 0.3
+                    end_pos.position.z = 0.3
+                    end_pos.orientation.y = 1
+
+                    if j == 0:
+                        end_pos.position.y = -0.3
+                    else:
+                        end_pos.position.y = 0.3
 
                     robot_name = str(robot_namespaces[j])
                     
