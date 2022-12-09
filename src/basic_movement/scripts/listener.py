@@ -4,7 +4,10 @@ from std_msgs.msg import String
 from basic_movement.msg import Joints
 
 def callback(data):
+    joint_demands = list(data.joints)
     rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.joints)
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s", joint_demands[0])
+
     
 def listener():
 
