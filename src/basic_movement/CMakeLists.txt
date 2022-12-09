@@ -6,6 +6,7 @@ project(basic_movement)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
   std_msgs
   sensor_msgs
   control_msgs
@@ -103,3 +104,7 @@ add_executable(GoalMovementMover6
   src/GoalMovementMover6.cpp) 
 target_link_libraries(GoalMovementMover6 ${catkin_LIBRARIES})
 
+catkin_install_python(PROGRAMS 
+  scripts/NewJointANgles.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
