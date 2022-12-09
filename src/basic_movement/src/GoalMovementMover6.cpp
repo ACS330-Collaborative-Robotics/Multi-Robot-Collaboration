@@ -2,7 +2,7 @@
 #include "std_msgs/String.h"
 #include "control_msgs/JointJog.h"
 #include "sensor_msgs/JointState.h"
-#include "std_msgs/Float32MultiArray.h"
+#include "basic_movement/Joints.h"
 
 #include <sstream>
 #include <iostream>
@@ -46,8 +46,8 @@ void jointsCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 	ROS_INFO("Received State %f\t%f\t%f\t%f\t%f\t%f", joint1, joint2, joint3, joint4, joint5, joint6);
 }
 
-void listenerJointAngles(const std_msgs::Float32MultiArray::ConstPtr& msg){
-	int i=0;
+void listenerJointAngles(const basic_movement::Joints::ConstPtr& msg){
+	int i=0;/*
 	for(std::vector<float>::const_iterator it = msg->data.begin(); it != msg->data.end(); ++it) {
 		if(i==0) {
 			jointdemand_1=*it;
@@ -69,8 +69,9 @@ void listenerJointAngles(const std_msgs::Float32MultiArray::ConstPtr& msg){
 		}		
 		i++;
 	}
-	ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
+	//ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
 	//know_demands = true;
+	*/
 }
 
 

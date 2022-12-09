@@ -4,9 +4,11 @@
 
 import rospy
 from std_msgs.msg import String
+from basic_movement.msg import Joints
 
 def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data.data)
+    rospy.loginfo(rospy.get_caller_id() + 'All angles %s', data)
+
 
 def listener():
 
@@ -17,7 +19,7 @@ def listener():
     # run simultaneously.
     rospy.init_node('listener', anonymous=True)
 
-    rospy.Subscriber('/mover6_a/physical/joint_angles', String, callback)
+    rospy.Subscriber('/mover6_a/physical/joint_angles', Joints, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

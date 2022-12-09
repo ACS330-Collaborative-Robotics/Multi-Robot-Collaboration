@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   control_msgs
   genmsg
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -48,6 +49,16 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate added messages and services with any dependencies listed here
 
+add_message_files(
+  FILES
+  Joints.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
 ################################################
@@ -80,7 +91,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES cpr_robot
-  CATKIN_DEPENDS roscpp std_msgs sensor_msgs control_msgs 
+  CATKIN_DEPENDS message_runtime roscpp std_msgs sensor_msgs control_msgs 
 #  DEPENDS system_lib
 )
 
