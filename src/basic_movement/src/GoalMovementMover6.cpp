@@ -2,6 +2,7 @@
 #include "std_msgs/String.h"
 #include "control_msgs/JointJog.h"
 #include "sensor_msgs/JointState.h"
+#include "std_msgs/Float32MultiArray.h"
 
 #include <sstream>
 #include <iostream>
@@ -14,45 +15,68 @@
 
 
 /* Create node */
+float jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6;
 float joint1, joint2, joint3, joint4, joint5, joint6;
-bool know_states;
+bool know_states, know_demands;
 
 void jointsCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 	int i=0;
 	for(std::vector<double>::const_iterator it = msg->position.begin(); it != msg->position.end(); ++it) {
 		if(i==0) {
 			joint1=*it;
-			//*jointpos[i]=joint1;
 		}
 		if(i==1) {
 			joint2=*it;
-			//*jointpos[i]=joint2;
 		}
 		if(i==2) {
 			joint3=*it;
-			//*jointpos[i]=joint3;
 		}
 		if(i==3) {
 			joint4=*it;
-			//*jointpos[i]=joint4;
 		}
 		if(i==4) {
 			joint5=*it;
-			//*jointpos[i]=joint5;
 		}
 		if(i==5) {
 			joint6=*it;
-			//*jointpos[i]=joint6;
 		}
 		i++;
 	}
-	know_states=true;
-	ROS_INFO("Receive1 State %f\t%f\t%f\t%f\t%f\t%f", joint1, joint2, joint3, joint4, joint5, joint6);
+	know_states = true;
+	ROS_INFO("Received State %f\t%f\t%f\t%f\t%f\t%f", joint1, joint2, joint3, joint4, joint5, joint6);
+}
+
+void listenerJointAngles(const std_msgs::String::ConstPtr& msg){
+	int i=0;
+	for(std::vector<float>::const_iterator it = msg->data.begin(); it != msg->data.end(); ++it) {
+		if(i==0) {
+			jointdemand_1=*it;
+		}
+		if(i==1) {
+			jointdemand_2=*it;
+		}
+		if(i==2) {
+			jointdemand_3=*it;
+		}
+		if(i==3) {
+			jointdemand_4=*it;
+		}
+		if(i==4) {
+			jointdemand_5=*it;
+		}
+		if(i==5) {
+			jointdemand_6=*it;
+		}		
+		i++;
+	}
+	ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
+	//know_demands = true;
 }
 
 
 int main(int argc, char **argv) {
 	know_states=false;
+	know_demands=false;
 	ros::init(argc, argv, "goal_movement_example");
 	ros::NodeHandle n;
 
@@ -60,6 +84,9 @@ int main(int argc, char **argv) {
 	ros::Publisher chatter_pub = n.advertise<control_msgs::JointJog>("/JointJog",1);
 
 	ros::Subscriber chatter_sub = n.subscribe("/joint_states", 1000, jointsCallback);
+
+	ros::Subscriber joint_demands = n.subscribe("/mover6_a/physical/joint_angles", 10000, listenerJointAngles);
+	
 
 	ros::Rate loop_rate(10);
 
@@ -70,8 +97,8 @@ int main(int argc, char **argv) {
 
 	ros::Duration(2.0).sleep();
 	while(ros::ok()) {
-		if(know_states) {
-			float joint_demands[6]= {0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
+		if(know_states && know_demands) {
+			float joint_demands[6]= {jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6};
 			float joint_gains[6] = {0.25, 0.25, 0.25, 0.25, 0.25, 0.1};
 			float jointpos[6] = {joint1, joint2, joint3, joint4, joint5, joint6}; 
 			for (int i=0;i<6;i++){
