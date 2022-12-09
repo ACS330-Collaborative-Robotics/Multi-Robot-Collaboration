@@ -7,8 +7,8 @@ from std_msgs.msg import String
 from basic_movement.msg import Joints
 
 def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + 'All angles %s', data)
-
+    #rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data)
+    rospy.loginfo("Hello World")
 
 def listener():
 
