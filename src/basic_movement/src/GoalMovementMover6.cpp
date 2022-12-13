@@ -10,7 +10,6 @@
 
 // TODO:
 // Imploment listener for where to go
-// implemnt a is this robot moving
 // 
 
 
@@ -56,6 +55,7 @@ void listenerJointAngles(const basic_movement::Joints::ConstPtr& msg){
 	ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
 	know_demands = true;
 }
+
 
 int main(int argc, char **argv) {
 	know_states=false;
@@ -115,6 +115,7 @@ int main(int argc, char **argv) {
 					ROS_INFO("Sending message");
 					chatter_pub.publish(msg_start);
 				}
+				
 				std_msgs::String msg;
 				std::stringstream ss;
 				if(moving_state == true){
@@ -127,6 +128,7 @@ int main(int argc, char **argv) {
 				ROS_INFO("%s", msg.data.c_str());
 				moving.publish(msg);
 				ros::spinOnce();
+				
 			}
 
 		}
