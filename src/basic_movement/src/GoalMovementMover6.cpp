@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
+#include "basic_movement/Joints.h"
 #include "control_msgs/JointJog.h"
 #include "sensor_msgs/JointState.h"
-#include "basic_movement/Joints.h"
 
 #include <sstream>
 #include <iostream>
