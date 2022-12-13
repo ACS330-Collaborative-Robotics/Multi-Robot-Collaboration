@@ -116,20 +116,19 @@ int main(int argc, char **argv) {
 					chatter_pub.publish(msg_start);
 				}
 				
-				std_msgs::String msg;
-				std::stringstream ss;
-				if(moving_state == true){
-					ss << "Moving";
-				}
-				else {
-					ss << "Stationery";
-				}
-				msg.data = ss.str();
-				ROS_INFO("%s", msg.data.c_str());
-				moving.publish(msg);
-				ros::spinOnce();
-				
 			}
+			std_msgs::String msg;
+			std::stringstream ss;
+			if(moving_state == true){
+				ss << "Moving";
+			}
+			else {
+				ss << "Stationery";
+			}
+			msg.data = ss.str();
+			ROS_INFO("%s", msg.data.c_str());
+			moving.publish(msg);
+			ros::spinOnce();
 
 		}
 
