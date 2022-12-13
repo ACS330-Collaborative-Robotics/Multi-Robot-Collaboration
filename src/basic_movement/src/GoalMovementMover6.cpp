@@ -57,7 +57,6 @@ void listenerJointAngles(const basic_movement::Joints::ConstPtr& msg){
 	know_demands = true;
 }
 
-
 int main(int argc, char **argv) {
 	know_states=false;
 	know_demands=false;
