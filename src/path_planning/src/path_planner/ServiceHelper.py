@@ -55,6 +55,7 @@ class ServiceHelper:
 
         Uses gazebo/get_model_state service.
         """
+        # TODO: Replace with data from /blocks
 
         rospy.wait_for_service('gazebo/get_model_state')
 
