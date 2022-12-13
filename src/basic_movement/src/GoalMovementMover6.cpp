@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
-#include "basic_movement/Joints.h"
 #include "control_msgs/JointJog.h"
 #include "sensor_msgs/JointState.h"
+#include "basic_movement/Joints.h"
 
 #include <sstream>
 #include <iostream>
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 
 	/* Create publisher to attach to JointJog */
 	ros::Publisher chatter_pub = n.advertise<control_msgs::JointJog>("/JointJog",1);
-	ros::Publisher moving = n.advertise<std_msgs::String>("/mover6_a/physical/moving_state",1000);
+	ros::Publisher moving = n.advertise<std_msgs::String>("/mover6_a/physical/moving_state",1);
 
 	ros::Subscriber chatter_sub = n.subscribe("/joint_states", 1000, jointsCallback);
 	ros::Subscriber joint_demands = n.subscribe("/mover6_a/physical/joint_angles", 10000, listenerJointAngles);
@@ -116,17 +116,17 @@ int main(int argc, char **argv) {
 					ROS_INFO("Sending message");
 					chatter_pub.publish(msg_start);
 				}
-				std_msgs::String state;
-				std::stringstream system_state;
+				std_msgs::String msg;
+				std::stringstream ss;
 				if(moving_state == true){
-					system_state << "Moving";
+					ss << "Moving";
 				}
 				else {
-					system_state << "Stationery";
+					ss << "Stationery";
 				}
-				state.data = system_state.str();
-				ROS_INFO("%s", state.data.c_str());
-				chatter_pub.publish(state);
+				msg.data = ss.str();
+				ROS_INFO("%s", msg.data.c_str());
+				moving.publish(msg);
 				ros::spinOnce();
 			}
 
