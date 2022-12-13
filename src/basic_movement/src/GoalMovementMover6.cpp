@@ -124,8 +124,8 @@ int main(int argc, char **argv) {
 				else {
 					system_state << "Stationery";
 				}
-				ROS_INFO(system_state);
 				state.data = system_state.str();
+				ROS_INFO("%s", state.data.c_str());
 				chatter_pub.publish(state);
 				ros::spinOnce();
 			}
