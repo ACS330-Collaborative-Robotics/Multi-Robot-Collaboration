@@ -9,8 +9,7 @@
 #include <stdio.h>
 
 // TODO:
-// Imploment listener for where to go
-// Comment code
+// Add Gripper Control
 
 
 /* Create node */

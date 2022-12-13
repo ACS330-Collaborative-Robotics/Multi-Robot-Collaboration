@@ -11,6 +11,9 @@ from pathlib import Path
 from inv_kinematics.srv import InvKin
 from std_msgs.msg import Float64
 
+## TODO:
+# Change publish location
+
 def service(req):
     # x y z Co-ordinates
     x = req.state.pose.position.x

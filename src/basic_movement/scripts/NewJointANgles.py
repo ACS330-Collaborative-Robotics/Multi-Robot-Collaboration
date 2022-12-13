@@ -6,6 +6,13 @@ import random
 import math
 from basic_movement.msg import Joints
 
+## TODO:
+# Talk to sim robot
+# Recive angles from inv_kin_srv.py - see photo from for topic names
+# Add details to readMe
+# Better comments
+
+
 def talker():
     # Shouting where i want the robot to move to then changeing to diffent position after getting there
     # Joint lims in radians [[-2.269,2.269],[-0.873,1.047],[-1.920,1.309],[-2.443,2.443],[-1.221,1.047],[-2.094,2.094]]
