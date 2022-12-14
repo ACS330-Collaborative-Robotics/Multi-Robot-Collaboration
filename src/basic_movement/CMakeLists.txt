@@ -120,7 +120,7 @@ add_executable(listenerincpp
 target_link_libraries(listenerincpp ${catkin_LIBRARIES})
 
 catkin_install_python(PROGRAMS 
-  scripts/NewJointANgles.py
+  scripts/joint_controller.py
   scripts/listener.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

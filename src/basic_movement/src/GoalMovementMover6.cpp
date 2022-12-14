@@ -10,6 +10,7 @@
 
 // TODO:
 // Add Gripper Control
+// Add topics to readme
 
 
 /* Create node */
