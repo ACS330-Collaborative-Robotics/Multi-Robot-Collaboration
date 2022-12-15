@@ -9,6 +9,7 @@ project(assignment_selection)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  roscpp
   std_msgs
 )
 
@@ -104,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES assignment_selection
-#  CATKIN_DEPENDS rospy std_msgs
+#  CATKIN_DEPENDS rospy roscpp std_msgs
 #  DEPENDS system_lib
 )
 
