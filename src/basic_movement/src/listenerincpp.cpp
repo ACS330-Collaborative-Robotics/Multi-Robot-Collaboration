@@ -2,7 +2,7 @@
 #include "std_msgs/String.h"
 //#include "basic_movement/Joints.h"
 
-#include <string> 
+#include <string>
 
 /*
 void chatterCallback(const basic_movement::Joints::ConstPtr& msg)
