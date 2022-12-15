@@ -45,12 +45,7 @@ void jointsCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 	know_states = true;
 	ROS_INFO("Received State %f\t%f\t%f\t%f\t%f\t%f", joint1, joint2, joint3, joint4, joint5, joint6);
 }
-<<<<<<< HEAD
 /*
-=======
-
-// Reviving Joint Demands from topic - assinging to veriable - ROSINFO to terminal
->>>>>>> 79f833d402c9dfe91dc6e86799c9b3a4af49728d
 void listenerJointAngles(const basic_movement::Joints::ConstPtr& msg){
 	jointdemand_1=msg->joints[0];
 	jointdemand_2=msg->joints[1];
