@@ -1,6 +1,6 @@
 catkin_make clean
 catkin_make rebuild_cache
-catkin_make
+catkin_make -DCATKIN_BLACKLIST_PACKAGES="basic_movement"
 catkin_make install
 sudo modprobe can_dev
 sudo modprobe can
