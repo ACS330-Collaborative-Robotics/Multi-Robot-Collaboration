@@ -114,6 +114,13 @@ source /opt/ros/noetic/setup.bash
 source ~/catkin_ws/devel/setup.bash
 ```
 
+**CPR robot not conetting/working after running ./reconnect_robo.sh**
+Probably dont have ifconfig
+```
+apt install net-tools
+```
+
+
 **Failed to launch joint_position_controller**
 
 Need to install ros-control and ros-controllers using: `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
