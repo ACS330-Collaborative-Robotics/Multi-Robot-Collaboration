@@ -115,9 +115,9 @@ add_executable(GoalMovementMover6
   src/GoalMovementMover6.cpp) 
 target_link_libraries(GoalMovementMover6 ${catkin_LIBRARIES})
 
-add_executable(listenerincpp 
-  src/listenerincpp.cpp) 
-target_link_libraries(listenerincpp ${catkin_LIBRARIES})
+#add_executable(listenerincpp 
+#  src/listenerincpp.cpp) 
+#target_link_libraries(listenerincpp ${catkin_LIBRARIES})
 
 catkin_install_python(PROGRAMS 
   scripts/joint_controller.py
