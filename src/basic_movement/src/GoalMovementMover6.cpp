@@ -56,7 +56,7 @@ void listenerJointAngles(const basic_movement::Joints::ConstPtr& msg){
 	jointdemand_6=msg->joints[5];
 	ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
 	know_demands = true;
-}*/
+}
 
 
 int main(int argc, char **argv) {
