@@ -148,6 +148,14 @@ Use VSCode which can be downloaded [here](https://code.visualstudio.com/download
 
 To open run `code .` in Ubuntu terminal in `~/catkin_ws`
 
+## Setup GitHub credentials
+
+Log into GitHub through VSCode then setup username and email using:
+
+```bash
+git config --global user.name "USERNAME"
+git config --global user.email "EMAIL"
+```
 
 ## Run Software
 
