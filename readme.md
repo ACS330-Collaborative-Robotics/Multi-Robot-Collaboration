@@ -114,7 +114,7 @@ sudo apt update
 sudo apt install ros-noetic-desktop-full
 ```
 
-Setup terminal to run ROS commands properly:
+Next, setup terminal to run ROS commands properly as outlined below. `pico` opens a Command Line text editor which will allow you to edit the `.bashrc` files and add the relevant lines. The pico editor is navigated with the arrow keys and you can type as normal. To save press `Ctrl+X` then `Enter`.
 ```bash
 cd
 pico .bashrc # Or open this text file in a text editor
@@ -128,8 +128,9 @@ Close the terminal and reopen it.
 ## Dependencies Install
 
 ```bash
+sudo apt-get update
 sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
-sudo apt python3-pip
+sudo apt install python3-pip
 pip install ikpy
 pip install numpy --upgrade
 ```
@@ -156,6 +157,17 @@ Log into GitHub through VSCode then setup username and email using:
 git config --global user.name "USERNAME"
 git config --global user.email "EMAIL"
 ```
+
+## Reccomended VS Code Extension
+
+There are a few VSCode exentension that will make your life much easier so I would reccomend installing the ones listed below using the Extensions tab on the right.
+ - WSL - This extension makes VSCode play nicely with the WSL system. This will make the terminal in VSCode into an Ubuntu terminal too which makes running commands much easier.
+ - GitLens - Makes VSCode and GitHub play nicely together.
+ - C/C++
+ - Python
+ - Pylance
+ - Todo Tree
+ - A nice theme - I reccomend One Dark Pro ;)
 
 ## Run Software
 
