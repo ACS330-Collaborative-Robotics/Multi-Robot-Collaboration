@@ -1,5 +1,6 @@
 <robot
   name="robotiq_arg85_description">
+  
   <link
     name="robotiq_85_base_link">
     <inertial>
@@ -40,6 +41,7 @@
       </geometry>
     </collision>
   </link>
+
   <link
     name="left_outer_knuckle">
     <inertial>
@@ -80,6 +82,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="finger_joint"
     type="revolute">
@@ -98,6 +101,7 @@
       velocity="2.0"
       effort="1000" />
   </joint>
+
   <link
     name="left_outer_finger">
     <inertial>
@@ -138,6 +142,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="left_outer_finger_joint"
     type="fixed">
@@ -151,6 +156,7 @@
     <axis
       xyz="0 -1 0" />
   </joint>
+
   <link
     name="left_inner_knuckle">
     <inertial>
@@ -191,6 +197,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="left_inner_knuckle_joint"
     type="revolute">
@@ -213,6 +220,7 @@
       multiplier="1"
       offset="0" />
   </joint>
+
   <link
     name="left_inner_finger">
     <inertial>
@@ -253,6 +261,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="left_inner_finger_joint"
     type="revolute">
@@ -275,6 +284,7 @@
       multiplier="-1"
       offset="0" />
   </joint>
+
   <link
     name="right_inner_knuckle">
     <inertial>
@@ -315,6 +325,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="right_inner_knuckle_joint"
     type="revolute">
@@ -337,6 +348,7 @@
       multiplier="-1"
       offset="0" />
   </joint>
+
   <link
     name="right_inner_finger">
     <inertial>
@@ -377,6 +389,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="right_inner_finger_joint"
     type="revolute">
@@ -399,6 +412,7 @@
       multiplier="1"
       offset="0" />
   </joint>
+
   <link
     name="right_outer_knuckle">
     <inertial>
@@ -439,6 +453,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="right_outer_knuckle_joint"
     type="revolute">
@@ -461,6 +476,7 @@
       multiplier="-1"
       offset="0" />
   </joint>
+
   <link
     name="right_outer_finger">
     <inertial>
@@ -501,6 +517,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="right_outer_finger_joint"
     type="fixed">
