@@ -43,7 +43,10 @@ def talker():
 
 
         # Getting Demand Angels
+        joint_angles = None
         rospy.Subscriber("/mover6_a/joint_angles", Joints, callback)
+        while(joint_angles == None):
+            rospy.sleep(10)
 
         # Telling the Phisical robot tomove
         if enablePhiscal:
