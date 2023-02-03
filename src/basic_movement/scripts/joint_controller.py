@@ -12,6 +12,11 @@ from basic_movement.msg import Joints
 # Add details to readMe
 # Better comments
 # movement demo, pass string when lauching in lauch file
+# Set arms Acuracy
+# S et sim acuracy
+# set overall speed
+# check acuracy and gairns are complatable
+# https://answers.ros.org/question/290992/parallel-execution-of-same-ros-nodes/
 
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + "Angles Recived: %s", data.joints)
