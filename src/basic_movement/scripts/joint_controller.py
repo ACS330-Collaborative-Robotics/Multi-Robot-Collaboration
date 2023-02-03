@@ -25,7 +25,8 @@ enableSIM = False
 def main():
     rospy.init_node('joint_controller', anonymous=True)
     ##recive angles
-    rate = rospy.Rate(0.1) # 10hz
+    T_period = 10
+    rate = rospy.Rate(1/T_period)
     while not rospy.is_shutdown():
         #subsibers for phiscal and sim
         global enablePhiscal
