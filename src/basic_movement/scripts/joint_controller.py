@@ -6,6 +6,8 @@ import random
 import math
 from basic_movement.msg import Joints
 
+joint_angles = []
+
 
 ## TODO:
 # Talk to sim robot
@@ -20,9 +22,9 @@ from basic_movement.msg import Joints
 # https://answers.ros.org/question/290992/parallel-execution-of-same-ros-nodes/
 
 def callback(data):
+    global joint_angles
     joint_angles = list(data.joints)
-    rospy.loginfo(rospy.get_caller_id() + "Angles Recived: %s", joint_angles)
-
+    rospy.loginfo(rospy.get_caller_id() + " Angles Recived: %s", joint_angles)
 
 
 def talker():
@@ -37,6 +39,7 @@ def talker():
 
     # Cheak robot runnning
     rospy.init_node('joint_controller', anonymous=True)
+    
 
     pubPhisic = rospy.Publisher('/mover6_a/physical/joint_angles', Joints, queue_size=10)
     rate = rospy.Rate(0.1) # 10hz
@@ -45,15 +48,13 @@ def talker():
 
 
         # Getting Demand Angels
-        rospy.loginfo("made it here 1")
         rospy.Subscriber("/mover6_a/joint_angles", Joints, callback)
-
-        rospy.loginfo("made it here 2")
         
         # Telling the Phisical robot to move
         if enablePhiscal:
             rospy.loginfo("Angles Published: %s", joint_angles)
             pubPhisic.publish(joint_angles)
+            
         
         # Telling the Sim to move
         if enableSIM:
