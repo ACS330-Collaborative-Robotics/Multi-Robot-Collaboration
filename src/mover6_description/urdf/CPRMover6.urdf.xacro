@@ -258,6 +258,53 @@
 	</transmission>
 
     
+<link
+    name="robotiq_85_base_link">
+    <inertial>
+      <origin
+        xyz="0.00021987 -2.3546E-10 0.030163"
+        rpy="0 0 0" />
+      <mass
+        value="0.30915" />
+      <inertia
+        ixx="0.00028972"
+        ixy="-5.7879E-10"
+        ixz="-1.8543E-06"
+        iyy="0.00030737"
+        iyz="1.682E-12"
+        izz="0.00019914" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robotiq_arg85_description/meshes/robotiq_85_base_link_fine.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robotiq_arg85_description/meshes/robotiq_85_base_link_coarse.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="gripper_mount" type="fixed">
+    <parent link="link6"/>
+    <child link="robotiq_85_base_link"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
   <link
     name="left_outer_knuckle">
     <inertial>
@@ -298,6 +345,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="finger_joint"
     type="revolute">
@@ -305,7 +353,7 @@
       xyz="0.0306011444260539 0 0.0627920162695395"
       rpy="0 0 0" />
     <parent
-      link="link6" />
+      link="robotiq_85_base_link" />
     <child
       link="left_outer_knuckle" />
     <axis
@@ -316,6 +364,7 @@
       velocity="2.0"
       effort="1000" />
   </joint>
+
   <link
     name="left_outer_finger">
     <inertial>
@@ -356,6 +405,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="left_outer_finger_joint"
     type="fixed">
@@ -369,6 +419,7 @@
     <axis
       xyz="0 -1 0" />
   </joint>
+
   <link
     name="left_inner_knuckle">
     <inertial>
@@ -409,6 +460,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="left_inner_knuckle_joint"
     type="revolute">
@@ -416,7 +468,7 @@
       xyz="0.0127000000001501 0 0.0693074999999639"
       rpy="0 0 0" />
     <parent
-      link="link6" />
+      link="robotiq_85_base_link" />
     <child
       link="left_inner_knuckle" />
     <axis
@@ -431,6 +483,7 @@
       multiplier="1"
       offset="0" />
   </joint>
+
   <link
     name="left_inner_finger">
     <inertial>
@@ -471,6 +524,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="left_inner_finger_joint"
     type="revolute">
@@ -493,6 +547,7 @@
       multiplier="-1"
       offset="0" />
   </joint>
+
   <link
     name="right_inner_knuckle">
     <inertial>
@@ -533,6 +588,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="right_inner_knuckle_joint"
     type="revolute">
@@ -540,7 +596,7 @@
       xyz="-0.0126999999998499 0 0.0693075000000361"
       rpy="0 0 3.14159265358979" />
     <parent
-      link="link6" />
+      link="robotiq_85_base_link" />
     <child
       link="right_inner_knuckle" />
     <axis
@@ -555,6 +611,7 @@
       multiplier="-1"
       offset="0" />
   </joint>
+
   <link
     name="right_inner_finger">
     <inertial>
@@ -595,6 +652,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="right_inner_finger_joint"
     type="revolute">
@@ -617,6 +675,7 @@
       multiplier="1"
       offset="0" />
   </joint>
+
   <link
     name="right_outer_knuckle">
     <inertial>
@@ -657,6 +716,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="right_outer_knuckle_joint"
     type="revolute">
@@ -664,7 +724,7 @@
       xyz="-0.0306011444258893 0 0.0627920162695395"
       rpy="0 0 3.14159265358979" />
     <parent
-      link="link6" />
+      link="robotiq_85_base_link" />
     <child
       link="right_outer_knuckle" />
     <axis
@@ -679,6 +739,7 @@
       multiplier="-1"
       offset="0" />
   </joint>
+
   <link
     name="right_outer_finger">
     <inertial>
@@ -719,6 +780,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="right_outer_finger_joint"
     type="fixed">
