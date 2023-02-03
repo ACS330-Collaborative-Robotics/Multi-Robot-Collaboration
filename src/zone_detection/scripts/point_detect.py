@@ -4,7 +4,7 @@
 # Author: Andrei Codin (aacodin1@sheffield.ac.uk)
 
 import rospy
-#import tf
+import tf2_ros
 from shapely.geometry import Point, Polygon
 from zone_controller.msg import Zones
 
@@ -41,10 +41,12 @@ def listener():
         rospy.init_node('point_detect', anonymous=True)
         rospy.Subscriber("zones", Zones, callback)
 
-        #mover6_a_data = tf.TransformListener()
-        #mover6_b_data = tf.TransformListener()
-        #(transl_a,rot_a) = mover6_a_data.lookupTransform('/link6', '/base_link', rospy.Time(0))
-        #(transl_b,rot_b) = mover6_b_data.lookupTransform('/link6', '/base_link', rospy.Time(0))
+        # Use TF for forward kinematics to find joint positions
+        tfBuffer = tf2_ros.Buffer()
+        listener = tf2_ros.TransformListener(tfBuffer)
+
+        trans = tfBuffer.lookup_transform('mover6_a/link6', 'mover6_a/link5', rospy.Time()) # Calculate transfrom from robot base to link 6
+        print(trans)
 
         rospy.spin()
 
