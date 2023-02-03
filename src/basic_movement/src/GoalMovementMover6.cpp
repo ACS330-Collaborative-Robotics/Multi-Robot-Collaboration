@@ -2,6 +2,7 @@
 #include "std_msgs/String.h"
 #include "control_msgs/JointJog.h"
 #include "sensor_msgs/JointState.h"
+#include "basic_movement/Joints.h"
 
 #include <sstream>
 #include <iostream>
@@ -45,7 +46,7 @@ void jointsCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 	ROS_INFO("Received State %f\t%f\t%f\t%f\t%f\t%f", joint1, joint2, joint3, joint4, joint5, joint6);
 }
 
-/*
+
 // Reviving Joint Demands from topic - assinging to veriable - ROSINFO to terminal
 void listenerJointAngles(const basic_movement::Joints::ConstPtr& msg){
 	jointdemand_1=msg->joints[0];
@@ -56,17 +57,8 @@ void listenerJointAngles(const basic_movement::Joints::ConstPtr& msg){
 	jointdemand_6=msg->joints[5];
 	ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
 	know_demands = true;
-}*/
-void listenerJointAngles(){
-	jointdemand_1=20;
-	jointdemand_2=0;
-	jointdemand_3=0;
-	jointdemand_4=0;
-	jointdemand_5=0;
-	jointdemand_6=0;
-	ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
-	know_demands = true;
 }
+
 
 int main(int argc, char **argv) {
 	// setting up veriables
@@ -82,8 +74,7 @@ int main(int argc, char **argv) {
 
 	//Creating Subscribers
 	ros::Subscriber chatter_sub = n.subscribe("/joint_states", 1000, jointsCallback);
-	//ros::Subscriber joint_demands = n.subscribe("/mover6_a/physical/joint_angles", 10000, listenerJointAngles);
-	listenerJointAngles();
+	ros::Subscriber joint_demands = n.subscribe("/mover6_a/physical/joint_angles", 10000, listenerJointAngles);
 	
 	ros::Rate loop_rate(10);
 
@@ -110,7 +101,7 @@ int main(int argc, char **argv) {
 				// Moving joints
 				if(abs(joint_demands[i]-jointpos[i])>accuracy) {
 
-					ROS_INFO("Setting message Go to set point");
+					ROS_INFO("Setting message Go to set point point joint %d",i);
 					control_msgs::JointJog msg_start;
 					std::stringstream ss;
 					ss << joints[i];
@@ -119,7 +110,6 @@ int main(int argc, char **argv) {
 					msg_start.velocities.push_back(joint_gains[i]*(joint_demands[i]-jointpos[i])/abs(joint_demands[i]-jointpos[i]));
 					msg_start.duration=5; //Unfortunately duration isn't implemented...
 
-					ROS_INFO("Sending message");
 					chatter_pub.publish(msg_start);
 					moving_state = true;
 				}
@@ -127,7 +117,7 @@ int main(int argc, char **argv) {
 				// Stopping joints
 				if(abs(joint_demands[i]-jointpos[i])<accuracy) {
 
-					ROS_INFO("Setting message Stay Still");
+					ROS_INFO("Setting message Stay Still point joint %d",i);
 					control_msgs::JointJog msg_start;
 					std::stringstream ss;
 					ss << joints[i];
@@ -136,7 +126,6 @@ int main(int argc, char **argv) {
 					msg_start.velocities.push_back(0);
 					msg_start.duration=5; //Unfortunately duration isn't implemented...
 
-					ROS_INFO("Sending message");
 					chatter_pub.publish(msg_start);
 				}
 				

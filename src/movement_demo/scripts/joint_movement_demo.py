@@ -19,7 +19,7 @@ def talker():
     points = 9
 
     rospy.init_node('joint_movement_demo')
-    T_period = 2
+    T_period = 10
     rate = rospy.Rate(1/T_period)
 
     currentPoint = 0
@@ -29,9 +29,9 @@ def talker():
             pos = []
             for joint in range(6):
                 pos.append(currentPoint*(limits[joint][1] - limits[joint][0])/(points-1) + limits[joint][0])#*3.14/180 #converts to radians
-            rospy.loginfo(pos)
             robot.publish(pos)
         currentPoint = (currentPoint + 1) % points
+        rospy.loginfo(pos)
         rate.sleep()
 
 if __name__ == '__main__':

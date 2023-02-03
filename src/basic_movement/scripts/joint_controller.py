@@ -6,7 +6,8 @@ import random
 import math
 from basic_movement.msg import Joints
 
-joint_angles = []
+enablePhiscal = True
+enableSIM = False
 
 
 ## TODO:
@@ -21,51 +22,48 @@ joint_angles = []
 # check acuracy and gairns are complatable
 # https://answers.ros.org/question/290992/parallel-execution-of-same-ros-nodes/
 
+def main():
+    rospy.init_node('joint_controller', anonymous=True)
+    ##recive angles
+    rate = rospy.Rate(0.1) # 10hz
+    while not rospy.is_shutdown():
+        #subsibers for phiscal and sim
+        global enablePhiscal
+        enablePhiscal = True
+        global enableSIM
+        enableSIM = False
+        #
+        rospy.Subscriber("/mover6_a/joint_angles", Joints, callback)
+        ## ros loop
+        rate.sleep()
+        rospy.spin()
+
 def callback(data):
     global joint_angles
     joint_angles = list(data.joints)
-    rospy.loginfo(rospy.get_caller_id() + " Angles Recived: %s", joint_angles)
+    rospy.loginfo("Angles Recived: %s", joint_angles)
 
-
-def talker():
-    # Shouting where i want the robot to move to then changeing to diffent position after getting there
-    # Joint lims in radians [[-2.269,2.269],[-0.873,1.047],[-1.920,1.309],[-2.443,2.443],[-1.221,1.047],[-2.094,2.094]]
-
-    # Engabling the Sim and Phiscal
-    enablePhiscal = True
-    enableSIM = False
-
-    # Reciving angles
-
-    # Cheak robot runnning
-    rospy.init_node('joint_controller', anonymous=True)
-    
-
-    pubPhisic = rospy.Publisher('/mover6_a/physical/joint_angles', Joints, queue_size=10)
-    rate = rospy.Rate(0.1) # 10hz
-    while not rospy.is_shutdown():
-        # Cheaking system is enabled
-
-
-        # Getting Demand Angels
-        rospy.Subscriber("/mover6_a/joint_angles", Joints, callback)
-        
-        # Telling the Phisical robot to move
-        if enablePhiscal:
-            rospy.loginfo("Angles Published: %s", joint_angles)
-            pubPhisic.publish(joint_angles)
+    # Telling phiscail to move
+    if enablePhiscal:
+        pubPhisic = rospy.Publisher('/mover6_a/physical/joint_angles', Joints, queue_size=10)
+        rospy.loginfo("Angles Published to phical: %s", joint_angles)
+        pubPhisic.publish(joint_angles)
             
         
-        # Telling the Sim to move
-        if enableSIM:
-            for joint_num in range(len(joint_angles)):
-                pubSim = rospy.Publisher("/mover6_a/joint" + str(joint_num) + "_position_controller/command", Float64, queue_size=10)
-                pubSim.publish(joint_angles[joint_num])
+    # Telling the Sim to move
+    if enableSIM:
+        for joint_num in range(len(joint_angles)):
+            pubSim = rospy.Publisher("/mover6_a/joint" + str(joint_num) + "_position_controller/command", Float64, queue_size=10)
+            pubSim.publish(joint_angles[joint_num])
 
-        rate.sleep()
+
+    # Joint lims in radians [[-2.269,2.269],[-0.873,1.047],[-1.920,1.309],[-2.443,2.443],[-1.221,1.047],[-2.094,2.094]]
+        
+
+        
 
 if __name__ == '__main__':
     try:
-        talker()
+        main()
     except rospy.ROSInterruptException:
         pass
