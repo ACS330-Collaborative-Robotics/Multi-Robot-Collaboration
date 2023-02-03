@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 			float joint_demands[6]= {jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6};
 			float jointpos[6] = {joint1, joint2, joint3, joint4, joint5, joint6}; 
 
-			// Accuracy of angles
+			// Accuracy of angles in radians
 			float accuracy = 0.04;
 			
 			// Gains of robots (Speeds) joint 1-6, joint 5 and 6 cant go faster
