@@ -4,7 +4,7 @@ import rospy
 from std_msgs.msg import String
 import random
 import math
-from basic_movement.msg import Joints
+from custom_msgs.msg import Joints
 
 enablePhiscal = True
 enableSIM = False

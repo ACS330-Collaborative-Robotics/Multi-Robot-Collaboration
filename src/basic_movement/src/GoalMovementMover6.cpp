@@ -2,7 +2,7 @@
 #include "std_msgs/String.h"
 #include "control_msgs/JointJog.h"
 #include "sensor_msgs/JointState.h"
-#include "basic_movement/Joints.h"
+#include "custom_msgs/Joints.h"
 
 #include <sstream>
 #include <iostream>
@@ -48,7 +48,7 @@ void jointsCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 
 
 // Reviving Joint Demands from topic - assinging to veriable - ROSINFO to terminal
-void listenerJointAngles(const basic_movement::Joints::ConstPtr& msg){
+void listenerJointAngles(const custom_msgs::Joints::ConstPtr& msg){
 	jointdemand_1=msg->joints[0];
 	jointdemand_2=msg->joints[1];
 	jointdemand_3=msg->joints[2];
