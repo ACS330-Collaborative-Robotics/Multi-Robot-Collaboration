@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import String
-from basic_movement.msg import Joints
+from custom_msgs.msg import Joints
 
 def callback(data):
     joint_demands = list(data.joints)
