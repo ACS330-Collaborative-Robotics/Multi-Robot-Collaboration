@@ -112,9 +112,9 @@ add_executable(BasicMovement
   src/BasicMovement.cpp) 
 target_link_libraries(BasicMovement ${catkin_LIBRARIES})
 
-add_executable(GoalMovementMover6 
-  src/GoalMovementMover6.cpp) 
-target_link_libraries(GoalMovementMover6 ${catkin_LIBRARIES})
+add_executable(mover6_driver 
+  src/mover6_driver.cpp) 
+target_link_libraries(mover6_driver ${catkin_LIBRARIES})
 
 add_executable(listenerincpp 
   src/listenerincpp.cpp) 
