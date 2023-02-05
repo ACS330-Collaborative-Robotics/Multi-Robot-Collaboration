@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import String, Float64
 import random
 import math
 from custom_msgs.msg import Joints
@@ -32,7 +32,7 @@ def main():
         global enablePhiscal
         enablePhiscal = True
         global enableSIM
-        enableSIM = False
+        enableSIM = True
         #
         rospy.Subscriber("/mover6_a/joint_angles", Joints, callback)
         ## ros loop

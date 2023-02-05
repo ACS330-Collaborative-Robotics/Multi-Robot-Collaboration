@@ -10,10 +10,7 @@ from pathlib import Path
 
 from inv_kinematics.srv import InvKin
 from std_msgs.msg import Float64
-from basic_movement.msg import Joints
-
-## TODO:
-# Change publish location
+from custom_msgs.msg import Joints
 
 def service(req):
     # x y z Co-ordinates
@@ -38,7 +35,7 @@ def service(req):
     joints = chain.inverse_kinematics(target_position, target_orientation, orientation_mode="all")
 
     # Publish joint positions
-    pub = rospy.Publisher(req.state.model_name + "/joint_angles",Joints, queue_size=10)
+    pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
     pub.publish(joints)
 
     return True
