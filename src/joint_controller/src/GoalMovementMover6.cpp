@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 // TODO:
-// Add Gripper Control - //#include "basic_movement/Joints.h"
+// Add Gripper Control - //#include "custom_msgs/Joints.h"
 // Add topics to readme
 
 

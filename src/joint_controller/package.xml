@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>basic_movement</name>
+  <name>joint_controller</name>
   <version>0.0.0</version>
 
    <author>Jonathan Aitken</author>

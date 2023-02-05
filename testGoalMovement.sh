@@ -1,1 +1,1 @@
-rosrun basic_movement GoalMovementMover6
+rosrun joint_controller GoalMovementMover6

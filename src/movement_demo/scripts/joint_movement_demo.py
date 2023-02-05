@@ -5,7 +5,7 @@
 
 import rospy
 from std_msgs.msg import Float64
-from basic_movement.msg import Joints
+from custom_msgs.msg import Joints
 
 def talker():
     robot_namespaces = ["mover6_a", "mover6_b"]
