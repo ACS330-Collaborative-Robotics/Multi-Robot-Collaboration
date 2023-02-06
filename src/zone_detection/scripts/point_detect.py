@@ -38,20 +38,21 @@ def callback(data):
     print(pos_b2)
 
 def listener():
-    while not rospy.is_shutdown():
-        rospy.init_node('point_detect', anonymous=True)
-        rospy.Subscriber("zones", Zones, callback)
+    rospy.init_node('point_detect')
+    rospy.Subscriber("zones", Zones, callback)
 
-        # Use TF for forward kinematics to find joint positions
-        listener = tf.TransformListener()
-        try:
-            trans = listener.lookupTransform('mover6_a/link6', 'mover6_a/link5', rospy.Time()) # Calculate transfrom from robot base to link 6
-            print(listener.canTransform('mover6_a/link6', 'mover6_a/link5', rospy.Time()))
-            time.sleep(0.5) 
-            print(trans)
-        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            continue
-        rospy.spin()
+    # Use TF for forward kinematics to find joint positions
+    listener = tf.TransformListener()
+
+    while listener.canTransform('mover6_a/world', 'mover6_a/link6', rospy.Time(0)) == False:
+        rospy.sleep(0.01)
+
+    try:
+        (trans,rot) = listener.lookupTransform('mover6_a/world', 'mover6_a/link6', rospy.Time(0)) # Calculate transfrom from robot base to link 6
+        print(trans)
+        print(rot)
+    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        print("Error.")
 
 
 if __name__ == '__main__':
