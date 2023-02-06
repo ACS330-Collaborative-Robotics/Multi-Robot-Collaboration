@@ -37,7 +37,7 @@ def main():
 def callback(data):
     global joint_angles
     joint_angles = list(data.joints)
-    rospy.loginfo("Angles Recived: %s", joint_angles)
+    #rospy.loginfo("Angles Recived: %s", joint_angles)
 
     # Telling Physical to move
     if enablePhysical:
