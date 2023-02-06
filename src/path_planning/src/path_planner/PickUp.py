@@ -2,11 +2,11 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
+from path_planner import Movement
 
-class PickUp:
-    def __init__(self, serv_helper, movement):
+class PickUp(Movement.Movement):
+    def __init__(self, serv_helper):
         self.serv_helper = serv_helper
-        self.movement = movement
     
     def pick(self, block_name):
         """ Pick up specified block
@@ -25,7 +25,7 @@ class PickUp:
         pose.orientation.z = 0
         pose.orientation.w = 0
         
-        if self.movement.move(pose):
+        if self.move(pose):
             rospy.loginfo("Path Planner - Succesfully positioned above block.")
 
     def moveGripper(self, state):

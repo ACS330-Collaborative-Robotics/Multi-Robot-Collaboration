@@ -4,11 +4,13 @@
 import rospy
 import tf_conversions
 
+from geometry_msgs.msg import Pose
+
 class Movement:
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
     
-    def move(self, pos):
+    def move(self, pos:Pose):
         """ Safely move to desired position using IK, checking robot will stay within zone
 
         INPUT: Pose pos
