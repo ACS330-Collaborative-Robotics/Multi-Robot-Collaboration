@@ -6,6 +6,7 @@
 import rospy
 from std_msgs.msg import Float64
 from custom_msgs.msg import Joints
+from sys import argv
 
 ## TODO:
 # Add details to readMe
@@ -20,10 +21,10 @@ def main():
     enableSimulation = True
     #Getting robot name pryamiter
     global robot_name
-    
-    robot_name =  "/" + rospy.get_param("/robo_ns")
+
+    robot_name =  "/" + argv[1]
     print("----------------------------------")
-    print(robot_name)
+    print(robot_name + " Initialised.")
     print("----------------------------------")
 
     # Setup subscriber for Joint Angle demands
