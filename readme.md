@@ -8,11 +8,11 @@ This project shall look at the creation of a sophisticated model-based control a
 
 ## ROS/Gazebo simulation build
 
-1. Navigate to `~/catkin_ws` in Terminal and clone this GitHub repo with `git clone https://github.com/ACS330-Collaborative-Robotics/Gazebo_Sim.git`
+1. Navigate to `~/catkin_ws` in Ubuntu Terminal.
 
-2. Only the `src` and build scripts are stored in the GH Repo so now build the `build` and `devel` folder by running `./build_sim.sh`. **NOTE: `cpr-robot` package is not built with this script to reduce build time.** To build `cpr-robot`, delete `build` and `devel` and run `catkin_make`.
+2. Build the project by running `catkin_make`. Only the `src` and build scripts are stored in the GH Repo so this will build the `build` and `devel` folders.
 
-3. Each node is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each node (usually) has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
+3. Each set of nodes is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each group of nodes has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
 
 ## Startup Instructions
 
@@ -50,8 +50,9 @@ Robot Joints - `1 -> 6`
 | `./run_demo.sh` |  |  |  |
 | Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
 | Inverse kinematics | inv_kinematics | Runs service `inverse-kinematics` and publish inverse kinematics to relevant joint position controller | `rosrun inv_kinematics inv_kin_srv.py` |
+| Joint Controller | joint_controller | Controls whether or not simulation and physical robots recieve commands as required. Runs once per robot. | `rosrun joint_controller joint_controller.py` |
 | Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
-| Path Planner | path_planning | Mega node using OOP to plan and execute pick and place operations. | `rosrun path_planning path_plan.py`
+| Path Planner | path_planning | Mega node using OOP to plan and execute pick and place operations. | `rosrun path_planning path_plan.py` |
 
 ## Additional nodes
 
@@ -59,7 +60,9 @@ Robot Joints - `1 -> 6`
 | - | - | - | - |
 | Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
 | Kinematics Movement Demo | movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
-| Old Inverse kinematics (Depreciated) | matlab_global_node_XXXXX | Listen on `/command_pos` for xyz coords and publish inverse kinematics to relevant joint position controller | `inv_kin_ros` in MATLAB |
+| Mover6 Driver | joint_controller | Relays data from physical robot demand position to physical robot including change of units. | `rosrun joint_controller mover6_driver` |
+| Fixed Zone Controller | zone_controller | Publishes a pair of fixed zones for testing purposes. | `rosrun zone_controller fixed_zone.py` |
+| Zone Point Detection Demo (Including TF Forward Kinematics demo) | zone_detection | Checks whether a point is in each published zone. Also demonstrate forward kinematics using Transform Trees. | `rosrun zone_detection point_detect.py` |
 
 ## Topics
 
@@ -114,7 +117,7 @@ sudo apt update
 sudo apt install ros-noetic-desktop-full
 ```
 
-Setup terminal to run ROS commands properly:
+Next, setup terminal to run ROS commands properly as outlined below. `pico` opens a Command Line text editor which will allow you to edit the `.bashrc` files and add the relevant lines. The pico editor is navigated with the arrow keys and you can type as normal. To save press `Ctrl+X` then `Enter`.
 ```bash
 cd
 pico .bashrc # Or open this text file in a text editor
@@ -128,8 +131,9 @@ Close the terminal and reopen it.
 ## Dependencies Install
 
 ```bash
+sudo apt-get update
 sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
-sudo apt python3-pip
+sudo apt install python3-pip
 pip install ikpy
 pip install numpy --upgrade
 ```
@@ -156,6 +160,17 @@ Log into GitHub through VSCode then setup username and email using:
 git config --global user.name "USERNAME"
 git config --global user.email "EMAIL"
 ```
+
+## Reccomended VS Code Extension
+
+There are a few VSCode exentension that will make your life much easier so I would reccomend installing the ones listed below using the Extensions tab on the right.
+ - WSL - This extension makes VSCode play nicely with the WSL system. This will make the terminal in VSCode into an Ubuntu terminal too which makes running commands much easier.
+ - GitLens - Makes VSCode and GitHub play nicely together.
+ - C/C++
+ - Python
+ - Pylance
+ - Todo Tree
+ - A nice theme - I reccomend One Dark Pro ;)
 
 ## Run Software
 
@@ -196,10 +211,13 @@ source /opt/ros/noetic/setup.bash
 source ~/catkin_ws/devel/setup.bash
 ```
 
+**CPR robot not conetting/working after running ./reconnect_robo.sh**
+Probably dont have ifconfig
+```
+apt install net-tools
+```
+
+
 **Failed to launch joint_position_controller**
 
 Need to install ros-control and ros-controllers using: `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
-
-**MATLAB not setup for ROS**
-
-Requires `sudo apt install python3.9 python3.9-venv` and path set in MATLAB in `preferences>ROS Toolbox>Open ROS Toolbox Prefences`.
