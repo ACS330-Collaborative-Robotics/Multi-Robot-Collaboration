@@ -1,20 +1,20 @@
-# ACS330 Collaborative Robotics - Group 1
+# ACS330 Multi-Robot Collaboration - Group 1
 
-This repository contains:
-- ROS Driver for Mover6
-- Gazebo Simulation of System
+Efficient coordination of a multi-robot team is the key challenge in robotic application domains such as manufacturing, construction and service robotics. In cooperative manipulation tasks, the system dynamics result from the complex interaction of several manipulators handling a common object. However, the widespread use of robots in flexible factories  is limited by the robots’ inability to safely collaborate with one another. The robots’ incapacity to coordinate, communicate, and understand their actions, roles, and task statuses thus decreases the robots’ usefulness in applications where tasks cannot be completed by a single robot. This limitation is driven by both the absence of tools and protocols needed for describing collaborative functions.
 
-## How to build
+This project shall look at the creation of a sophisticated model-based control algorithm for the effective and efficient interaction of multiple robots into their production processes.
 
-### ROS/Gazebo simulation
+# How to Build and Run
 
-1. Navigate to `~/catkin_ws` in Terminal and clone this GitHub repo with `git clone https://github.com/ACS330-Collaborative-Robotics/Gazebo_Sim.git`
+## ROS/Gazebo simulation build
 
-2. Only the `src` and build scripts are stored in the GH Repo so now build the `build` and `devel` folder by running `./build_sim.sh`. **NOTE: `cpr-robot` package is not built with this script to reduce build time.** To build `cpr-robot`, delete `build` and `devel` and run `catkin_make`.
+1. Navigate to `~/catkin_ws` in Ubuntu Terminal.
 
-3. Each node is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each node (usually) has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
+2. Build the project by running `catkin_make`. Only the `src` and build scripts are stored in the GH Repo so this will build the `build` and `devel` folders.
 
-#### Startup Instructions
+3. Each set of nodes is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each group of nodes has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
+
+## Startup Instructions
 
 Run each of the following in its own terminal tab, after running `cd ~/catkin_ws`.
 
@@ -32,13 +32,13 @@ catkin_make install
 roslaunch cpr_robot CPRMover6.launch
 ```
 
-## ROS Information
+# ROS Information
 
 Robot Namespaces - `robot_ns = ["mover6_a", "mover6_b]`
 
 Robot Joints - `1 -> 6`
 
-### Core nodes
+## Core nodes
 
 | Nickname | Package | Description | Startup Script |
 | - | - | - | - |
@@ -54,16 +54,17 @@ Robot Joints - `1 -> 6`
 | Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
 | Path Planner | path_planning | Mega node using OOP to plan and execute pick and place operations. | `rosrun path_planning path_plan.py` |
 
-### Additional nodes
+## Additional nodes
 
 | Nickname | Package | Description | Startup Script |
 | - | - | - | - |
 | Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
 | Kinematics Movement Demo | movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
-| Old Inverse kinematics (Depreciated) | matlab_global_node_XXXXX | Listen on `/command_pos` for xyz coords and publish inverse kinematics to relevant joint position controller | `inv_kin_ros` in MATLAB |
 | Mover6 Driver | joint_controller | Relays data from physical robot demand position to physical robot including change of units. | `rosrun joint_controller mover6_driver` |
+| Fixed Zone Controller | zone_controller | Publishes a pair of fixed zones for testing purposes. | `rosrun zone_controller fixed_zone.py` |
+| Zone Point Detection Demo (Including TF Forward Kinematics demo) | zone_detection | Checks whether a point is in each published zone. Also demonstrate forward kinematics using Transform Trees. | `rosrun zone_detection point_detect.py` |
 
-### Topics
+## Topics
 
 | Nickname | Name | Data Format | Python Data Format Import | Publishers | Subscribers |
 | - | - | - | - | - | - |
@@ -72,7 +73,7 @@ Robot Joints - `1 -> 6`
 | Next block to pick | `robot_ns/next_block` | `std_msgs Strings` | `from std_msgs.msg import String` | `assignment_selection block_selection.py` | `movement_demo basic_kinematic_movement.py` |
 | Gazebo Joint Position Controller | `robot_ns/jointX_position_controller/command` | `from std_msgs.msg import Float64` | `inv_kinematics inv_kin_srv.py`, `movement_demo joint_movement_demo.py`, `inv_kin_ros.m` | Gazebo |
 
-### Services
+## Services
 
 | Nickname | Name | Location | Python Import | Input Format | Response Format |
 | - | - | - | - | - | - |
@@ -81,7 +82,101 @@ Robot Joints - `1 -> 6`
 | ikpy Inverse Kinematics | `inverse_kinematics` | `inv_kinematics inv_kin_srv.py` | `from inv_kinematics.srv import InvKin` | `gazebo_msgs ModelState` | `bool success` |
 | Path Planner | `path_planner` | `path_planning path_plan.py` | `from path_planning.srv import PathPlan` | `string robot-name`, `geometry_msg/Pose end_pos`, `string block_name` | `bool success` |
 
-## Useful Links
+# Run on Windows through Windows Subsystems for Linux
+
+The project can be run on Windows using WSL2 based on [this guide from DR Tom Howard TuoS](https://github.com/tom-howard/COM2009/wiki/Working-On-Your-Own-Computer#installing-on-windows-using-wsl)
+
+## Ubuntu (Linux) Install
+
+Windows 11 works best but can using Windows 10 with more effort.
+
+Install Windows Subsystems for Linux 2 using Ubuntu 20.04 Distribution with: `wsl --install -d Ubuntu-20.04` in Terminal. Use Windows Terminal, not command prompt! You may need to install Windows Terminal [here](https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701?hl=en-gb&gl=gb).
+
+
+Set a short username i.e. your first name and a password you can remember and type quickly - it doesn't need to be massively secure!
+
+Reboot computer.
+
+Type `wsl --status` and make sure it returns:
+```bash
+Default Distribution: Ubuntu-20.04
+Default Version: 2
+```
+
+Now we're gonna get to the Ubuntu command line and install ROS. 
+
+Go to Terminal and click the down arrow in the top tab bar, then click `Ubuntu 20.04`. You should have a new terminal tab which says `Username@PC_Name`, this is the Ubuntu terminal.
+
+## ROS Install
+
+Now, install ROS by running each of the following commands:
+```bash
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+sudo apt update
+sudo apt install ros-noetic-desktop-full
+```
+
+Next, setup terminal to run ROS commands properly as outlined below. `pico` opens a Command Line text editor which will allow you to edit the `.bashrc` files and add the relevant lines. The pico editor is navigated with the arrow keys and you can type as normal. To save press `Ctrl+X` then `Enter`.
+```bash
+cd
+pico .bashrc # Or open this text file in a text editor
+# Add following to the end of the file
+source /opt/ros/noetic/setup.bash
+source ~/catkin_ws/devel/setup.bash
+```
+
+Close the terminal and reopen it.
+
+## Dependencies Install
+
+```bash
+sudo apt-get update
+sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
+sudo apt install python3-pip
+pip install ikpy
+pip install numpy --upgrade
+```
+
+## Clone repository
+
+```bash
+mkdir ~/catkin_ws
+cd ~/catkin_ws
+git clone https://github.com/ACS330-Collaborative-Robotics/Multi-Robot-Collaboration.git .
+```
+
+## Open in Editor
+
+Use VSCode which can be downloaded [here](https://code.visualstudio.com/download).
+
+To open run `code .` in Ubuntu terminal in `~/catkin_ws`
+
+## Setup GitHub credentials
+
+Log into GitHub through VSCode then setup username and email using:
+
+```bash
+git config --global user.name "USERNAME"
+git config --global user.email "EMAIL"
+```
+
+## Reccomended VS Code Extension
+
+There are a few VSCode exentension that will make your life much easier so I would reccomend installing the ones listed below using the Extensions tab on the right.
+ - WSL - This extension makes VSCode play nicely with the WSL system. This will make the terminal in VSCode into an Ubuntu terminal too which makes running commands much easier.
+ - GitLens - Makes VSCode and GitHub play nicely together.
+ - C/C++
+ - Python
+ - Pylance
+ - Todo Tree
+ - A nice theme - I reccomend One Dark Pro ;)
+
+## Run Software
+
+See *How to Build* above.
+
+# Useful Links
 
 - [CPR Robots Driver Repo](https://github.com/CPR-Robots/cpr_robot)
 - [ROS Wiki](http://wiki.ros.org/Documentation)
@@ -89,7 +184,7 @@ Robot Joints - `1 -> 6`
 - [UR5 ROS Gazebo](https://github.com/lihuang3/ur5_ROS-Gazebo)
 - [Gazebo Message Docs](http://docs.ros.org/en/noetic/api/gazebo_msgs/html/index-msg.html)
 
-### Gazebo Tutorials
+## Gazebo Tutorials
 
 - [ROS integration overview](https://classic.gazebosim.org/tutorials?tut=ros_overview) 
 - [Using roslaunch](https://classic.gazebosim.org/tutorials?tut=ros_roslaunch&cat=connect_ros)
@@ -100,7 +195,7 @@ Robot Joints - `1 -> 6`
 - [Creating and Spawning Custom URDF Objects in Simulation](http://wiki.ros.org/simulator_gazebo/Tutorials/SpawningObjectInSimulation)
 - [Manipulate and interact with simulation and simulated objects](http://wiki.ros.org/simulator_gazebo/Tutorials/Gazebo_ROS_API)
 
-## Fixes
+# Fixes
 
 **Gazebo not launching properly**
 
@@ -126,7 +221,3 @@ apt install net-tools
 **Failed to launch joint_position_controller**
 
 Need to install ros-control and ros-controllers using: `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
-
-**MATLAB not setup for ROS**
-
-Requires `sudo apt install python3.9 python3.9-venv` and path set in MATLAB in `preferences>ROS Toolbox>Open ROS Toolbox Prefences`.
