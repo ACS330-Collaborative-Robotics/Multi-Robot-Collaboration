@@ -42,7 +42,7 @@ def callback(data):
     # Telling Physical to move
     if enablePhysical:
         pubPhysical = rospy.Publisher(robot_name + "/physical/joint_angles", Joints, queue_size=10)
-        rospy.loginfo("Angles Published to physical: %s", joint_angles)
+        #rospy.loginfo("Angles Published to physical: %s", joint_angles)
         pubPhysical.publish(joint_angles)
             
     # Telling Simulation to move
