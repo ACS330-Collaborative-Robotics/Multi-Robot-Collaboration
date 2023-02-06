@@ -49,6 +49,10 @@ def listener():
 
     try:
         (trans,rot) = listener.lookupTransform('mover6_a/world', 'mover6_a/link6', rospy.Time(0)) # Calculate transfrom from robot base to link 6
+
+        # Tranform from world to robot base
+        #(trans,rot) = listener.lookupTransform('world', 'mover6_a_base', rospy.Time(0))
+
         print(trans)
         print(rot)
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
