@@ -125,3 +125,7 @@ catkin_install_python(PROGRAMS
   scripts/listener.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+add_dependencies(mover6_driver ${catkin_EXPORTED_TARGETS})
+
+add_dependencies(listenerincpp ${catkin_EXPORTED_TARGETS})
