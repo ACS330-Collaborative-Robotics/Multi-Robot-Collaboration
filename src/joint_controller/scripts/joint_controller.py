@@ -21,7 +21,16 @@ def main():
     enableSimulation = True
 
     # Setup subscriber for Joint Angle demands
-    rospy.Subscriber("/mover6_a/joint_angles", Joints, callback)
+    robot_namespaces = ["mover6_a", "mover6_b"]
+    pub = []
+    for robot in robot_namespaces:
+        pub.append(rospy.Publisher(robot + "/joint_angles", Joints, queue_size=10))
+    
+    while not rospy.is_shutdown():
+        for robot in pub:
+            pos = []
+        rospy.Subscriber("/mover6_a/joint_angles", Joints, callback)
+        rospy.Subscriber("/mover6_b/joint_angles", Joints, callback)
     #TODO: Add multirobot support
 
     # Wait until a callback happens
@@ -30,12 +39,12 @@ def main():
 def callback(data):
     global joint_angles
     joint_angles = list(data.joints)
-    rospy.loginfo("Angles Recived: %s", joint_angles)
+    #rospy.loginfo("Angles Recived: %s", joint_angles)
 
     # Telling Physical to move
     if enablePhysical:
         pubPhysical = rospy.Publisher('/mover6_a/physical/joint_angles', Joints, queue_size=10)
-        rospy.loginfo("Angles Published to physical: %s", joint_angles)
+        #rospy.loginfo("Angles Published to physical: %s", joint_angles)
         pubPhysical.publish(joint_angles)
             
     # Telling Simulation to move

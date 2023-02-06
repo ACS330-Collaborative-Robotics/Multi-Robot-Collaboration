@@ -28,10 +28,10 @@ def talker():
         for robot in pub:
             pos = []
             for joint in range(6):
-                pos.append(currentPoint*(limits[joint][1] - limits[joint][0])/(points-1) + limits[joint][0])#*3.14/180 #converts to radians
+                pos.append(currentPoint*(limits[joint][1] - limits[joint][0])/(points-1) + limits[joint][0])*3.14/180 #converts to radians
             robot.publish(pos)
         currentPoint = (currentPoint + 1) % points
-        rospy.loginfo(pos)
+        #rospy.loginfo(pos)
         rate.sleep()
 
 if __name__ == '__main__':

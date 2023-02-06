@@ -43,19 +43,19 @@ void jointsCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 		i++;
 	}
 	know_states = true;
-	ROS_INFO("Received State %f\t%f\t%f\t%f\t%f\t%f", joint1, joint2, joint3, joint4, joint5, joint6);
+	//ROS_INFO("Received State %f\t%f\t%f\t%f\t%f\t%f", joint1, joint2, joint3, joint4, joint5, joint6);
 }
 
 
 // Reviving Joint Demands from topic - assinging to veriable - ROSINFO to terminal
 void listenerJointAngles(const custom_msgs::Joints::ConstPtr& msg){
-	jointdemand_1=msg->joints[0];
-	jointdemand_2=msg->joints[1];
-	jointdemand_3=msg->joints[2];
-	jointdemand_4=msg->joints[3];
-	jointdemand_5=msg->joints[4];
-	jointdemand_6=msg->joints[5];
-	ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
+	jointdemand_1=msg->joints[0]*3.14/180;
+	jointdemand_2=msg->joints[1]*3.14/180;
+	jointdemand_3=msg->joints[2]*3.14/180;
+	jointdemand_4=msg->joints[3]*3.14/180;
+	jointdemand_5=msg->joints[4]*3.14/180;
+	jointdemand_6=msg->joints[5]*3.14/180;
+	//ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
 	know_demands = true;
 }
 
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
 				// Moving joints
 				if(abs(joint_demands[i]-jointpos[i])>accuracy) {
 
-					ROS_INFO("Setting message Go to set point point joint %d",i);
+					//ROS_INFO("Setting message Go to set point point joint %d",i);
 					control_msgs::JointJog msg_start;
 					std::stringstream ss;
 					ss << joints[i];
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
 				// Stopping joints
 				if(abs(joint_demands[i]-jointpos[i])<accuracy) {
 
-					ROS_INFO("Setting message Stay Still point joint %d",i);
+					//ROS_INFO("Setting message Stay Still point joint %d",i);
 					control_msgs::JointJog msg_start;
 					std::stringstream ss;
 					ss << joints[i];
@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
 				ss << "Stationery";
 			}
 			msg.data = ss.str();
-			ROS_INFO("%s", msg.data.c_str());
+			//ROS_INFO("%s", msg.data.c_str());
 			moving.publish(msg);
 			ros::spinOnce();
 
