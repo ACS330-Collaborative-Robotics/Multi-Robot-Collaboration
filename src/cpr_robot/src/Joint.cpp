@@ -83,7 +83,7 @@ namespace cpr_robot
         m_CurrentEffort=0.0;
         m_CurrentVelocity=0.0;
         m_DesiredVelocity=0.0;
-        m_JointJogSubscriber=m_Node.subscribe("/JointJog",10,&Joint::JointJogCallback, this);
+        m_JointJogSubscriber=m_Node.subscribe("JointJog",10,&Joint::JointJogCallback, this);
     }
     
     //! \brief Callback for received messages on the /JointJog ROS topic.
