@@ -13,7 +13,7 @@ def talker():
     set_model_state_serv = rospy.ServiceProxy('gazebo/set_model_state', SetModelState)
     
 
-    model_name = "block9" #TODO: Make this work for robots
+    model_name = "mover6_a" #TODO: Make this work for robots
     reference_frame = "world"
     data = get_model_state_serv(model_name, reference_frame)
     print(data)
