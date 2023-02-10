@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="GreiferZF_2016">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.000716667951646768 -0.0220467546898447 -0.00525012125053753"
+        rpy="0 0 0" />
+      <mass
+        value="0.0420250780697651" />
+      <inertia
+        ixx="7.03835468352771E-06"
+        ixy="4.54494835168959E-08"
+        ixz="-1.34095035418891E-08"
+        iyy="8.07960101558684E-06"
+        iyz="1.78358247621345E-07"
+        izz="9.6532965389247E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://GreiferZF_2016/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://GreiferZF_2016/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="gripper_a">
+    <inertial>
+      <origin
+        xyz="-2.63929004545528E-05 -0.00428504497802679 0.0208602404512305"
+        rpy="0 0 0" />
+      <mass
+        value="0.00998043833114313" />
+      <inertia
+        ixx="3.94265701566114E-06"
+        ixy="-1.29448842700966E-11"
+        ixz="2.24074768068578E-11"
+        iyy="3.66921985815796E-06"
+        iyz="1.92289374934855E-07"
+        izz="5.30574201923679E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://GreiferZF_2016/meshes/gripper_a.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.101960784313725 0.101960784313725 0.101960784313725 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://GreiferZF_2016/meshes/gripper_a.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_a"
+    type="revolute">
+    <origin
+      xyz="-0.0105 0.00085663 -0.029246"
+      rpy="-2.8041 0 1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="gripper_a" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="gripper_b">
+    <inertial>
+      <origin
+        xyz="8.09543524907481E-08 -0.00428504497802674 0.0208602404512296"
+        rpy="0 0 0" />
+      <mass
+        value="0.00998043833114302" />
+      <inertia
+        ixx="3.94265701565814E-06"
+        ixy="-1.29448837528763E-11"
+        ixz="2.24074773134326E-11"
+        iyy="3.66921985809367E-06"
+        iyz="1.92289374934843E-07"
+        izz="5.30574201861358E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://GreiferZF_2016/meshes/gripper_b.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://GreiferZF_2016/meshes/gripper_b.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_b"
+    type="revolute">
+    <origin
+      xyz="0.0105 0 -0.029246"
+      rpy="-2.8041 0 -1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="gripper_b" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+    <mimic
+      joint="joint_a"
+      multiplier="1"
+      offset="0" />
+  </joint>
+</robot>
