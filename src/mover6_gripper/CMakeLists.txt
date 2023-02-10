@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(GreiferZF_2016)
+project(mover6_gripper)
 
 find_package(catkin REQUIRED)
 

@@ -1,5 +1,5 @@
 <package format="2">
-  <name>GreiferZF_2016</name>
+  <name>mover6_gripper</name>
   <version>1.0.0</version>
   <description>
     <p>URDF Description package for GreiferZF_2016</p>
