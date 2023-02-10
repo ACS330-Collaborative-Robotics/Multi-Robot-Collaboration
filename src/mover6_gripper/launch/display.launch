@@ -3,7 +3,7 @@
     name="model" />
   <param
     name="robot_description"
-    textfile="$(find GreiferZF_2016)/urdf/GreiferZF_2016.urdf" />
+    textfile="$(find mover6_gripper)/urdf/GreiferZF_2016.urdf" />
   <node
     name="joint_state_publisher_gui"
     pkg="joint_state_publisher_gui"
@@ -16,5 +16,5 @@
     name="rviz"
     pkg="rviz"
     type="rviz"
-    args="-d $(find GreiferZF_2016)/urdf.rviz" />
+    args="-d $(find mover6_gripper)/urdf.rviz" />
 </launch>
