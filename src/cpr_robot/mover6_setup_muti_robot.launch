@@ -2,5 +2,6 @@
     <arg name="mover6" value="$(arg mover6_ns)"/>
     <group ns="$(arg mover6)">
         <include file="$(dirname)/CPRMover6.launch"/>
+        <node name="mover6_driver" pkg="joint_controller" type="mover6_driver" output="screen"/>
     </group>
 </launch>
