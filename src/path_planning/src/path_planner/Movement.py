@@ -32,6 +32,6 @@ class Movement:
         self.serv_helper.move(pos_robot_frame)
         
         #TODO: Force wait until robot has reached desired position. Temp fix:
-        rospy.sleep(1)
+        rospy.sleep(3)
 
         return True #TODO: Implement zone checks

@@ -36,7 +36,13 @@ def choose_block():
     rospy.init_node('block_selector')
 
     # Set Loop rate
-    rate = rospy.Rate(0.5)
+    T = 5
+    rate = rospy.Rate(1/T)
+
+    while blockData is None:
+        rospy.loginfo("Block Selection - Waiting for data.")
+        rospy.sleep(0.1)
+    rospy.loginfo("Block Selection - Got block data,")
 
     # Loop Selection until script is terminated
     while not rospy.is_shutdown():
