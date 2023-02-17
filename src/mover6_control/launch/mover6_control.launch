@@ -9,6 +9,7 @@
     <!-- convert joint states to TF transforms for rviz, etc -->
     <node name="robot_state_publisher_a" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
     <remap from="/joint_states" to="/mover6_a/joint_states" />
+    <param name="tf_prefix" value="mover6_a"/>
     </node>
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
@@ -20,6 +21,7 @@
     <!-- convert joint states to TF transforms for rviz, etc -->
     <node name="robot_state_publisher_b" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
     <remap from="/joint_states" to="/mover6_b/joint_states" />
+        <param name="tf_prefix" value="mover6_b"/>
     </node>
 
 </launch>

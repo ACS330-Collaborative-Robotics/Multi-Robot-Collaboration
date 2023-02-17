@@ -1,7 +1,7 @@
 # Name: Path Planner Class Definition
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
-from path_planner import PickUp, PickDown, ServiceHelper, Movement
+from path_planner import PickUp, PlaceDown, ServiceHelper, Movement
 
 from geometry_msgs.msg import Pose
 
@@ -12,15 +12,15 @@ class PathPlanner:
         self.target_block = block_name
         self.end_pos = end_pos
 
-        # Setup Inverse Kinematics Object
+        # Setup Service Helper Object
         self.serv_helper = ServiceHelper.ServiceHelper(self.robot_ns)
 
         # Setup Movement Object
         self.movement = Movement.Movement(self.serv_helper)
 
-        # Setup PickUp/Down Objects with Service Helper and Movement
-        self.pickUp = PickUp.PickUp(self.serv_helper, self.movement)
-        self.pickDown = PickDown.PickDown(self.serv_helper, self.movement)
+        # Setup PickUp/PlaceDown Objects with Service Helper
+        self.pickUp = PickUp.PickUp(self.serv_helper)
+        self.placeDown = PlaceDown.PlaceDown(self.serv_helper)
 
 
     def pathPlan(self) -> bool:
