@@ -16,7 +16,7 @@ def main():
     # Toggles for Physical and Simulation robots
     # TODO: Setup topics and subscribers to control these variables
     enablePhysical = True
-    enableSimulation = False
+    enableSimulation = True
     #Getting robot name pryamiter
     global robot_name
     robot_name =  "/" + argv[1]
