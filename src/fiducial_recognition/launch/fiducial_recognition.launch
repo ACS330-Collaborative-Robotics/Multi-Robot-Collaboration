@@ -1,0 +1,15 @@
+<launch>
+    <!-- Run transform from a to reference fiducial -->
+    
+    <!-- Run usb_cam -->
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen"/>
+    <!-- Run image_proc -->
+    <node name="image_proc" pkg="image_proc" ns="usb_cam" type="image_proc" output="screen"/>
+    <!-- Arguments for apriltag_ros -->
+    <arg name="camera_name" default="/camera_rect" />
+    <arg name="image_topic" default="image_rect_color" />
+    <arg name="queue_size" default="1" />
+    <!-- Run apriltag_ros -->
+    <include file="$(find apriltag_ros)/launch/continuous_detection.launch" pass_all_args="true"/>
+
+</launch>
