@@ -11,5 +11,7 @@
     <arg name="queue_size" default="1" />
     <!-- Run apriltag_ros -->
     <include file="$(find apriltag_ros)/launch/continuous_detection.launch" pass_all_args="true"/>
+    <!-- Run tf2_listener (arg=publish rate)-->
+    <node name="tf2_listener" pkg="fiducial_recognition" type="tf2_listener.py" args="2" output="screen"/>
 
 </launch>
