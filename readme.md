@@ -53,10 +53,12 @@ Robot Joints - `1 -> 6`
 | Joint Controller | joint_controller | Controls whether or not simulation and physical robots recieve commands as required. Runs once per robot. | `rosrun joint_controller joint_controller.py` |
 | Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
 | Path Planner | path_planning | Mega node using OOP to plan and execute pick and place operations. | `rosrun path_planning path_plan.py` |
+| Block Fiducial Detector | fiducial_recognition | Runs camera setup, image processing, apriltag detection and cartesian block coordinates relative to mover6a | `roslaunch fiducial_recognition fiducial_recognition.launch camera_name:=/usb_cam image_topic:=image_rect_color` |
 | `./connect_robo_setup.sh` |  | Runs the comands to connect the robot arms to the computer. Needs to be run once each time the computer boots. |   |
 | `./connect_mover6a.sh` `./connect_mover6b.sh` | | | Use launch files so that they are namespaced correctly. |
 | CPR robot controller | cpr_robot | Modifed version of the controller provided in the CPR_Robot git page. The modifications allow for they system to be namespaced. | |
 | Mover6 driver | joint_controller| Takes the output form the joint controller and passes it to rvis and the CPR_Robot package. | |
+
 
 ## Additional nodes
 
@@ -73,7 +75,7 @@ Robot Joints - `1 -> 6`
 | Nickname | Name | Data Format | Python Data Format Import | Publishers | Subscribers |
 | - | - | - | - | - | - |
 | Roscore | `/rosout` `/rosout_agg` | Roscore setup nodes |  |  |  |
-| Block Positions | `/blocks_pos` | `block_controller Blocks` | `from block_controller.msg import Block, Blocks` | `block_controller block_pos_talker.py` | `assignment_selection block_selection.py` |
+| Block Positions | `/blocks_pos` | `block_controller Blocks OR tf2_listener` | `from block_controller.msg import Block, Blocks` | `block_controller block_pos_talker.py OR tf2_listener.py` | `assignment_selection block_selection.py` |
 | Gazebo Model States (All Models) | `/gazebo/model_states` | `gazebo_msgs ModelStates` | `from gazebo_msgs.msg import ModelStates` | Gazebo | `block_controller block_pos_talker.py` | 
 | Next block to pick | `robot_ns/next_block` | `std_msgs Strings` | `from std_msgs.msg import String` | `assignment_selection block_selection.py` | `movement_demo basic_kinematic_movement.py` |
 | Gazebo Joint Position Controller | `robot_ns/jointX_position_controller/command` | `from std_msgs.msg import Float64` | `inv_kinematics inv_kin_srv.py`, `movement_demo joint_movement_demo.py`, `inv_kin_ros.m` | Gazebo |
