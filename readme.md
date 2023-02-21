@@ -53,6 +53,10 @@ Robot Joints - `1 -> 6`
 | Joint Controller | joint_controller | Controls whether or not simulation and physical robots recieve commands as required. Runs once per robot. | `rosrun joint_controller joint_controller.py` |
 | Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
 | Path Planner | path_planning | Mega node using OOP to plan and execute pick and place operations. | `rosrun path_planning path_plan.py` |
+|`./connect_robo_setup.sh`|  |This runs the comands to connect the robot arms to the computer. This needs to be run once per time the computer boots up|   |
+|`./connect_mover6a.sh` `./connect_mover6b.sh`|||Please lauch from aluch files so that they are namespaced correctly|
+|CPR robot controller|cpr_robot|This is a modifed version of the controller provided in the CPR_Robot git page. The modifications allow for they system to be namespaced||
+|Mover6 driver|joint_controller|This is a node that taked the output form the joint controller and passes it to rvis and the CPR_Robot pacage||
 
 ## Additional nodes
 
@@ -60,7 +64,7 @@ Robot Joints - `1 -> 6`
 | - | - | - | - |
 | Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
 | Kinematics Movement Demo | movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
-| Mover6 Driver | joint_controller | Relays data from physical robot demand position to physical robot including change of units. | `rosrun joint_controller mover6_driver` |
+| Mover6 Driver | joint_controller | Relays data from physical robot demand position to physical robot including change of units. |`export ROS_NAMESPACE=/mover6_a_p` `rosrun joint_controller mover6_driver` |
 | Fixed Zone Controller | zone_controller | Publishes a pair of fixed zones for testing purposes. | `rosrun zone_controller fixed_zone.py` |
 | Zone Point Detection Demo (Including TF Forward Kinematics demo) | zone_detection | Checks whether a point is in each published zone. Also demonstrate forward kinematics using Transform Trees. | `rosrun zone_detection point_detect.py` |
 
@@ -68,10 +72,21 @@ Robot Joints - `1 -> 6`
 
 | Nickname | Name | Data Format | Python Data Format Import | Publishers | Subscribers |
 | - | - | - | - | - | - |
+| Roscore | `/rosout` `/rosout_agg` | Roscore setup nodes |  |  |  |
 | Block Positions | `/blocks_pos` | `block_controller Blocks` | `from block_controller.msg import Block, Blocks` | `block_controller block_pos_talker.py` | `assignment_selection block_selection.py` |
 | Gazebo Model States (All Models) | `/gazebo/model_states` | `gazebo_msgs ModelStates` | `from gazebo_msgs.msg import ModelStates` | Gazebo | `block_controller block_pos_talker.py` | 
 | Next block to pick | `robot_ns/next_block` | `std_msgs Strings` | `from std_msgs.msg import String` | `assignment_selection block_selection.py` | `movement_demo basic_kinematic_movement.py` |
 | Gazebo Joint Position Controller | `robot_ns/jointX_position_controller/command` | `from std_msgs.msg import Float64` | `inv_kinematics inv_kin_srv.py`, `movement_demo joint_movement_demo.py`, `inv_kin_ros.m` | Gazebo |
+| Setup/Rivs single use | `/tf` `/tf_static ` `/clicked_point` `/initialpose` `/move_base_simple/goal` | setup and run by rvis/CPR_Robot driver | We do not use however are needed for setup |  |  |
+| Mover6 Input Channel | `/robot_ns_p/InputChannels` | cpr_robot/ChannelStates |  | /mover6_a_p/CPRMover6 | /mover6_a_p/rviz |
+| Mover6 Output Channel | `/robot_ns_p/OutputChannels` | cpr_robot/ChannelStates |  | /mover6_a_p/CPRMover6 | /mover6_a_p/rviz |
+| Mover6 Move Comands | `/robot_ns_p/JointJog` | control_msgs/JointJog |  | /mover6_a_p/mover6_driver /mover6_a_p/rviz | /mover6_a_p/CPRMover6 |
+| Current Joint Angles | `/robot_ns_p/joint_states` | sensor_msgs/JointState |  | /mover6_a_p/CPRMover6 | /mover6_a_p/robot_state_publisher /mover6_a_p/mover6_driver /mover6_a_p/rviz |
+| Desired Joint Angles | `/robot_ns_p/physical/joint_angles` | custom_msgs/Joints |  | /mover6_a_p/mover6_driver |  |
+| Current Moveing State | `/robot_ns_p/physical/moving_state` | std_msgs/String |  | /mover6_a_p/mover6_driver |  |
+|  | `/robot_ns_p/robot_state` | cpr_robot/RobotState |  | /mover6_a_p/CPRMover6 | /mover6_a_p/rviz |
+
+
 
 ## Services
 
@@ -81,6 +96,48 @@ Robot Joints - `1 -> 6`
 | URDF Spawner | `gazebo/spawn_urdf_model` | Gazebo | `from gazebo_msgs.srv import SpawnModel` | `gazebo_msgs SpawnModel` | `bool success`, `string status_message` |
 | ikpy Inverse Kinematics | `inverse_kinematics` | `inv_kinematics inv_kin_srv.py` | `from inv_kinematics.srv import InvKin` | `gazebo_msgs ModelState` | `bool success` |
 | Path Planner | `path_planner` | `path_planning path_plan.py` | `from path_planning.srv import PathPlan` | `string robot-name`, `geometry_msg/Pose end_pos`, `string block_name` | `bool success` |
+
+# Conceting and setting up Network
+
+You will need to conect your device to the wrobotlan acsesable in scerten areas of the unicersity.
+
+## Setup localhost after network
+```
+$ export ROS_HOSTNAME=localhost
+$ export ROS_MASTER_URI=http://localhost:11311
+```
+## Roscore Host Mechine
+Run this comands when first opeing the terminal
+```
+$ hostname -I
+0.0.0.1         #Example ip
+$ export ROS_HOSTNAME=0.0.0.1
+$ export ROS_MASTER_URI=http://0.0.0.1:11311/
+$ roscore
+...
+ROS_MASTER_URI=http://0.0.0.1:11311/       #Makesure you see this line in roscore output
+...
+```
+Run these in every tab you open afterwards
+```
+$ export ROS_HOSTNAME=0.0.0.1
+$ export ROS_MASTER_URI=http://0.0.0.1:11311/
+```
+
+Hopefully the roscore pi will have a static IP this will be amended aswell as well as sejested .bashrc commands
+
+## Worker Mechine
+```
+$ hostname -I
+0.0.0.2         #Example ip
+$ export ROS_HOSTNAME=0.0.0.2
+$ export ROS_MASTER_URI=http://0.0.0.1:11311/
+```
+Run these in every tab you open afterwards
+```
+$ export ROS_HOSTNAME=0.0.0.2
+$ export ROS_MASTER_URI=http://0.0.0.1:11311/
+```
 
 # Run on Windows through Windows Subsystems for Linux
 
