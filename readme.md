@@ -198,7 +198,7 @@ Close the terminal and reopen it.
 
 ```bash
 sudo apt-get update
-sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
+sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-apriltag ros-noetic-apriltag-ros ros-noetic-image-pipeline ros-noetic-usb-cam
 sudo apt install python3-pip
 pip install ikpy
 pip install numpy --upgrade
