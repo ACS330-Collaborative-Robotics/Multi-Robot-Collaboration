@@ -14,7 +14,7 @@ def talker():
         pub.append(rospy.Publisher(robot + "/joint_angles", Joints, queue_size=10))
 
     #limits = [[-130, 130], [-50, 60], [-110, 75], [-140, 140], [-70, 60], [-120, 120]]
-    limits = [[0,0], [0,0], [-100, 65], [0,0], [0,0], [0,0]]
+    limits = [[0,0], [0,0], [-100, 60], [0,0], [0,0], [0,0]]
     # Radians limits 3dp = [[-2.269,2.269],[-0.873,1.047],[-1.920,1.309],[-2.443,2.443],[-1.221,1.047],[-2.094,2.094]]
     points = 9
 
@@ -28,10 +28,10 @@ def talker():
         for robot in pub:
             pos = []
             for joint in range(6):
-                pos.append(currentPoint*(limits[joint][1] - limits[joint][0])/(points-1) + limits[joint][0])*3.14/180 #converts to radians
+                pos.append((currentPoint*(limits[joint][1] - limits[joint][0])/(points-1) + limits[joint][0])*3.14/180) #converts to radians
             robot.publish(pos)
         currentPoint = (currentPoint + 1) % points
-        #rospy.loginfo(pos)
+        rospy.loginfo(pos)
         rate.sleep()
 
 if __name__ == '__main__':

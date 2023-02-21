@@ -117,9 +117,9 @@ namespace cpr_rviz
     //! \brief Sets up communication with ROS.
     void JointControl::InitializeROS()
     {
-        m_GetJointInfoClient=m_Node.serviceClient<cpr_robot::GetJointInfo>("/GetJointInfo");
-        m_JointJogPublisher=m_Node.advertise<control_msgs::JointJog>("/JointJog", 50);
-        m_JointStateSubscriber=m_Node.subscribe("/joint_states",10,&JointControl::JointStateCallback, this);
+        m_GetJointInfoClient=m_Node.serviceClient<cpr_robot::GetJointInfo>("GetJointInfo");
+        m_JointJogPublisher=m_Node.advertise<control_msgs::JointJog>("JointJog", 50);
+        m_JointStateSubscriber=m_Node.subscribe("joint_states",10,&JointControl::JointStateCallback, this);
     }
 
     //! \brief Callback that handles messages received over the /JointState ROS topic.

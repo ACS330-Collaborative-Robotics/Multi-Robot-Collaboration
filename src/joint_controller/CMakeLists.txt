@@ -119,6 +119,7 @@ target_link_libraries(listenerincpp ${catkin_LIBRARIES})
 catkin_install_python(PROGRAMS 
   scripts/joint_controller.py
   scripts/listener.py
+  scripts/talker.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
