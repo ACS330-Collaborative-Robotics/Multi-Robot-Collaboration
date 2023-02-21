@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 	know_states=false;
 	know_demands=false;
 	moving_state=false;
-	ros::init(argc, argv, "Phisical_Mover6_Driver");
+	ros::init(argc, argv, "Physical_Mover6_Driver");
 	ros::NodeHandle n;
 	
 
