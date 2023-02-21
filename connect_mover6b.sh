@@ -1,0 +1,1 @@
+roslaunch cpr_robot mover6_setup_muti_robot.launch mover6_ns:=mover6_b_p
