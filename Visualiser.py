@@ -2,6 +2,7 @@
 #this is the script for getting 3d plots of what the APF sees
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from Potential_Attractions import *
 from Potential_Repulsion import *
 from APF_Path import *
@@ -30,8 +31,7 @@ def Space_Generation(startx,starty,xgoal,ygoal,xobj,yobj,Q,D): #### needs to ad 
 
 def plotAPF(X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
     # Making 3d Plot
-    fig = plt.figure()
-    ax = plt.axes(projection='3d')
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     ax.plot_surface(X, Y, PotentialEnergy)
     ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
     ax.set_xlabel('X axis')
