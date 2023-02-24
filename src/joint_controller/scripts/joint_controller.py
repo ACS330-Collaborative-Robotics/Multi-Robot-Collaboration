@@ -42,7 +42,7 @@ def callback_sim(data):
     global joint_angles
     joint_angles = list(data.joints)
     #rospy.loginfo("Angles Recived: %s", joint_angles)
-    for joint_num in range(len(joint_angles)):
+    for joint_num in range(1, len(joint_angles)):
         pubSimulation = rospy.Publisher(robot_name + "/joint" + str(joint_num) + "_position_controller/command", Float64, queue_size=10)
         pubSimulation.publish(joint_angles[joint_num])
         

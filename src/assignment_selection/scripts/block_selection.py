@@ -26,7 +26,7 @@ def choose_block():
     rospy.Subscriber('/blocks_pos', Blocks, callback)
 
     # Define robot namespaces being used - also defines number of robots
-    robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_namespaces = ["mover6_a", "mover6_b", "mover6_c"]
     
     # Setup path_planner service
     rospy.wait_for_service('path_planner')
@@ -36,7 +36,7 @@ def choose_block():
     rospy.init_node('block_selector')
 
     # Set Loop rate
-    T = 5
+    T = 1
     rate = rospy.Rate(1/T)
 
     while blockData is None:
