@@ -101,7 +101,7 @@ Robot Joints - `1 -> 6`
 
 # Connecting and setting up Network
 
-## coneting Linux mechine to robotwlan
+## Connecting Linux machine to robotwlan
 
 ```
 nmcli show
