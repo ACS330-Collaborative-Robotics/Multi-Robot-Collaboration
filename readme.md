@@ -101,6 +101,14 @@ Robot Joints - `1 -> 6`
 
 # Connecting and setting up Network
 
+## Connecting Linux machine to robotwlan
+
+```
+nmcli show
+nmcli down eduroam
+nmcli up robotwlan
+```
+
 You will need to conect your device to the `robotwlan` network, accessable in certain areas of the university or the wired university network.
 
 ## Setup localhost after network
