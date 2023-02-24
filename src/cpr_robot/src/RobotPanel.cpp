@@ -79,7 +79,7 @@ namespace cpr_rviz
         m_InputGroupBox.setTitle("Digital inputs:");
         m_MainLayout.addRow(&m_InputGroupBox);
         m_pOutputs=new TaggedButton*[m_Outputs.size()];
-        for(size_t i=0;i<m_Outputs.size();i++)
+        for(size_t i=0;i<m_Outputs.size();i++)             // GRIPPER NOT WORK  original line was []
         {
             m_pOutputs[i]=new TaggedButton((int)i,&m_OutputGroupBox);
             m_pOutputs[i]->setText(m_Outputs[i].c_str());
