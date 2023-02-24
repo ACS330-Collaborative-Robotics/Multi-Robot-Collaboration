@@ -167,6 +167,10 @@ add_executable(CPRMover6
 target_link_libraries(CPRMover6 ${catkin_LIBRARIES})
 add_dependencies(CPRMover6 cpr_robot_generate_messages_cpp)
 
+add_executable(Gripper_Control 
+  src/Gripper_Control .cpp) 
+target_link_libraries(Gripper_Control ${catkin_LIBRARIES})
+add_dependencies(Gripper_Control ${catkin_EXPORTED_TARGETS})
 
 add_library(RobotPanel 
   src/RobotPanel.cpp 

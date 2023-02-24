@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   message_generation
   custom_msgs
+  cpr_robot
 )
 
 ## System dependencies are found with CMake's conventions
@@ -112,10 +113,6 @@ add_executable(mover6_driver
   src/mover6_driver.cpp) 
 target_link_libraries(mover6_driver ${catkin_LIBRARIES})
 
-add_executable(listenerincpp 
-  src/listenerincpp.cpp) 
-target_link_libraries(listenerincpp ${catkin_LIBRARIES})
-
 catkin_install_python(PROGRAMS 
   scripts/joint_controller.py
   scripts/listener.py
@@ -125,4 +122,3 @@ catkin_install_python(PROGRAMS
 
 add_dependencies(mover6_driver ${catkin_EXPORTED_TARGETS})
 
-add_dependencies(listenerincpp ${catkin_EXPORTED_TARGETS})
