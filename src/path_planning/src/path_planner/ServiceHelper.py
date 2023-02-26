@@ -3,6 +3,7 @@
 
 import rospy
 import tf2_ros
+import tf
 
 from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import GetModelState
@@ -106,21 +107,22 @@ class ServiceHelper:
         joint_header = Header()
         linkID=target_arm_name+'/link'+str(link)
         try:
-            trans = self.tfBuffer.lookup_transform(BaseID, tagID, rospy.Time(0)) # get transform between tag_0 abd
+            trans = self.tfBuffer.lookup_transform(BaseID, linkID, rospy.Time(0)) # get transform between base and link0
             
-            joint_pos.x=trans.transform.translation.x #unit: meters
-            joint_pos.y=trans.transform.translation.y
-            joint_pos.z=trans.transform.translation.z
+            joint_pos.position.x=trans.transform.translation.x #unit: meters
+            joint_pos.position.y=trans.transform.translation.y
+            joint_pos.position.z=trans.transform.translation.z
 
             (roll, pitch, yaw) = tf.transformations.euler_from_quaternion([float(trans.transform.rotation.x),float(trans.transform.rotation.y),float(trans.transform.rotation.z),float(trans.transform.rotation.w)])
-            joint_pos.a=pitch
-            joint_pos.b=roll
-            joint_pos.c=yaw
+            joint_pos.orientation.x=pitch
+            joint_pos.orientation.y=roll
+            joint_pos.orientation.z=yaw
             
-        except (tf2_ros.ConnectivityException,tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException): 
-            rospy.logerr("Error Transformation not found")
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException): 
+            rospy.loginfo("Error Transformation not found")
         return joint_pos
-    def EuclidianDistance(x,y,xgoal,ygoal):
+
+    def EuclidianDistance(self,x,y,xgoal,ygoal):
         d = ((x-xgoal)**2+(y-ygoal)**2)**0.5 #absolute distance
         return d
 
@@ -129,7 +131,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.2 #scaling factor
+        SF = 0.5 #scaling factor
         d= self.EuclidianDistance(x,y,xgoal,ygoal)
         if d <= D: #switch to more precise potential at small ranges
             PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal) #in x and y (simplified tuple)
@@ -142,7 +144,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
         """
-        SF = 0.2 #scaling factor
+        SF = 0.5 #scaling factor
         d = self.EuclidianDistance(x,y,xgoal,ygoal)
         if d <= D:
             PotentialAtt = 0.5*SF*(d**2)
@@ -150,12 +152,12 @@ class ServiceHelper:
             PotentialAtt = D*SF*d - 0.5*SF*D**2
         return PotentialAtt
 
-    def PotentialRepulsion(x,y,xobj,yobj,Q): #Repulsive field as a whole
+    def PotentialRepulsion(self,x,y,xobj,yobj,Q): #Repulsive field as a whole
         """ 
         INPUT: current position and obstacle postition XYs. 
         OUTPUT: PotentialRep (a single value for Potential at those coordinates)
         """
-        SF = 100000
+        SF = 1.5
         PotentialRep = 0
         for object in range(len(xobj)):
             print(object)
@@ -169,20 +171,20 @@ class ServiceHelper:
             PotentialRep += PotentialRepcurrent
         return PotentialRep
 
-    def PotentialRepulsionChange(x,y,xobj,yobj,Q): #repulsion at a specific point
+    def PotentialRepulsionChange(self,x,y,xobj,yobj,Q): #repulsion at a specific point
         """
         INPUT: current position and obstacle position XYs. 
         OUTPUT: is repulsion at a specific point
         """
-        SF = 20
+        SF = 1.5
         #print(d)
         PotentialRepChangex = 0
         PotentialRepChangey = 0
-        for object in range(len(xobj)):
-            d = self.EuclidianDistance(x, y, xobj[object], yobj[object])
+        for obj in range(len(xobj)):
+            d = self.EuclidianDistance(x, y, xobj[obj], yobj[obj])
             if d <= Q: #no repulsion outside of a safe range 
-                PotentialRepChangexcurrent = -SF*(1/d - 1/Q)*(x-xobj[object]/abs(x-xobj[object]))*1/(d**2) #'push' in x and y
-                PotentialRepChangeycurrent = -SF*(1/d - 1/Q)*(y-yobj(object)/abs(y-yobj(object)))*1/(d**2)
+                PotentialRepChangexcurrent = -SF*(1/d - 1/Q)*(x-xobj[obj]/abs(x-xobj[obj]))*1/(d**2) #'push' in x and y
+                PotentialRepChangeycurrent = -SF*(1/d - 1/Q)*(y-yobj[obj]/abs(y-yobj[obj]))*1/(d**2)
                 PotentialRepChangey += PotentialRepChangeycurrent
             else:
                 PotentialRepChangex += 0
@@ -191,7 +193,7 @@ class ServiceHelper:
         return PotentialRepChange
 
     
-    def AFFPathPlanner(x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add this in, this is the path from a point using position and force ads velocity
+    def APFPathPlanner(self,x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add this in, this is the path from a point using position and force ads velocity
         """
         returned as an array of points
         INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)
@@ -208,10 +210,14 @@ class ServiceHelper:
             difx = diffattx+diffrepx #total force (attract and repulsive combined)
             dify = diffatty+diffrepy
             d = self.EuclidianDistance(x,y,xgoal,ygoal) #distance to objects
-            if abs(difx) <0.2 and abs(dify) <0.2 and d > 0.1: #if gradient is small then goal reached (local minima issues here)
+            #rospy.loginfo([difx,dify,d])
+            if abs(difx) <0.2 and abs(dify) <0.2 and d < 0.005: #if gradient is small then goal reached (local minima issues here)
                 PathComplete = 1
-            if abs(difx) < 0.1 and abs(dify) < 0.1: #gradient small but goal not reached
-                pass
+            if abs(difx) < 0.001 and abs(dify) <0.001 and d >0.01: #gradient small but goal not reached
+                #pass
+                rospy.logwarn("LOCAL MINIMA ISSUE")
+                PathPoints = list(zip(PathPointsx,PathPointsy))
+                return PathPoints #DELETE
                 #add get out of local minima here
             else:
                 #print('Iteration: ',i,'diff x,y: ',diffrepx,diffrepy)
@@ -219,6 +225,7 @@ class ServiceHelper:
                 nexty = PathPointsy[i] - dify*0.2 
                 x = nextx
                 y = nexty
+                rospy.loginfo([x,y,d])
                 PathPointsx.append(x) #add next point to list of points
                 PathPointsy.append(y)
             i += 1
@@ -226,3 +233,35 @@ class ServiceHelper:
         return PathPoints    
 
 
+    def APFSpace_Generation(self,startx,starty,xgoal,ygoal,xobj,yobj,Q,D): #### needs to ad objx and objy
+        x = np.linspace(-1, 1, 4)  # Creating X and Y axis
+        y = np.linspace(-1, 1, 4)
+        X, Y = np.meshgrid(x, y)  # Creates 2 arrays with respective x any y coordination for each point
+        PotentialEnergy = np.ndarray(shape=(len(x), len(y)))  # this acts as the z axis on graphs. Works better for visualisation
+        for i in range(len(X)):  # gets Z values for the X Y positions
+            for j in range(len(Y)):
+                PotentialEnergy[i, j] = self.PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +self.PotentialRepulsion(X[i,j],Y[i,j],xobj,yobj,Q)
+                            # self.PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +self.PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
+        PathTaken = self.APFPathPlanner(startx, starty, xgoal, ygoal, xobj, yobj,Q, D)  ## you are here ^^^
+        EnergyPathTaken = []
+        xline = []
+        yline = []
+        for i in range(len(PathTaken)):
+            x, y = PathTaken[i]
+            xline.append(x)
+            yline.append(y)
+            TotalPotential = self.PotentialAttraction(x, y, xgoal, ygoal, D) + self.PotentialRepulsion(x, y, xobj, yobj, Q)
+            EnergyPathTaken.append(TotalPotential)
+        return X,Y, xline, yline, PotentialEnergy, EnergyPathTaken
+
+
+    def APFplot(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
+        # Making 3d Plot
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+        ax.clear()
+        ax.plot_surface(X, Y, PotentialEnergy)
+        ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
+        ax.set_xlabel('X axis')
+        ax.set_ylabel('Y axis')
+        plt.show()
+        print("Successfuly run")

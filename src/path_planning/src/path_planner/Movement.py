@@ -43,8 +43,8 @@ class Movement:
         """
         
         start_pose=self.serv_helper.getJointPos(self.serv_helper.robot_ns,self.serv_helper.robot_ns,6)
-        startx = start_pose.translation.x #start position for arm (now relative)
-        starty = start_pose.translation.y
+        startx = start_pose.position.x #start position for arm (now relative)
+        starty = start_pose.position.y
 
         pos_robot_frame = self.serv_helper.frameConverter(self.serv_helper.robot_ns, "world", pos) #get desired pose in robot frame
         
@@ -54,33 +54,35 @@ class Movement:
         pos_robot_frame.orientation.z = euler_angles[2]
         pos_robot_frame.orientation.w = 0 #currently no angle stuff
 
-        xgoal = pos_robot_frame.translation.x #position of goal x
-        ygoal = pos_robot_frame.translation.y
+        xgoal = pos_robot_frame.position.x #position of goal x
+        ygoal = pos_robot_frame.position.y
 
-        xobj = [] #obstacles will add for loop to look at other arm
-        yobj = []
-        Q = 10
-        D = 5
+        xobj = [0.5] #obstacles will add for loop to look at other arm
+        yobj = [0.5]
+        Q = 0.01
+        D = 0.05
         ##Visual Commands
-        #X, Y, xline, yline, PotentialEnergy, EnergyPathTaken = Space_Generation(startx, starty, xgoal, ygoal, xobj, yobj, Q, D) 
-        #plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
-        ##X,Y path the End effector will take
+        X, Y, xline, yline, PotentialEnergy, EnergyPathTaken = self.serv_helper.APFSpace_Generation(startx, starty, xgoal, ygoal, xobj, yobj, Q, D) 
+        self.serv_helper.APFplot(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
 
-        PathTaken = self.serv_helper.APFPathPlanner(startx,starty,xgoal, ygoal, xobj, yobj, Q, D)
+        ##X,Y path the End effector will take
+        rospy.loginfo([startx,starty,xgoal,ygoal,xobj,yobj,Q,D])
+        PathTaken = self.serv_helper.APFPathPlanner(startx,starty,xgoal,ygoal,xobj,yobj,Q,D)
+        rospy.loginfo(PathTaken)
         ## add a while loop to move through the points?
         tempPos=Pose()
         for incr in range(len(PathTaken)): #move incrementally through positions
-            #print("move to incr %s",PathTaken[incr])
+            rospy.loginfo("move to incr %s",PathTaken[incr])
             incrx,incry=PathTaken[incr]
-            tempPos.translation.x=incrx
-            tempPos.translation.y=incry
-            tempPos.translation.z= pos_robot_frame.translation.z #temporary
+            tempPos.position.x=incrx
+            tempPos.position.y=incry
+            tempPos.position.z= pos_robot_frame.position.z #temporary
             tempPos.orientation.x= pos_robot_frame.orientation.x #temporary
             tempPos.orientation.y= pos_robot_frame.orientation.y #temporary
             tempPos.orientation.z= pos_robot_frame.orientation.z #temporary
             self.serv_helper.move(tempPos)
 
             #TODO: Force wait until robot has reached desired position. Temp fix:
-            rospy.sleep(1)
+            rospy.sleep(0.01)
 
         return True

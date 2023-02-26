@@ -45,7 +45,7 @@ class PathPlanner:
         OUTPUT: bool Success
         """
         # Pick up block
-        self.APFpickUp.pick(self.target_block)
+        self.pickUp.APFpick(self.target_block)
 
         # Move arm
         self.movement.APFmove(self.end_pos)

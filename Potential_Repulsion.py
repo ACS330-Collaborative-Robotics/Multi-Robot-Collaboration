@@ -28,7 +28,7 @@ def PotentialRepulsionChange(x,y,xobj,yobj,Q): #repulsion at a specific point
         d = EuclidianDistance(x, y, xobj[object], yobj[object])
         if d <= Q: #no repulsion outside of a safe range 
             PotentialRepChangexcurrent = -SF*(1/d - 1/Q)*(x-xobj[object]/abs(x-xobj[object]))*1/(d**2) #'push' in x and y
-            PotentialRepChangeycurrent = -SF*(1/d - 1/Q)*(y-yobj(object)/abs(y-yobj(object)))*1/(d**2)
+            PotentialRepChangeycurrent = -SF*(1/d - 1/Q)*(y-yobj[object]/abs(y-yobj[object]))*1/(d**2)
             PotentialRepChangey += PotentialRepChangeycurrent
         else:
             PotentialRepChangex += 0

@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 # Name: Path Planner Runner (APF VERSION USED TO TEST)
 # Author: Joseph Fields (jfields1@sheffield.ac.uk)
@@ -10,7 +10,7 @@ from path_planning.srv import PathPlan
 
 from path_planner import PathPlanner
 
-def path_plan(req):
+def path_plan_APF(req):
     # Initialise PathPlanner object
     pathPlanner = PathPlanner.PathPlanner(req.robot_name, req.block_name, req.end_pos)
 
@@ -20,7 +20,7 @@ def path_plan(req):
 def main():
     rospy.init_node('path_planner_server')
 
-    s = rospy.Service('path_planner', PathPlan, path_plan)
+    s = rospy.Service('path_planner', PathPlan, path_plan_APF)
 
     rospy.spin()
 
