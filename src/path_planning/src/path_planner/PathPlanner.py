@@ -1,5 +1,5 @@
 # Name: Path Planner Class Definition
-# Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
+# Authors: Conor Nichols (cjnichols1@sheffield.ac.uk) Joseph Fields (jfields1@sheffield.ac.uk)
 
 from path_planner import PickUp, PlaceDown, ServiceHelper, Movement
 
@@ -25,7 +25,6 @@ class PathPlanner:
 
     def pathPlan(self) -> bool:
         """ Plan and excute a complete block movement.
-
         INPUT: robot_ns, block_name, end_pos from object init
         OUTPUT: bool Success
         """
@@ -37,6 +36,22 @@ class PathPlanner:
 
         # Put down block
         #self.pickDown.pick(self.target_block, self.end_pos)
+
+        return True
+
+    def APFpathPlan(self) -> bool:
+        """ Plan and excute a complete block movement. (APF version)
+        INPUT: robot_ns, block_name, end_pos from object init
+        OUTPUT: bool Success
+        """
+        # Pick up block
+        self.APFpickUp.pick(self.target_block)
+
+        # Move arm
+        self.movement.APFmove(self.end_pos)
+
+        # Put down block
+        #self.APFpickDown.pick(self.target_block, self.end_pos)
 
         return True
     

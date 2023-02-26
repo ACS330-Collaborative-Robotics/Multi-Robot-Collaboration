@@ -1,5 +1,5 @@
 # Name: ServiceHelper Class Definition
-# Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
+# Authors: Conor Nichols (cjnichols1@sheffield.ac.uk) Joseph Fields (jfields1@sheffield.ac.uk)
 
 import rospy
 import tf2_ros
@@ -92,7 +92,7 @@ class ServiceHelper:
         return new_pose.pose
 
     def getJointPos(self, ref_arm_name:str,target_arm_name:str,link) -> Pose:
-        """ Get cartesian joint coordinates from reference point
+        """ Get target cartesian joint coordinates from reference point
 
         INPUT: string ref_arm_name, string target_arm_name, int link
         OUTPUT: Pose - Orientation in Euler angles not quaternions
@@ -125,10 +125,9 @@ class ServiceHelper:
         return d
 
     def PotentialAttractionChange(self,x,y,xgoal,ygoal,D): #attraction at a specific point
-        """
-        Calculates potential change from point to goal
-        Inputs current position and goal position XYs and distance where laws change. 
-        Output is a tuple of the change in potential along x and y axis (deltaX,deltaY)
+        """ Calculates potential change from point to goal
+        INPUT: current position and goal position XYs and distance where laws change. 
+        OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
         SF = 0.2 #scaling factor
         d= self.EuclidianDistance(x,y,xgoal,ygoal)
@@ -139,10 +138,9 @@ class ServiceHelper:
         return PotentialChange
 
     def PotentialAttraction(self,x,y,xgoal,ygoal,D): #the attractive field as a whole
-        """
-        Calculates potential from point to goal
-        Inputs current position and goal position XYs and distance where laws change. 
-        Ouput is a single value for the Potential at those coordinates.
+        """ Calculates potential from point to goal
+        INPUT: current position and goal position XYs and distance where laws change. 
+        OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
         """
         SF = 0.2 #scaling factor
         d = self.EuclidianDistance(x,y,xgoal,ygoal)
@@ -153,9 +151,9 @@ class ServiceHelper:
         return PotentialAtt
 
     def PotentialRepulsion(x,y,xobj,yobj,Q): #Repulsive field as a whole
-        """
-        Inputs current position and obstacle postition XYs. 
-        Outputs is a single value for Potentail at those coordinates
+        """ 
+        INPUT: current position and obstacle postition XYs. 
+        OUTPUT: PotentialRep (a single value for Potential at those coordinates)
         """
         SF = 100000
         PotentialRep = 0
@@ -173,8 +171,8 @@ class ServiceHelper:
 
     def PotentialRepulsionChange(x,y,xobj,yobj,Q): #repulsion at a specific point
         """
-        Inputs current position and obstacle position XYs. 
-        Outputs is repulsion at a specific point
+        INPUT: current position and obstacle position XYs. 
+        OUTPUT: is repulsion at a specific point
         """
         SF = 20
         #print(d)
@@ -196,12 +194,13 @@ class ServiceHelper:
     def AFFPathPlanner(x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add this in, this is the path from a point using position and force ads velocity
         """
         returned as an array of points
-        Takes the start position and goal position XYs. Output an array of the via points ((x1,y1),(x2,y2),(x3,y3)....)
-        xobj is an array of all obstacle x points, y is the same but for y points
+        INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)
+                
+        OUTPUT: PathPoints (an array of the via points ((x1,y1),(x2,y2),(x3,y3)....))
         """
-        PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
+        PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of potential)
         PathPointsx = [x] #First X and Y points
-        PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
+        PathPointsy = [y] #Currently arrays, The 'zip' function at the end turns them into a tuple
         i = 0
         while PathComplete == 0:
             diffattx,diffatty = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],xgoal,ygoal,D) #what is the attractive slope of the current pos
@@ -209,11 +208,11 @@ class ServiceHelper:
             difx = diffattx+diffrepx #total force (attract and repulsive combined)
             dify = diffatty+diffrepy
             d = self.EuclidianDistance(x,y,xgoal,ygoal) #distance to objects
-            if abs(difx) <0.2 and abs(dify) <0.2 and d > 0.1: #if gradient is small then we've reached goal (local minima issues here)
+            if abs(difx) <0.2 and abs(dify) <0.2 and d > 0.1: #if gradient is small then goal reached (local minima issues here)
                 PathComplete = 1
-            if abs(difx) < 0.1 and abs(dify) < 0.1:
+            if abs(difx) < 0.1 and abs(dify) < 0.1: #gradient small but goal not reached
                 pass
-                #add get out of minima here
+                #add get out of local minima here
             else:
                 #print('Iteration: ',i,'diff x,y: ',diffrepx,diffrepy)
                 nextx = PathPointsx[i] - difx*0.2 #make next point (with scaling factor)

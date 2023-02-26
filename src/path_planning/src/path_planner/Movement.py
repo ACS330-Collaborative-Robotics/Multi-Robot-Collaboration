@@ -1,5 +1,5 @@
 # Name: Movement Class Definition
-# Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
+# Authors: Conor Nichols (cjnichols1@sheffield.ac.uk) Joseph Fields (jfields1@sheffield.ac.uk)
 
 import rospy
 import tf_conversions
@@ -36,7 +36,7 @@ class Movement:
 
         return True #TODO: Implement zone checks
 
-    def APF_move(self, pos:Pose):
+    def APFmove(self, pos:Pose):
         """ Safely move to desired position using IK, checking robot will stay within zone
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
@@ -46,18 +46,18 @@ class Movement:
         startx = start_pose.translation.x #start position for arm (now relative)
         starty = start_pose.translation.y
 
-        pos_robot_frame = self.serv_helper.frameConverter(self.serv_helper.robot_ns, "world", pos)
+        pos_robot_frame = self.serv_helper.frameConverter(self.serv_helper.robot_ns, "world", pos) #get desired pose in robot frame
         
         euler_angles = tf_conversions.transformations.euler_from_quaternion([pos_robot_frame.orientation.x, pos_robot_frame.orientation.y, pos_robot_frame.orientation.z, pos_robot_frame.orientation.w])
         pos_robot_frame.orientation.x = euler_angles[0]
         pos_robot_frame.orientation.y = euler_angles[1]
         pos_robot_frame.orientation.z = euler_angles[2]
-
         pos_robot_frame.orientation.w = 0 #currently no angle stuff
-        xgoal = pos_robot_frame.translation.x #position of goal
+
+        xgoal = pos_robot_frame.translation.x #position of goal x
         ygoal = pos_robot_frame.translation.y
 
-        xobj = [] #obstacles
+        xobj = [] #obstacles will add for loop to look at other arm
         yobj = []
         Q = 10
         D = 5
@@ -69,15 +69,18 @@ class Movement:
         PathTaken = self.serv_helper.APFPathPlanner(startx,starty,xgoal, ygoal, xobj, yobj, Q, D)
         ## add a while loop to move through the points?
         tempPos=Pose()
-        for incr in range(len(PathTaken)):
-            print("move to %s",PathTaken[incr])
+        for incr in range(len(PathTaken)): #move incrementally through positions
+            #print("move to incr %s",PathTaken[incr])
             incrx,incry=PathTaken[incr]
             tempPos.translation.x=incrx
             tempPos.translation.y=incry
-            tempPos.translation.z=pos_robot_frame.translation.z #temporary
-            tempPos.orientation.x=pos_robot_frame.orientation.x
-            tempPos.orientation.y=pos_robot_frame.orientation.y
-            tempPos.orientation.z=pos_robot_frame.orientation.z
+            tempPos.translation.z= pos_robot_frame.translation.z #temporary
+            tempPos.orientation.x= pos_robot_frame.orientation.x #temporary
+            tempPos.orientation.y= pos_robot_frame.orientation.y #temporary
+            tempPos.orientation.z= pos_robot_frame.orientation.z #temporary
             self.serv_helper.move(tempPos)
+
+            #TODO: Force wait until robot has reached desired position. Temp fix:
+            rospy.sleep(1)
 
         return True
