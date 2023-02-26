@@ -7,7 +7,7 @@ from Distance_Euclidian import *
 #returned as an array of points
 #Takes the start position and goal position XYs. Output an array of the via points ((x1,y1),(x2,y2),(x3,y3)....)
 #xobj is an array of all obstacle x points, y is the same but for y points
-def PathPlanner(x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
+def PathPlanner(x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add this in, this is the path from a point using position and force ads velocity
     PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
     PathPointsx = [x] #First X and Y points
     PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
@@ -32,5 +32,5 @@ def PathPlanner(x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add
             PathPointsx.append(x) #add next point to list of points
             PathPointsy.append(y)
         i += 1
-    PathPoints = list(zip(PathPointsx,PathPointsy)) #put into a tuple
+    PathPoints = list(zip(PathPointsx,PathPointsy)) #put into a tuple 
     return PathPoints

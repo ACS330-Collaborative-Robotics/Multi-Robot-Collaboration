@@ -19,3 +19,8 @@ plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
 
 ##X,Y path the End effector will take
 PathTaken = PathPlanner(startx,starty,xgoal, ygoal, xobj, yobj, Q, D)
+
+for incr in range(len(PathTaken)): #test stuff
+    x,y=PathTaken[incr]
+    print(x)
+ 

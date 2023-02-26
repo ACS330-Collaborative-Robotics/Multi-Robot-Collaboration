@@ -1,12 +1,12 @@
 #Function for the Potential Repulsion
-#Inputs current position and obstacle postition XYs. Outputs is a single value for Potentail at those coordinates
+#Inputs current position and obstacle postition XYs. Outputs is a single value for Potential at those coordinates
 #Author:Steven Craig
 from Distance_Euclidian import *
 def PotentialRepulsion(x,y,xobj,yobj,Q): #Repulsive field as a whole
     SF = 100000
     PotentialRep = 0
     for object in range(len(xobj)):
-        print(object)
+        #print(object)
         d = EuclidianDistance(x,y,xobj[object],yobj[object])
         if d <= Q:
             PotentialRepcurrent = 0.5*SF*((1/d)-(1/Q))**2
