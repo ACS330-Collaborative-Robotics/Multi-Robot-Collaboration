@@ -42,40 +42,32 @@ class ServiceHelper:
 
         Uses inverse_kinematics service.
         """
-
         rospy.wait_for_service('inverse_kinematics')
 
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
         arm_pos.model_name = self.robot_ns
-
         arm_pos.pose = pos
-
         # Call inverse_kinematics service and log ArmPos
         self.inv_kin(arm_pos)
 
     def getBlockPos(self, specific_model_name:str) -> Pose:
         """ Get block position relative to current robot arm
-
         INPUT: string specific_model_name
         OUTPUT: gazebo_msgs Pose() - Orientation in Euler angles not quaternions
 
         Uses gazebo/get_model_state service.
         """
         # TODO: Replace with data from /blocks
-
         rospy.wait_for_service('gazebo/get_model_state')
-
         # Extract Pose() object
         data = self.model_state_service(specific_model_name, "world").pose
-
         return data
 
     def frameConverter(self, target_frame:str, reference_frame:str, goal_pose:Pose) -> Pose:
         # Setup time stamped pose object
         start_pose = PoseStamped()
         start_pose.pose = goal_pose
-
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
 
@@ -89,15 +81,12 @@ class ServiceHelper:
                 rate.sleep()
                 print("Failed")
                 continue
-
         return new_pose.pose
 
     def getJointPos(self, ref_arm_name:str,target_arm_name:str,link) -> Pose:
         """ Get target cartesian joint coordinates from reference point
-
         INPUT: string ref_arm_name, string target_arm_name, int link
         OUTPUT: Pose - Orientation in Euler angles not quaternions
-
         """
         #tfBuffer = tf2_ros.Buffer() might be done already in init
         #listener = tf2_ros.TransformListener(tfBuffer) #create transform listener 
@@ -108,7 +97,6 @@ class ServiceHelper:
         linkID=target_arm_name+'/link'+str(link)
         try:
             trans = self.tfBuffer.lookup_transform(BaseID, linkID, rospy.Time(0)) # get transform between base and link0
-            
             joint_pos.position.x=trans.transform.translation.x #unit: meters
             joint_pos.position.y=trans.transform.translation.y
             joint_pos.position.z=trans.transform.translation.z
@@ -196,8 +184,7 @@ class ServiceHelper:
     def APFPathPlanner(self,x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add this in, this is the path from a point using position and force ads velocity
         """
         returned as an array of points
-        INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)
-                
+        INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)   
         OUTPUT: PathPoints (an array of the via points ((x1,y1),(x2,y2),(x3,y3)....))
         """
         PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of potential)
@@ -232,7 +219,6 @@ class ServiceHelper:
         PathPoints = list(zip(PathPointsx,PathPointsy)) #put into a tuple
         return PathPoints    
 
-
     def APFSpace_Generation(self,startx,starty,xgoal,ygoal,xobj,yobj,Q,D): #### needs to ad objx and objy
         x = np.linspace(-1, 1, 4)  # Creating X and Y axis
         y = np.linspace(-1, 1, 4)
@@ -253,7 +239,6 @@ class ServiceHelper:
             TotalPotential = self.PotentialAttraction(x, y, xgoal, ygoal, D) + self.PotentialRepulsion(x, y, xobj, yobj, Q)
             EnergyPathTaken.append(TotalPotential)
         return X,Y, xline, yline, PotentialEnergy, EnergyPathTaken
-
 
     def APFplot(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
         # Making 3d Plot
