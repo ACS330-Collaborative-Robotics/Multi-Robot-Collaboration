@@ -38,20 +38,4 @@ class PathPlanner:
         #self.pickDown.pick(self.target_block, self.end_pos)
 
         return True
-
-    def APFpathPlan(self) -> bool:
-        """ Plan and excute a complete block movement. (APF version)
-        INPUT: robot_ns, block_name, end_pos from object init
-        OUTPUT: bool Success
-        """
-        # Pick up block
-        self.pickUp.APFpick(self.target_block)
-
-        # Move arm
-        self.movement.APFmove(self.end_pos)
-
-        # Put down block
-        #self.APFpickDown.pick(self.target_block, self.end_pos)
-
-        return True
     
