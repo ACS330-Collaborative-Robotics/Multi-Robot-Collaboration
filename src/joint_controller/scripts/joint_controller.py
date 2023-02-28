@@ -33,7 +33,10 @@ def main():
     if enableSimulation:
         rospy.Subscriber(robot_name + "/joint_angles", Joints, callback_sim)
 
-    #TODO: Add multirobot support
+    # Setup joint controller to be a publisher for the required topics
+    for joint_num in range(6):
+        pubSimulation = rospy.Publisher(robot_name + "/joint" + str(joint_num+1) + "_position_controller/command", Float64, queue_size=10)
+    pubPhysical = rospy.Publisher(robot_name + "_p/physical/joint_angles", Joints, queue_size=10)
 
     # Wait until a callback happens
     rospy.spin()
@@ -43,7 +46,7 @@ def callback_sim(data):
     joint_angles = list(data.joints)
     #rospy.loginfo("Angles Recived: %s", joint_angles)
     for joint_num in range(len(joint_angles)):
-        pubSimulation = rospy.Publisher(robot_name + "/joint" + str(joint_num) + "_position_controller/command", Float64, queue_size=10)
+        pubSimulation = rospy.Publisher(robot_name + "/joint" + str(joint_num+1) + "_position_controller/command", Float64, queue_size=10)
         pubSimulation.publish(joint_angles[joint_num])
         
 
@@ -53,7 +56,7 @@ def callback_phis(data):
     global joint_angles
     joint_angles = list(data.joints)
     pubPhysical = rospy.Publisher(robot_name + "_p/physical/joint_angles", Joints, queue_size=10)
-    rospy.loginfo("Angles Published to physical: %s", joint_angles)
+    #rospy.loginfo("Angles Published to physical: %s", joint_angles)
     pubPhysical.publish(joint_angles)
 
 if __name__ == '__main__':
