@@ -13,6 +13,8 @@ from std_msgs.msg import Float64
 from custom_msgs.msg import Joints
 
 def service(req):
+    chain = ikpy.chain.Chain.from_urdf_file(Path.home().as_posix() + "/catkin_ws/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
+
     # x y z Co-ordinates
     x = req.state.pose.position.x
     y = req.state.pose.position.y
@@ -44,10 +46,6 @@ def main():
     rospy.init_node('inverse_kinematics_server')
 
     s = rospy.Service('inverse_kinematics', InvKin, service)
-
-    # Setup inverse kinematics object as global variable so service can use it
-    global chain
-    chain = ikpy.chain.Chain.from_urdf_file(Path.home().as_posix() + "/catkin_ws/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
     
     rospy.spin()
 
