@@ -13,6 +13,9 @@ from std_msgs.msg import Float64
 from custom_msgs.msg import Joints
 
 def service(req):
+    print("Inverse Kinematics - Service call recieved.")
+    pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
+
     chain = ikpy.chain.Chain.from_urdf_file(Path.home().as_posix() + "/catkin_ws/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
 
     # x y z Co-ordinates
@@ -37,8 +40,9 @@ def service(req):
     joints = chain.inverse_kinematics(target_position, target_orientation, orientation_mode="all")
 
     # Publish joint positions
-    pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
     pub.publish(joints)
+
+    print("Inverse Kinematics - Joint positions published.")
 
     return True
 

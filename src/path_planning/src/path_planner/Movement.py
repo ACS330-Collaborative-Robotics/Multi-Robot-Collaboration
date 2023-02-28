@@ -28,6 +28,8 @@ class Movement:
         pos_robot_frame.orientation.z = euler_angles[2]
         pos_robot_frame.orientation.w = 0
 
+        print("Path Planner - Move - Publishing ", self.serv_helper.robot_ns, " to ", pos_robot_frame.position.x, "\t", pos_robot_frame.position.y, "\t", pos_robot_frame.position.z, "\t", pos_robot_frame.orientation.x, "\t", pos_robot_frame.orientation.y, "\t", pos_robot_frame.orientation.z)
+
         # Move robot to new position, in robot reference frame
         self.serv_helper.move(pos_robot_frame)
         

@@ -38,6 +38,8 @@ class ServiceHelper:
 
         rospy.wait_for_service('inverse_kinematics')
 
+        print("Path Planner - Service Helper - Calling ik for ", self.robot_ns)
+
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
         arm_pos.model_name = self.robot_ns
