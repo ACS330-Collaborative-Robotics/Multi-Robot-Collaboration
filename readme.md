@@ -295,3 +295,19 @@ apt install net-tools
 **Failed to launch joint_position_controller**
 
 Need to install ros-control and ros-controllers using: `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
+
+**ROS Ignoring the first message on a topic**
+
+ROS needs to know where each node is subscribed to and publishing to. This needs to happen before you can publish your first message. It then needs an amount of time to process this otherwise it will ignore the first message. e.g.
+
+```python
+## Incorrect method ##
+pub = rospy.Publisher("/topic_name", Joints, queue_size=10)
+pub.publish(joints)
+
+## More correct method ##
+pub = rospy.Publisher("/topic_name", Joints, queue_size=10)
+# Delay or run calculations
+pub.publish(joints)
+
+```
