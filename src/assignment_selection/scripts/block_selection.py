@@ -39,7 +39,7 @@ def choose_block():
     T = 5
     rate = rospy.Rate(1/T)
 
-    while blockData is None:
+    while (blockData is None) and not(rospy.is_shutdown()):
         rospy.loginfo("Block Selection - Waiting for data.")
         rospy.sleep(0.1)
     rospy.loginfo("Block Selection - Got block data,")
@@ -49,7 +49,7 @@ def choose_block():
         ## Making array of block names ##
 
         # Wait for blockData to read in by subscriber
-        while blockData is None:
+        while (blockData is None) and not(rospy.is_shutdown()):
             rospy.loginfo("Block Selection - Waiting for data.")
             rate.sleep()
         rospy.loginfo("Block Selection - Got block data,")
