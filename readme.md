@@ -38,6 +38,14 @@ Robot Namespaces - `robot_ns = ["mover6_a", "mover6_b]`
 
 Robot Joints - `1 -> 6`
 
+**Node Graph Diagram**
+
+![ROS Node Graph](docs/node_graph.png)
+
+**Path Planner Class Diagram**
+
+![Path Planner Class Diagram](docs/path_planner_class_diagram.png)
+
 ## Core nodes
 
 | Nickname | Package | Description | Startup Script |
@@ -58,7 +66,6 @@ Robot Joints - `1 -> 6`
 | `./connect_mover6a.sh` `./connect_mover6b.sh` | | | Use launch files so that they are namespaced correctly. |
 | CPR robot controller | cpr_robot | Modifed version of the controller provided in the CPR_Robot git page. The modifications allow for they system to be namespaced. | |
 | Mover6 driver | joint_controller| Takes the output form the joint controller and passes it to rvis and the CPR_Robot package. | |
-
 
 ## Additional nodes
 
@@ -87,8 +94,6 @@ Robot Joints - `1 -> 6`
 | Desired Joint Angles | `/robot_ns_p/physical/joint_angles` | custom_msgs/Joints |  | /mover6_a_p/mover6_driver |  |
 | Current Moving State | `/robot_ns_p/physical/moving_state` | std_msgs/String |  | /mover6_a_p/mover6_driver |  |
 | CPR Robot State | `/robot_ns_p/robot_state` | cpr_robot/RobotState |  | /mover6_a_p/CPRMover6 | /mover6_a_p/rviz |
-
-
 
 ## Services
 
