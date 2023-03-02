@@ -27,7 +27,7 @@ def main():
     # Setup subscriber for Joint Angle demand
     # Telling Physical to move
     if enablePhysical:
-        rospy.Subscriber(robot_name + "/joint_angles", Joints, callback_phis)
+        rospy.Subscriber(robot_name + "/joint_angles", Joints, callback_physical)
             
     # Telling Simulation to move
     if enableSimulation:
@@ -52,7 +52,7 @@ def callback_sim(data):
 
     # Joint lims in radians [[-2.269,2.269],[-0.873,1.047],[-1.920,1.309],[-2.443,2.443],[-1.221,1.047],[-2.094,2.094]]
 
-def callback_phis(data):
+def callback_physical(data):
     global joint_angles
     joint_angles = list(data.joints)
     pubPhysical = rospy.Publisher(robot_name + "_p/physical/joint_angles", Joints, queue_size=10)

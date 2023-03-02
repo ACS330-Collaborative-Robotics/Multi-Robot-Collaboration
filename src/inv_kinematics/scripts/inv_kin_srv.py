@@ -38,9 +38,10 @@ def service(req):
 
     # Inverse Kinematics
     joints = chain.inverse_kinematics(target_position, target_orientation, orientation_mode="all")
+    print("Inverse Kinematics - Publishing: ", joints[1:])
 
     # Publish joint positions
-    pub.publish(joints)
+    pub.publish(joints[1:])
 
     print("Inverse Kinematics - Joint positions published.")
 
