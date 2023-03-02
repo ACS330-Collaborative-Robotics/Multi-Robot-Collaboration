@@ -71,6 +71,9 @@ class ServiceHelper:
         start_pose = PoseStamped()
         start_pose.pose = goal_pose
 
+        print("Frame Converter - Start pose:")
+        print(start_pose)
+
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
 
@@ -84,5 +87,8 @@ class ServiceHelper:
                 rate.sleep()
                 print("Failed")
                 continue
+        
+        print("Frame Converter - New pose:")
+        print(new_pose)
 
         return new_pose.pose
