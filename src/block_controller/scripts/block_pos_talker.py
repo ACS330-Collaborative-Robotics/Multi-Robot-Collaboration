@@ -56,10 +56,10 @@ def callback(data):
         block.z = data.pose.position.z
 
         # Get quaternion rotation data
-        w = data.pose.orientation.w
-        x = data.pose.orientation.x
-        y = data.pose.orientation.y
-        z = data.pose.orientation.z
+        block.w = data.pose.orientation.w
+        block.x = data.pose.orientation.x
+        block.y = data.pose.orientation.y
+        block.z = data.pose.orientation.z
 
         # Convert quaternion to pitch, roll, yaw
         block.a = atan2(2*x*w - 2*y*z, 1 - 2*x*x - 2*z*z) # Pitch - a
