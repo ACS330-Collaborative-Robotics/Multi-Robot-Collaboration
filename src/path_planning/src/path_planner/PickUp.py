@@ -24,13 +24,9 @@ class PickUp(Movement.Movement):
         pose.orientation.y = 1
         pose.orientation.z = 0
         pose.orientation.w = 0
-
         print("Path Planner - Pick Up - Moving to ", block_name)
         
-        if self.move(pose):
-            print("Path Planner - Pick Up - Succesfully positioned above ", block_name)
-        else:
-            print("Path Planner - Pick Up - Move to above ", block_name, " failed.")
+        self.move(pose)
 
     def moveGripper(self, state):
         pass

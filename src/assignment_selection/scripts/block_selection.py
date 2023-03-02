@@ -89,14 +89,15 @@ def choose_block():
                     block_name = str(goCollect[j][i])
 
                     end_pos = Pose()
-                    end_pos.position.x = 0.3
+                    
                     end_pos.position.z = 0.3
-                    end_pos.orientation.y = 1
 
                     if j == 0:
-                        end_pos.position.y = -0.3
+                        end_pos.position.x = 0.3
+                        end_pos.position.y = 0
                     else:
-                        end_pos.position.y = 0.3
+                        end_pos.position.x = 0.3
+                        end_pos.position.y = 0.5
 
                     robot_name = str(robot_namespaces[j])
                     

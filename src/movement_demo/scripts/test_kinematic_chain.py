@@ -13,18 +13,19 @@ def choose_block():
 
     robot_name = "mover6_a"
     
-    block_name = "block19"
+    block_name = "block18"
 
     end_pos = Pose()
     
-    end_pos.position.x = 0.25
+    end_pos.position.x = 0.2
     end_pos.position.y = 0
     end_pos.position.z = 0.2
-
+    
     end_pos.orientation.x = 0
-    end_pos.orientation.y = 0
+    end_pos.orientation.y = 0.707
     end_pos.orientation.z = 0
-
+    end_pos.orientation.w = 0.707
+    
     print("Test Kinematic Chain - Calling path planner")
     
     try:

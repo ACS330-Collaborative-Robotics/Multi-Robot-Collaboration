@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import tf_conversions
 
 import ikpy.chain
 import numpy as np
@@ -24,26 +25,24 @@ def service(req):
     z = req.state.pose.position.z
     target_position = [x, y, z]
 
-    a = req.state.pose.orientation.x
-    b = req.state.pose.orientation.y
-    c = req.state.pose.orientation.z
+    # Convert from quaternions to 3x3 transformation matrix
+    target_orientation_quaternion = [req.state.pose.orientation.x, req.state.pose.orientation.y, req.state.pose.orientation.z, req.state.pose.orientation.w]
 
-    # Rotation - Euler angles to 3x3 rotation matrix
-    a_tform = np.array([[cos(a), -sin(a), 0], [sin(a), cos(a), 0], [0, 0, 1]])
-    b_tform = np.array([[cos(b), 0, sin(b)], [0, 1, 0], [-sin(b), 0, cos(b)]])
-    c_tform = np.array([[1, 0, 0], [0, cos(c), -sin(c)], [0, sin(c), cos(c)]])
-    ab_tform = np.dot(a_tform, b_tform)
-
-    target_orientation = np.dot(ab_tform, c_tform)
+    target_orientation = tf_conversions.transformations.quaternion_matrix(target_orientation_quaternion)
+    
+    # Cut 4x4 to 3x3
+    target_orientation = target_orientation[0:3, 0:3]
 
     # Inverse Kinematics
     joints = chain.inverse_kinematics(target_position, target_orientation, orientation_mode="all")
-    print("Inverse Kinematics - Publishing: ", joints[1:])
+    joints = list(joints[1:])
+    
+    print("Inverse Kinematics - Publishing: ", joints)
 
     # Publish joint positions
-    pub.publish(joints[1:])
+    pub.publish(joints)
 
-    print("Inverse Kinematics - Joint positions published.")
+    print("Inverse Kinematics - Joint positions published.\n")
 
     return True
 
