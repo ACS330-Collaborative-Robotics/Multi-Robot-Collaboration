@@ -2,6 +2,7 @@
 #this is the script for getting 3d plots of what the APF sees
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from Potential_Attractions import *
 from Potential_Repulsion import *
 from APF_Path import *
