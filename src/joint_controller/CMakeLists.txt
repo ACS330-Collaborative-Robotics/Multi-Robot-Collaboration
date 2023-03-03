@@ -113,6 +113,10 @@ add_executable(mover6_driver
   src/mover6_driver.cpp) 
 target_link_libraries(mover6_driver ${catkin_LIBRARIES})
 
+#add_executable(GripperControlV2
+#  src/GripperControlV2.cpp ) 
+#target_link_libraries(GripperControlV2 ${catkin_LIBRARIES})
+
 catkin_install_python(PROGRAMS 
   scripts/joint_controller.py
   scripts/listener.py
@@ -121,4 +125,5 @@ catkin_install_python(PROGRAMS
 )
 
 add_dependencies(mover6_driver ${catkin_EXPORTED_TARGETS})
+# add_dependencies(GripperControlV2 ${catkin_EXPORTED_TARGETS})
 

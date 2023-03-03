@@ -200,10 +200,10 @@ namespace cpr_robot
         for(size_t i=0;i<m_InputChannels.size();i++)
             inputChannels.state.push_back(get_Input(i));
         m_InputChannelsPublisher.publish(inputChannels);
-        /*cpr_robot::ChannelStates outputChannels;
+        /*cpr_robot::ChannelStates outputChannels;              //Desable Gripper channels
         outputChannels.Header.stamp = ros::Time::now();
         for(size_t i=0;i<m_OutputChannels.size();i++)
-            //outputChannels.state.push_back(get_Output(i));
+            outputChannels.state.push_back(get_Output(i));
         m_OutputChannelsPublisher.publish(outputChannels);*/
         cpr_robot::RobotState robot_state;
         robot_state.Header.stamp=ros::Time::now();
