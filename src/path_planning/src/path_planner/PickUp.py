@@ -9,8 +9,8 @@ class PickUp(Movement.Movement):
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
     
-    def pick(self, block_name, data):
-        rospy.loginfo(rospy.get_caller_id() + "%s", data.block_data)
+    def pick(self, block_name):
+        #rospy.loginfo(rospy.get_caller_id() + "%s", data.block_data)
 
         """ Pick up specified block
 
@@ -23,10 +23,10 @@ class PickUp(Movement.Movement):
         pose.position.z += 0.13
 
         # Set End Effector orientation to point downwards using quaternions
-        pose.orientation.x = data.block_data.z
-        pose.orientation.y = 1
+        pose.orientation.x = 0.707
+        pose.orientation.y = 0.707
         pose.orientation.z = 0
-        pose.orientation.w = 0
+        pose.orientation.w = 0.5
         print("Path Planner - Pick Up - Moving to ", block_name)
         
         self.move(pose)
