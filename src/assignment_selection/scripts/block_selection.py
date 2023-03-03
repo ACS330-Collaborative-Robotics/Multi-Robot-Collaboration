@@ -89,24 +89,29 @@ def choose_block():
                     block_name = str(goCollect[j][i])
 
                     end_pos = Pose()
-                    end_pos.position.x = 0.3
-                    end_pos.position.z = 0.3
-                    end_pos.orientation.y = 1
+                    
+                    end_pos.orientation.x = 0
+                    end_pos.orientation.y = 0.707
+                    end_pos.orientation.z = 0
+                    end_pos.orientation.w = 0.707
+                    
+                    end_pos.position.z = 0.2
 
                     if j == 0:
-                        end_pos.position.y = -0.3
+                        end_pos.position.x = 0.2
+                        end_pos.position.y = 0
                     else:
-                        end_pos.position.y = 0.3
+                        end_pos.position.x = 0.2
+                        end_pos.position.y = 0.5
 
                     robot_name = str(robot_namespaces[j])
                     
                     try:
                         success = path_service(block_name, end_pos, robot_name)
 
-                        if success:
-                            rospy.loginfo("Block Selection - " + robot_namespaces[j] + " to " + goCollect[j][i])
-                        else:
+                        if not(success):
                             rospy.loginfo("Block Selection - Service call returned False.")
+                            
                     except rospy.ServiceException as e:
                         rospy.loginfo("Block Selection - Service call failed: %s"%e)
 
