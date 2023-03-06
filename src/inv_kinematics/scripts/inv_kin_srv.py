@@ -4,13 +4,10 @@ import rospy
 import tf_conversions
 
 import ikpy.chain
-import numpy as np
 
-from math import cos, sin
 from pathlib import Path
 
 from inv_kinematics.srv import InvKin
-from std_msgs.msg import Float64
 from custom_msgs.msg import Joints
 
 def service(req):
