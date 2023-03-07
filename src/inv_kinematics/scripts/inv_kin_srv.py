@@ -4,6 +4,7 @@ import rospy
 import tf_conversions
 
 import ikpy.chain
+from trac_ik_python.trac_ik import IK
 
 from pathlib import Path
 
@@ -34,13 +35,35 @@ def ikpy_inverse_kinematics(pose: Pose):
 
     return joints
 
+def trac_ik_inverse_kinematics(pose: Pose):
+    urdf_str = rospy.get_param('/robot_description')
+
+    ik_solver = IK("base_link", "link6", urdf_string=urdf_str)
+
+    print(ik_solver)
+    print(ik_solver.joint_names)
+    print(ik_solver.base_link)
+    print(ik_solver.link_names)
+    print(ik_solver.tip_link)
+    print(ik_solver.get_joint_limits())
+
+    seed_state = [0.0]*ik_solver.number_of_joints
+
+    print(pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
+
+    joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
+
+    return joints
+
 def service(req):
     print("Inverse Kinematics - Service call recieved.")
     pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
 
+    joints = trac_ik_inverse_kinematics(req.state.pose)
+    print("Inverse Kinematics - Trac IK: ", joints)
+
     joints = ikpy_inverse_kinematics(req.state.pose)
-    
-    print("Inverse Kinematics - Publishing: ", joints)
+    print("Inverse Kinematics - ikpy: ", joints)
 
     # Publish joint positions
     pub.publish(joints)
