@@ -5,6 +5,7 @@ import tf_conversions
 
 import ikpy.chain
 from trac_ik_python.trac_ik import IK
+from time import time
 
 from pathlib import Path
 
@@ -40,30 +41,31 @@ def trac_ik_inverse_kinematics(pose: Pose):
 
     ik_solver = IK("base_link", "link6", urdf_string=urdf_str)
 
-    print(ik_solver)
-    print(ik_solver.joint_names)
-    print(ik_solver.base_link)
-    print(ik_solver.link_names)
-    print(ik_solver.tip_link)
-    print(ik_solver.get_joint_limits())
-
     seed_state = [0.0]*ik_solver.number_of_joints
 
     print(pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
 
     joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
 
-    return joints
+    if joints is None:
+        return None
+    else:
+        return list(joints)
 
 def service(req):
     print("Inverse Kinematics - Service call recieved.")
     pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
 
+    start_time = time()
     joints = trac_ik_inverse_kinematics(req.state.pose)
-    print("Inverse Kinematics - Trac IK: ", joints)
+    print("Inverse Kinematics - Trac IK: ", joints, " Computed in: ", round(time()-start_time, 4))
 
-    joints = ikpy_inverse_kinematics(req.state.pose)
-    print("Inverse Kinematics - ikpy: ", joints)
+    # IF trac_ik does not find an adequate solution, use ikpy to find a nearby approximation
+    if joints is None:
+        print("Inverse Kinematics - ERROR - Accurate IK not found, using fallback method")
+        start_time = time()
+        joints = ikpy_inverse_kinematics(req.state.pose)
+        print("Inverse Kinematics - ikpy: ", joints, " Computed in: ", round(time()-start_time, 4))
 
     # Publish joint positions
     pub.publish(joints)
