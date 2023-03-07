@@ -116,6 +116,7 @@ class ServiceHelper:
             joint_pos.orientation.y=trans.transform.rotation.y
             joint_pos.orientation.z=trans.transform.rotation.z
             joint_pos.orientation.w=trans.transform.rotation.w
+            rospy.loginfo("Position of joint %s is %s, %s, %s in reference to %s",link, joint_pos.position.x,joint_pos.position.y,joint_pos.position.z,ref_arm_name)
             
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException): 
             rospy.loginfo("Error Transformation not found")
@@ -130,7 +131,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.9 #scaling factor (step size)
+        SF = 0.95 #scaling factor (step size)
         d= self.EuclidianDistance(x,y,xgoal,ygoal)
         if d <= D:
             PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal)
