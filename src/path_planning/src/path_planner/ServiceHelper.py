@@ -125,12 +125,12 @@ class ServiceHelper:
         d = ((x-xgoal)**2+(y-ygoal)**2)**0.5 #absolute distance
         return d
 
-    def PotentialAttractionChange(self,x,y,xgoal,ygoal,D): #attraction at a specific point
+    def PotentialAttractionChange(self,x,y,xgoal,ygoal,D): #attraction at a specific point (used to calculate)
         """ Calculates potential change from point to goal
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.9 #scaling factor
+        SF = 0.9 #scaling factor (step size)
         d= self.EuclidianDistance(x,y,xgoal,ygoal)
         if d <= D:
             PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal)
@@ -139,7 +139,7 @@ class ServiceHelper:
         print('attraction change:',PotentialChange,'distance:',d)
         return PotentialChange
 
-    def PotentialAttraction(self,x,y,xgoal,ygoal,D): #the attractive field as a whole
+    def PotentialAttraction(self,x,y,xgoal,ygoal,D): #the attractive field as a whole (used to display)
         """ Calculates potential from point to goal
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
@@ -152,7 +152,7 @@ class ServiceHelper:
             PotentialAtt = D*SF*d - 0.5*SF*D**2
         return PotentialAtt
 
-    def PotentialRepulsion(self,x,y,xobj,yobj,Q): #Repulsive field as a whole
+    def PotentialRepulsion(self,x,y,xobj,yobj,Q): #Repulsive field as a whole (used to display)
         """ 
         INPUT: current position and obstacle postition XYs. 
         OUTPUT: PotentialRep (a single value for Potential at those coordinates)
@@ -170,7 +170,7 @@ class ServiceHelper:
             PotentialRep += PotentialRepcurrent
         return PotentialRep
 
-    def PotentialRepulsionChange(self,x,y,xobj,yobj,xgoal,ygoal,Q):
+    def PotentialRepulsionChange(self,x,y,xobj,yobj,xgoal,ygoal,Q): #repulsion at a specific point (used to calculate)
         """
         INPUT: current position and obstacle position XYs. 
         OUTPUT: is repulsion at a specific point
@@ -214,7 +214,7 @@ class ServiceHelper:
             diffrepx,diffrepy = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],xobj,yobj,xgoal,ygoal,Q)
             difx, dify = diffattx + diffrepx,diffatty + diffrepy
             d = self.EuclidianDistance(x,y,xgoal,ygoal)
-            if abs(difx) <0.2 and abs(dify) <0.2 and d < 2:#
+            if abs(difx) <0.2 and abs(dify) <0.2 and d < 0.5:#
                 PathComplete = 1
             if abs(difx) < 0.1 and abs(dify) < 0.1:
                 pass
