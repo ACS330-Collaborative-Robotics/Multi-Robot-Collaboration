@@ -112,10 +112,10 @@ class ServiceHelper:
             joint_pos.position.y=trans.transform.translation.y
             joint_pos.position.z=trans.transform.translation.z
 
-            (roll, pitch, yaw) = tf.transformations.euler_from_quaternion([float(trans.transform.rotation.x),float(trans.transform.rotation.y),float(trans.transform.rotation.z),float(trans.transform.rotation.w)])
-            joint_pos.orientation.x=pitch
-            joint_pos.orientation.y=roll
-            joint_pos.orientation.z=yaw
+            joint_pos.orientation.x=trans.transform.orientation.x
+            joint_pos.orientation.y=trans.transform.orientation.y
+            joint_pos.orientation.z=trans.transform.orientation.z
+            joint_pos.orientation.w=trans.transform.orientation.w
             
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException): 
             rospy.loginfo("Error Transformation not found")
