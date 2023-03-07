@@ -112,10 +112,10 @@ class ServiceHelper:
             joint_pos.position.y=trans.transform.translation.y
             joint_pos.position.z=trans.transform.translation.z
 
-            joint_pos.orientation.x=trans.transform.orientation.x
-            joint_pos.orientation.y=trans.transform.orientation.y
-            joint_pos.orientation.z=trans.transform.orientation.z
-            joint_pos.orientation.w=trans.transform.orientation.w
+            joint_pos.orientation.x=trans.transform.rotation.x
+            joint_pos.orientation.y=trans.transform.rotation.y
+            joint_pos.orientation.z=trans.transform.rotation.z
+            joint_pos.orientation.w=trans.transform.rotation.w
             
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException): 
             rospy.loginfo("Error Transformation not found")
