@@ -59,6 +59,9 @@
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>roscpp</exec_depend>
+  <build_depend>trac_ik_lib</build_depend>
+  <exec_depend>trac_ik_lib</exec_depend>
+
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
