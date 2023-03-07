@@ -10,8 +10,8 @@ ygoal = 40
 xobj = [-20,10]
 yobj = [-15,0]
 
-Q = 12
-D = 5
+Q = 20
+D = 10
 
 ##Visual Commands
 X, Y, xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken = Space_Generation(startx, starty, xgoal, ygoal, xobj, yobj, Q, D)

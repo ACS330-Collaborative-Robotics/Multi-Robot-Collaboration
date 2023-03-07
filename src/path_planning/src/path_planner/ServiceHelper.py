@@ -17,6 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+import math
 from math import atan2, asin
 
 class ServiceHelper:
@@ -119,12 +120,13 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.5 #scaling factor
+        SF = 0.2 #scaling factor
         d= self.EuclidianDistance(x,y,xgoal,ygoal)
-        if d <= D: #switch to more precise potential at small ranges
-            PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal) #in x and y (simplified tuple)
+        if d <= D:
+            PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal)
         if d > D:
-            PotentialChange = (D*SF*x-D*SF*xgoal/d,D*SF*y-D*SF*ygoal/d)
+            PotentialChange = ((SF*x-SF*xgoal)/d,(SF*y-SF*ygoal)/d)
+        print('attraction change:',PotentialChange,'distance:',d)
         return PotentialChange
 
     def PotentialAttraction(self,x,y,xgoal,ygoal,D): #the attractive field as a whole
@@ -132,7 +134,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
         """
-        SF = 0.5 #scaling factor
+        SF = 0.2 #scaling factor
         d = self.EuclidianDistance(x,y,xgoal,ygoal)
         if d <= D:
             PotentialAtt = 0.5*SF*(d**2)
@@ -145,13 +147,12 @@ class ServiceHelper:
         INPUT: current position and obstacle postition XYs. 
         OUTPUT: PotentialRep (a single value for Potential at those coordinates)
         """
-        SF = 1.5
+        SF = 5000
         PotentialRep = 0
         for object in range(len(xobj)):
-            print(object)
             d = self.EuclidianDistance(x,y,xobj[object],yobj[object])
             if d <= Q:
-                PotentialRepcurrent = 0.5*SF*((1/d)-(1/Q))**2
+                PotentialRepcurrent = SF*((1/d)-(1/Q))
             else:
                 PotentialRepcurrent = 0
             if PotentialRepcurrent > 100:
@@ -159,76 +160,77 @@ class ServiceHelper:
             PotentialRep += PotentialRepcurrent
         return PotentialRep
 
-    def PotentialRepulsionChange(self,x,y,xobj,yobj,Q): #repulsion at a specific point
+    def PotentialRepulsionChange(self,x,y,xobj,yobj,xgoal,ygoal,Q):
         """
         INPUT: current position and obstacle position XYs. 
         OUTPUT: is repulsion at a specific point
         """
-        SF = 1.5
-        #print(d)
-        PotentialRepChangex = 0
-        PotentialRepChangey = 0
-        for obj in range(len(xobj)):
-            d = self.EuclidianDistance(x, y, xobj[obj], yobj[obj])
-            if d <= Q: #no repulsion outside of a safe range 
-                PotentialRepChangexcurrent = -SF*(1/d - 1/Q)*(x-xobj[obj]/abs(x-xobj[obj]))*1/(d**2) #'push' in x and y
-                PotentialRepChangeycurrent = -SF*(1/d - 1/Q)*(y-yobj[obj]/abs(y-yobj[obj]))*1/(d**2)
-                PotentialRepChangey += PotentialRepChangeycurrent
-            else:
-                PotentialRepChangex += 0
-                PotentialRepChangey += 0
-        PotentialRepChange = PotentialRepChangex, PotentialRepChangey #put into tuple
-        return PotentialRepChange
+        allvectorsx = 0
+        allvectorsy = 0
+        repulsionangle = 0
+        for object in range(len(xobj)):
+
+            homevect = (xgoal-x,ygoal-y)
+            objvect = (xobj[object]-x,yobj[object]-y)
+            anglegoal = math.atan2(homevect[1],homevect[0])
+            angleobj = math.atan2(objvect[1],objvect[0])
+            angle = angleobj-anglegoal
+            if angle > 0 or angle == 0:
+                repulsionangle = anglegoal - 90
+            if angle < 0:
+                repulsionangle = anglegoal + 90
+            d = self.EuclidianDistance(x,y,xobj[object],yobj[object])
+            SF = 5*(d-Q)
+            repulsionvect = SF*math.cos(angle)*math.cos(repulsionangle),SF*math.cos(angle)*math.sin(repulsionangle)
+            if d > Q:
+                repulsionvect = 0,0
+            allvectorsx += repulsionvect[0]
+            allvectorsy += repulsionvect[1]
+        return allvectorsx,allvectorsy
 
     
-    def APFPathPlanner(self,x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add this in, this is the path from a point using position and force ads velocity
+    def PathPlanner(self,x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add this in, this is the path from a point using position and force ads velocity
         """
         returned as an array of points
         INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)   
         OUTPUT: PathPoints (an array of the via points ((x1,y1),(x2,y2),(x3,y3)....))
         """
-        PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of potential)
+        PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
         PathPointsx = [x] #First X and Y points
-        PathPointsy = [y] #Currently arrays, The 'zip' function at the end turns them into a tuple
+        PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
         i = 0
         while PathComplete == 0:
-            diffattx,diffatty = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],xgoal,ygoal,D) #what is the attractive slope of the current pos
-            diffrepx,diffrepy = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],xobj,yobj,Q) #what is the repulsive slope of current pos
-            difx = diffattx+diffrepx #total force (attract and repulsive combined)
-            dify = diffatty+diffrepy
-            d = self.EuclidianDistance(x,y,xgoal,ygoal) #distance to objects
-            #rospy.loginfo([difx,dify,d])
-            if abs(difx) <0.2 and abs(dify) <0.2 and d < 0.005: #if gradient is small then goal reached (local minima issues here)
+            diffattx,diffatty = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],xgoal,ygoal,D)
+            diffrepx,diffrepy = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],xobj,yobj,xgoal,ygoal,Q)
+            difx, dify = diffattx + diffrepx,diffatty + diffrepy
+            d = self.EuclidianDistance(x,y,xgoal,ygoal)
+            if abs(difx) <0.2 and abs(dify) <0.2 and d < 2:#
                 PathComplete = 1
-            if abs(difx) < 0.001 and abs(dify) <0.001 and d >0.01: #gradient small but goal not reached
-                #pass
-                rospy.logwarn("LOCAL MINIMA ISSUE")
-                PathPoints = list(zip(PathPointsx,PathPointsy))
-                return PathPoints #DELETE
-                #add get out of local minima here
+            if abs(difx) < 0.1 and abs(dify) < 0.1:
+                pass
+                #add get out of minima here
             else:
-                #print('Iteration: ',i,'diff x,y: ',diffrepx,diffrepy)
-                nextx = PathPointsx[i] - difx*0.2 #make next point (with scaling factor)
-                nexty = PathPointsy[i] - dify*0.2 
+                #print('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
+                nextx = PathPointsx[i] - 0.2*difx
+                nexty = PathPointsy[i] - 0.2*dify
                 x = nextx
                 y = nexty
-                rospy.loginfo([x,y,d])
-                PathPointsx.append(x) #add next point to list of points
+                PathPointsx.append(x)
                 PathPointsy.append(y)
             i += 1
-        PathPoints = list(zip(PathPointsx,PathPointsy)) #put into a tuple
-        return PathPoints    
+        PathPoints = list(zip(PathPointsx,PathPointsy))
+        return PathPoints  
 
-    def APFSpace_Generation(self,startx,starty,xgoal,ygoal,xobj,yobj,Q,D): #### needs to ad objx and objy
-        x = np.linspace(-1, 1, 4)  # Creating X and Y axis
-        y = np.linspace(-1, 1, 4)
+    def Space_Generation(self,startx,starty,xgoal,ygoal,xobj,yobj,Q,D): #### needs to ad objx and objy
+        x = np.linspace(-50, 50, 100)  # Creating X and Y axis
+        y = np.linspace(-50, 50, 100)
         X, Y = np.meshgrid(x, y)  # Creates 2 arrays with respective x any y coordination for each point
         PotentialEnergy = np.ndarray(shape=(len(x), len(y)))  # this acts as the z axis on graphs. Works better for visualisation
         for i in range(len(X)):  # gets Z values for the X Y positions
             for j in range(len(Y)):
-                PotentialEnergy[i, j] = self.PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +self.PotentialRepulsion(X[i,j],Y[i,j],xobj,yobj,Q)
-                            # self.PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +self.PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
-        PathTaken = self.APFPathPlanner(startx, starty, xgoal, ygoal, xobj, yobj,Q, D)  ## you are here ^^^
+                PotentialEnergy[i, j] = self.PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D)+ self.PotentialRepulsion(X[i,j],Y[i,j],xobj,yobj,Q)
+                            # PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
+        PathTaken = self.PathPlanner(startx, starty, xgoal, ygoal, xobj, yobj,Q, D)  ## you are here ^^^
         EnergyPathTaken = []
         xline = []
         yline = []
@@ -238,15 +240,26 @@ class ServiceHelper:
             yline.append(y)
             TotalPotential = self.PotentialAttraction(x, y, xgoal, ygoal, D) + self.PotentialRepulsion(x, y, xobj, yobj, Q)
             EnergyPathTaken.append(TotalPotential)
-        return X,Y, xline, yline, PotentialEnergy, EnergyPathTaken
+        return X,Y, xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
 
-    def APFplot(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
+    def plotAPF(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
         # Making 3d Plot
-        fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-        ax.clear()
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
         ax.plot_surface(X, Y, PotentialEnergy)
         ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
         plt.show()
         print("Successfuly run")
+
+    def plotPath(self,PathTaken):
+        fig = plt.figure()
+        ax = plt.axes()
+        xpoints =[]
+        ypoints = []
+        for point in PathTaken:
+            xpoints.append(point[0])
+            ypoints.append(point[1])
+        ax.plot(xpoints,ypoints)
+        plt.show()

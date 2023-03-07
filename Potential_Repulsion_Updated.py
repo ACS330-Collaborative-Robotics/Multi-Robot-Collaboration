@@ -5,7 +5,7 @@ from Distance_Euclidian import *
 import math
 import numpy as np
 def PotentialRepulsion(x,y,xobj,yobj,Q):
-    SF = 100000
+    SF = 5000
     PotentialRep = 0
     for object in range(len(xobj)):
         d = EuclidianDistance(x,y,xobj[object],yobj[object])

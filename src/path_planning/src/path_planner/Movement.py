@@ -15,7 +15,6 @@ class Movement:
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
-        
         start_pose=self.serv_helper.getJointPos(self.serv_helper.robot_ns,self.serv_helper.robot_ns,6)
         startx = start_pose.position.x #start position for arm (now relative)
         starty = start_pose.position.y
@@ -31,22 +30,22 @@ class Movement:
         xgoal = pos_robot_frame.position.x #position of goal x
         ygoal = pos_robot_frame.position.y
 
-        xobj = [0.5] #obstacles will add for loop to look at other arm
-        yobj = [0.5]
-        Q = 0.01
-        D = 0.05
-        ##Visual Commands
-        X, Y, xline, yline, PotentialEnergy, EnergyPathTaken = self.serv_helper.APFSpace_Generation(startx, starty, xgoal, ygoal, xobj, yobj, Q, D) 
-        self.serv_helper.APFplot(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
+        xobj = [5] #obstacles will add for loop to look at other arm
+        yobj = [5]
+        Q = 20
+        D = 10
 
+        ##Visual Commands
+        X, Y, xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken = self.serv_helper.Space_Generation(startx, starty, xgoal, ygoal, xobj, yobj, Q, D)
+        self.serv_helper.plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
+        self.serv_helper.plotPath(PathTaken)
         ##X,Y path the End effector will take
-        rospy.loginfo([startx,starty,xgoal,ygoal,xobj,yobj,Q,D])
-        PathTaken = self.serv_helper.APFPathPlanner(startx,starty,xgoal,ygoal,xobj,yobj,Q,D)
-        rospy.loginfo(PathTaken)
+        PathTaken = self.serv_helper.PathPlanner(startx,starty,xgoal, ygoal, xobj, yobj, Q, D)
+        print(len(PathTaken))
         ## add a while loop to move through the points?
         tempPos=Pose()
         for incr in range(len(PathTaken)): #move incrementally through positions
-            rospy.loginfo("move to incr %s",PathTaken[incr])
+            rospy.loginfo("move to: %s",PathTaken[incr])
             incrx,incry=PathTaken[incr]
             tempPos.position.x=incrx
             tempPos.position.y=incry
