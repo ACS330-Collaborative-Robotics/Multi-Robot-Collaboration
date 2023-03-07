@@ -33,15 +33,16 @@ class Movement:
         D = 10
 
         ##Visual Commands
-        X, Y, xline, yline, PotentialEnergy, EnergyPathTaken, PathTakenSF = self.serv_helper.Space_Generation(startx, starty, xgoal, ygoal, xobj, yobj, Q, D)
-        self.serv_helper.plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
-        self.serv_helper.plotPath(PathTakenSF)
+        #X, Y, xline, yline, PotentialEnergy, EnergyPathTaken, PathTakenSF = self.serv_helper.Space_Generation(startx, starty, xgoal, ygoal, xobj, yobj, Q, D)
+        #self.serv_helper.plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
+        #self.serv_helper.plotPath(PathTakenSF)
         ##X,Y path the End effector will take
         PathTakenSF = self.serv_helper.PathPlanner(startx,starty,xgoal, ygoal, xobj, yobj, Q, D)
         
         PathTaken = [[x[0]/SF,x[1]/SF] for x in PathTakenSF]
 
         print(len(PathTaken))
+        
         ## add a while loop to move through the points?
         tempPos=Pose()
         for incr in range(len(PathTaken)): #move incrementally through positions
@@ -57,6 +58,6 @@ class Movement:
             self.serv_helper.move(tempPos)
 
             #TODO: Force wait until robot has reached desired position. Temp fix:
-            rospy.sleep(0.01)
+            rospy.sleep(0.00000001)
 
         return True

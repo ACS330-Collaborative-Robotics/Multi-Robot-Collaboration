@@ -130,7 +130,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.2 #scaling factor
+        SF = 0.9 #scaling factor
         d= self.EuclidianDistance(x,y,xgoal,ygoal)
         if d <= D:
             PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal)
