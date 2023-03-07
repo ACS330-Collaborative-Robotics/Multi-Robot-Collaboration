@@ -9,21 +9,19 @@ from pathlib import Path
 
 from inv_kinematics.srv import InvKin
 from custom_msgs.msg import Joints
+from geometry_msgs.msg import Pose
 
-def service(req):
-    print("Inverse Kinematics - Service call recieved.")
-    pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
-
+def ikpy_inverse_kinematics(pose: Pose):
     chain = ikpy.chain.Chain.from_urdf_file(Path.home().as_posix() + "/catkin_ws/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
 
     # x y z Co-ordinates
-    x = req.state.pose.position.x
-    y = req.state.pose.position.y
-    z = req.state.pose.position.z
+    x = pose.position.x
+    y = pose.position.y
+    z = pose.position.z
     target_position = [x, y, z]
 
     # Convert from quaternions to 3x3 transformation matrix
-    target_orientation_quaternion = [req.state.pose.orientation.x, req.state.pose.orientation.y, req.state.pose.orientation.z, req.state.pose.orientation.w]
+    target_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
 
     target_orientation = tf_conversions.transformations.quaternion_matrix(target_orientation_quaternion)
     
@@ -33,6 +31,14 @@ def service(req):
     # Inverse Kinematics
     joints = chain.inverse_kinematics(target_position, target_orientation, orientation_mode="all")
     joints = list(joints[1:])
+
+    return joints
+
+def service(req):
+    print("Inverse Kinematics - Service call recieved.")
+    pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
+
+    joints = ikpy_inverse_kinematics(req.state.pose)
     
     print("Inverse Kinematics - Publishing: ", joints)
 
