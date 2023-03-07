@@ -12,8 +12,10 @@ from pathlib import Path
 from inv_kinematics.srv import InvKin
 from std_msgs.msg import Float64
 from custom_msgs.msg import Joints
+import time
 
 def service(req):
+    start_time = time.time()
     print("Inverse Kinematics - Service call recieved.")
     pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
 
@@ -42,7 +44,9 @@ def service(req):
     # Publish joint positions
     pub.publish(joints)
 
-    print("Inverse Kinematics - Joint positions published.\n")
+    print("Inverse Kinematics - Joint positions published. Time Taken:", time.time() - start_time)
+
+    print("\n")
 
     return True
 
