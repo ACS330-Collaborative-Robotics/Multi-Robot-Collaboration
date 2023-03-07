@@ -2,7 +2,6 @@
 # Authors: Conor Nichols (cjnichols1@sheffield.ac.uk) Joseph Fields (jfields1@sheffield.ac.uk)
 
 import rospy
-import tf_conversions
 
 from geometry_msgs.msg import Pose
 
@@ -20,13 +19,10 @@ class Movement:
         startx = start_pose.position.x*SF #start position for arm (now relative)
         starty = start_pose.position.y*SF
 
-        pos_robot_frame = self.serv_helper.frameConverter(self.serv_helper.robot_ns, "world", pos) #get desired pose in robot frame
-        
-        euler_angles = tf_conversions.transformations.euler_from_quaternion([pos_robot_frame.orientation.x, pos_robot_frame.orientation.y, pos_robot_frame.orientation.z, pos_robot_frame.orientation.w])
-        pos_robot_frame.orientation.x = euler_angles[0]
-        pos_robot_frame.orientation.y = euler_angles[1]
-        pos_robot_frame.orientation.z = euler_angles[2]
-        pos_robot_frame.orientation.w = 0 #currently no angle stuff
+        # Get coordinates relative to robot instead of world
+        pos_robot_frame = self.serv_helper.frameConverter(self.serv_helper.robot_ns, "world", pos)
+
+        print("Path Planner - Move - Publishing ", self.serv_helper.robot_ns, " to ", pos_robot_frame.position.x, "\t", pos_robot_frame.position.y, "\t", pos_robot_frame.position.z, "\t", pos_robot_frame.orientation.x, "\t", pos_robot_frame.orientation.y, "\t", pos_robot_frame.orientation.z, "\t", pos_robot_frame.orientation.w)
 
         xgoal = pos_robot_frame.position.x*SF #position of goal x
         ygoal = pos_robot_frame.position.y*SF
@@ -57,6 +53,7 @@ class Movement:
             tempPos.orientation.x= pos_robot_frame.orientation.x #temporary
             tempPos.orientation.y= pos_robot_frame.orientation.y #temporary
             tempPos.orientation.z= pos_robot_frame.orientation.z #temporary
+            tempPos.orientation.w= pos_robot_frame.orientation.w
             self.serv_helper.move(tempPos)
 
             #TODO: Force wait until robot has reached desired position. Temp fix:

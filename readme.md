@@ -38,6 +38,14 @@ Robot Namespaces - `robot_ns = ["mover6_a", "mover6_b]`
 
 Robot Joints - `1 -> 6`
 
+**Node Graph Diagram**
+
+![ROS Node Graph](docs/node_graph.png)
+
+**Path Planner Class Diagram**
+
+![Path Planner Class Diagram](docs/path_planner_class_diagram.png)
+
 ## Core nodes
 
 | Nickname | Package | Description | Startup Script |
@@ -59,13 +67,13 @@ Robot Joints - `1 -> 6`
 | CPR robot controller | cpr_robot | Modifed version of the controller provided in the CPR_Robot git page. The modifications allow for they system to be namespaced. | |
 | Mover6 driver | joint_controller| Takes the output form the joint controller and passes it to rvis and the CPR_Robot package. | |
 
-
 ## Additional nodes
 
 | Nickname | Package | Description | Startup Script |
 | - | - | - | - |
 | Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
 | Kinematics Movement Demo | movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
+| Test Kinematic Chain | movement_demo | Executes Path Plan service call once | `rosrun mover6_joint_movement_demo test_kinematic_chain.py` |
 | Mover6 Driver | joint_controller | Relays data from physical robot demand position to physical robot including change of units. |`export ROS_NAMESPACE=/mover6_a_p` `rosrun joint_controller mover6_driver` |
 | Fixed Zone Controller | zone_controller | Publishes a pair of fixed zones for testing purposes. | `rosrun zone_controller fixed_zone.py` |
 | Zone Point Detection Demo (Including TF Forward Kinematics demo) | zone_detection | Checks whether a point is in each published zone. Also demonstrate forward kinematics using Transform Trees. | `rosrun zone_detection point_detect.py` |
@@ -88,8 +96,6 @@ Robot Joints - `1 -> 6`
 | Current Moving State | `/robot_ns_p/physical/moving_state` | std_msgs/String |  | /mover6_a_p/mover6_driver |  |
 | CPR Robot State | `/robot_ns_p/robot_state` | cpr_robot/RobotState |  | /mover6_a_p/CPRMover6 | /mover6_a_p/rviz |
 
-
-
 ## Services
 
 | Nickname | Name | Location | Python Import | Input Format | Response Format |
@@ -100,6 +106,14 @@ Robot Joints - `1 -> 6`
 | Path Planner | `path_planner` | `path_planning path_plan.py` | `from path_planning.srv import PathPlan` | `string robot-name`, `geometry_msg/Pose end_pos`, `string block_name` | `bool success` |
 
 # Connecting and setting up Network
+
+## Connecting Linux machine to robotwlan
+
+```
+nmcli show
+nmcli down eduroam
+nmcli up robotwlan
+```
 
 You will need to conect your device to the `robotwlan` network, accessable in certain areas of the university or the wired university network.
 
@@ -287,3 +301,19 @@ apt install net-tools
 **Failed to launch joint_position_controller**
 
 Need to install ros-control and ros-controllers using: `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
+
+**ROS Ignoring the first message on a topic**
+
+ROS needs to know where each node is subscribed to and publishing to. This needs to happen before you can publish your first message. It then needs an amount of time to process this otherwise it will ignore the first message. e.g.
+
+```python
+## Incorrect method ##
+pub = rospy.Publisher("/topic_name", Joints, queue_size=10)
+pub.publish(joints)
+
+## More correct method ##
+pub = rospy.Publisher("/topic_name", Joints, queue_size=10)
+# Delay or run calculations
+pub.publish(joints)
+
+```

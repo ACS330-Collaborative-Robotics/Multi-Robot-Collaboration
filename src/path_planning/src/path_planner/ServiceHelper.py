@@ -39,11 +39,13 @@ class ServiceHelper:
     def move(self, pos:Pose):
         """ Move arm to specified position.
 
-        INPUT: geometry_msgs Pose() - Orientation in Euler angles not quaternions
+        INPUT: geometry_msgs Pose() - Orientation as quaternions
 
         Uses inverse_kinematics service.
         """
         rospy.wait_for_service('inverse_kinematics')
+
+        print("Path Planner - Service Helper - Calling ik for ", self.robot_ns)
 
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
@@ -69,19 +71,27 @@ class ServiceHelper:
         # Setup time stamped pose object
         start_pose = PoseStamped()
         start_pose.pose = goal_pose
+
+        print("Frame Converter - Start pose:", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z)
+        #print(start_pose)
+
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
 
         # Convert from world frame to robot frame using tf2
-        rate = rospy.Rate(10.0)
+        rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             try:
                 new_pose = self.tfBuffer.transform(start_pose, target_frame+"_base")
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                print("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
-                print("Failed")
                 continue
+        
+        print("Frame Converter - New pose:", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
+        #print(new_pose)
+
         return new_pose.pose
 
     def getJointPos(self, ref_arm_name:str,target_arm_name:str,link) -> Pose:
