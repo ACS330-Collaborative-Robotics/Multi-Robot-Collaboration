@@ -171,11 +171,11 @@ namespace cpr_rviz
     //! \brief Sets up communication with ROS.
     void RobotPanel::InitializeROS()
     {
-        m_GetRobotInfoClient=m_Node.serviceClient<cpr_robot::GetRobotInfo>("/GetRobotInfo");
-        m_RobotStateSubscriber=m_Node.subscribe("/robot_state",10,&RobotPanel::RobotStateCallback, this);
-        m_RobotCommandClient= m_Node.serviceClient<cpr_robot::RobotCommand>("/RobotCommand");
-        m_InputChannelsSubscriber=m_Node.subscribe("/InputChannels",10,&RobotPanel::InputChannelsCallback, this);
-        m_OutputChannelsSubscriber=m_Node.subscribe("/OutputChannels",10,&RobotPanel::OutputChannelsCallback, this);
+        m_GetRobotInfoClient=m_Node.serviceClient<cpr_robot::GetRobotInfo>("GetRobotInfo");
+        m_RobotStateSubscriber=m_Node.subscribe("robot_state",10,&RobotPanel::RobotStateCallback, this);
+        m_RobotCommandClient= m_Node.serviceClient<cpr_robot::RobotCommand>("RobotCommand");
+        m_InputChannelsSubscriber=m_Node.subscribe("InputChannels",10,&RobotPanel::InputChannelsCallback, this);
+        m_OutputChannelsSubscriber=m_Node.subscribe("OutputChannels",10,&RobotPanel::OutputChannelsCallback, this);
     }
 
     //! \brief Callback that handles messages received over the /RobotState ROS topic.
