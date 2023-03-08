@@ -79,7 +79,7 @@ namespace cpr_rviz
         m_InputGroupBox.setTitle("Digital inputs:");
         m_MainLayout.addRow(&m_InputGroupBox);
         m_pOutputs=new TaggedButton*[m_Outputs.size()];
-        for(size_t i=0;i<m_Outputs.size();i++)             // GRIPPER NOT WORK  original line was []
+        for(size_t i=0;i<m_Outputs.size();i++)
         {
             m_pOutputs[i]=new TaggedButton((int)i,&m_OutputGroupBox);
             m_pOutputs[i]->setText(m_Outputs[i].c_str());
@@ -171,11 +171,11 @@ namespace cpr_rviz
     //! \brief Sets up communication with ROS.
     void RobotPanel::InitializeROS()
     {
-        m_GetRobotInfoClient=m_Node.serviceClient<cpr_robot::GetRobotInfo>("GetRobotInfo");
-        m_RobotStateSubscriber=m_Node.subscribe("robot_state",10,&RobotPanel::RobotStateCallback, this);
-        m_RobotCommandClient= m_Node.serviceClient<cpr_robot::RobotCommand>("RobotCommand");
-        m_InputChannelsSubscriber=m_Node.subscribe("InputChannels",10,&RobotPanel::InputChannelsCallback, this);
-        m_OutputChannelsSubscriber=m_Node.subscribe("OutputChannels",10,&RobotPanel::OutputChannelsCallback, this);
+        m_GetRobotInfoClient=m_Node.serviceClient<cpr_robot::GetRobotInfo>("/GetRobotInfo");
+        m_RobotStateSubscriber=m_Node.subscribe("/robot_state",10,&RobotPanel::RobotStateCallback, this);
+        m_RobotCommandClient= m_Node.serviceClient<cpr_robot::RobotCommand>("/RobotCommand");
+        m_InputChannelsSubscriber=m_Node.subscribe("/InputChannels",10,&RobotPanel::InputChannelsCallback, this);
+        m_OutputChannelsSubscriber=m_Node.subscribe("/OutputChannels",10,&RobotPanel::OutputChannelsCallback, this);
     }
 
     //! \brief Callback that handles messages received over the /RobotState ROS topic.
@@ -227,6 +227,13 @@ namespace cpr_rviz
         for(size_t i=0;i<msg->state.size();i++)
         {
             m_pOutputs[i]->setChecked(msg->state[i]);
+
+	    // Partaking
+	    if(!m_pOutputs[i]->isChecked())
+            	RobotCommand(cpr_robot::Robot::COMMAND_DOUT_DISABLE, 0.0, i);
+            else
+            	RobotCommand(cpr_robot::Robot::COMMAND_DOUT_ENABLE, 0.0, i);
+
         }
     }
 

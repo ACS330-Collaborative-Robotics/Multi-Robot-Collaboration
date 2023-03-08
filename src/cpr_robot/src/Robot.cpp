@@ -67,13 +67,13 @@ namespace cpr_robot
         m_pIOmodules=new Joint*[m_CountIOmodules];
         for(size_t i=0;i<m_CountIOmodules;i++)
             m_pIOmodules[i]=new Joint(m_Bus,(unsigned int)(i+7));
-        m_JointStatePublisher=m_Node.advertise<sensor_msgs::JointState>("joint_states", 50);
-        m_RobotStatePublisher=m_Node.advertise<cpr_robot::RobotState>("robot_state",50);
-        m_InputChannelsPublisher=m_Node.advertise<cpr_robot::ChannelStates>("InputChannels",50);
-        m_OutputChannelsPublisher=m_Node.advertise<cpr_robot::ChannelStates>("OutputChannels",50);
-        m_GetRobotInfoServer=m_Node.advertiseService("GetRobotInfo",&Robot::GetRobotInfoHandler, this);
-        m_GetJointInfoServer=m_Node.advertiseService("GetJointInfo",&Robot::GetJointInfoHandler, this);
-        m_RobotCommandServer=m_Node.advertiseService("RobotCommand",&Robot::RobotCommandHandler, this);
+        m_JointStatePublisher=m_Node.advertise<sensor_msgs::JointState>("/joint_states", 50);
+        m_RobotStatePublisher=m_Node.advertise<cpr_robot::RobotState>("/robot_state",50);
+        m_InputChannelsPublisher=m_Node.advertise<cpr_robot::ChannelStates>("/InputChannels",50);
+        m_OutputChannelsPublisher=m_Node.advertise<cpr_robot::ChannelStates>("/OutputChannels",50);
+        m_GetRobotInfoServer=m_Node.advertiseService("/GetRobotInfo",&Robot::GetRobotInfoHandler, this);
+        m_GetJointInfoServer=m_Node.advertiseService("/GetJointInfo",&Robot::GetJointInfoHandler, this);
+        m_RobotCommandServer=m_Node.advertiseService("/RobotCommand",&Robot::RobotCommandHandler, this);
         m_Override=0.25;
     }
 
@@ -200,11 +200,12 @@ namespace cpr_robot
         for(size_t i=0;i<m_InputChannels.size();i++)
             inputChannels.state.push_back(get_Input(i));
         m_InputChannelsPublisher.publish(inputChannels);
-        cpr_robot::ChannelStates outputChannels;              //Desable Gripper channels
+        cpr_robot::ChannelStates outputChannels;
         outputChannels.Header.stamp = ros::Time::now();
-        for(size_t i=0;i<m_OutputChannels.size();i++)
+	//         
+	/* for(size_t i=0;i<m_OutputChannels.size();i++)
             outputChannels.state.push_back(get_Output(i));
-        m_OutputChannelsPublisher.publish(outputChannels);    //Stopping pulishing
+        m_OutputChannelsPublisher.publish(outputChannels); */
         cpr_robot::RobotState robot_state;
         robot_state.Header.stamp=ros::Time::now();
         robot_state.Override=m_Override;
