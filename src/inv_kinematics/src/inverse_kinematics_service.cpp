@@ -1,6 +1,6 @@
 #include "ros/ros.h"
 #include "inv_kinematics/InvKin.h"
-#include <trac_ik/trac_ik.hpp>
+//#include <trac_ik/trac_ik.hpp>
 
 using namespace std;
 
@@ -13,9 +13,9 @@ bool inverse_kinematics(inv_kinematics::InvKin::Request &req, inv_kinematics::In
     string URDF_param="/robot_description";
     double timeout_in_secs=0.005;
     double error=1e-5; 
-    TRAC_IK::SolveType type=TRAC_IK::Speed;
+    //TRAC_IK::SolveType type=TRAC_IK::Speed;
 
-    TRAC_IK::TRAC_IK ik_solver(string base_link, string tip_link, string URDF_param="/robot_description", double timeout_in_secs=0.005, double error=1e-5, TRAC_IK::SolveType type=TRAC_IK::Speed);
+    //TRAC_IK::TRAC_IK ik_solver(string base_link, string tip_link, string URDF_param="/robot_description", double timeout_in_secs=0.005, double error=1e-5, TRAC_IK::SolveType type=TRAC_IK::Speed);
     
     // NOTE: The last arguments to the constructors are optional.
     // The type can be one of the following: 
