@@ -82,7 +82,7 @@ class ServiceHelper:
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             try:
-                new_pose = self.tfBuffer.transform(start_pose, target_frame+"_base")
+                new_pose = self.tfBuffer.transform(start_pose, target_frame)
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 print("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
@@ -93,21 +93,20 @@ class ServiceHelper:
         #print(new_pose)
 
         return new_pose.pose
+    
 
-    def getJointPos(self, ref_arm_name:str,target_arm_name:str,link) -> Pose:
+    def getJointPos(self, ref_arm_name:str,target_arm_name:str,link:str) -> Pose:
         """ Get target cartesian joint coordinates from reference point
-        INPUT: string ref_arm_name, string target_arm_name, int link
-        OUTPUT: Pose - Orientation in Euler angles not quaternions
+        INPUT: string ref_arm_name, string target_arm_name, string link
+        OUTPUT: Pose 
         """
-        #tfBuffer = tf2_ros.Buffer() might be done already in init
-        #listener = tf2_ros.TransformListener(tfBuffer) #create transform listener 
-        #rate = rospy.Rate()
-        BaseID=ref_arm_name+'/base_link'
         joint_pos = Pose()
         joint_header = Header()
-        linkID=target_arm_name+'/link'+str(link)
+
+        BaseID=ref_arm_name+'/base_link'
+        linkID=target_arm_name+link
         try:
-            trans = self.tfBuffer.lookup_transform(BaseID, linkID, rospy.Time(0)) # get transform between base and link0
+            trans = self.tfBuffer.lookup_transform(linkID, BaseID, rospy.Time(0)) # get transform between base and link 
             joint_pos.position.x=trans.transform.translation.x #unit: meters
             joint_pos.position.y=trans.transform.translation.y
             joint_pos.position.z=trans.transform.translation.z
@@ -116,10 +115,10 @@ class ServiceHelper:
             joint_pos.orientation.y=trans.transform.rotation.y
             joint_pos.orientation.z=trans.transform.rotation.z
             joint_pos.orientation.w=trans.transform.rotation.w
-            rospy.loginfo("Position of joint %s is %s, %s, %s in reference to %s",link, joint_pos.position.x,joint_pos.position.y,joint_pos.position.z,ref_arm_name)
+            #rospy.loginfo("Position of %s is %f, %f, %f in reference to %s",linkID, joint_pos.position.x,joint_pos.position.y,joint_pos.position.z,ref_arm_name)
             
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException): 
-            rospy.loginfo("Error Transformation not found")
+            rospy.logerr("GetJointPos: Error Transformation not found")
         return joint_pos
 
     def EuclidianDistance(self,x,y,xgoal,ygoal):
@@ -137,7 +136,7 @@ class ServiceHelper:
             PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal)
         if d > D:
             PotentialChange = ((SF*x-SF*xgoal)/d,(SF*y-SF*ygoal)/d)
-        print('attraction change:',PotentialChange,'distance:',d)
+        #print('attraction change:',PotentialChange,'distance:',d)
         return PotentialChange
 
     def PotentialAttraction(self,x,y,xgoal,ygoal,D): #the attractive field as a whole (used to display)
@@ -219,9 +218,10 @@ class ServiceHelper:
                 PathComplete = 1
             if abs(difx) < 0.1 and abs(dify) < 0.1:
                 pass
+                rospy.logwarn("LOCAL MINIMA")
                 #add get out of minima here
             else:
-                #print('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
+                print('Iteration: ',i,' x,y: ',PathPointsx[i],PathPointsy[i],' Distance: ',d)
                 nextx = PathPointsx[i] - 0.2*difx
                 nexty = PathPointsy[i] - 0.2*dify
                 x = nextx

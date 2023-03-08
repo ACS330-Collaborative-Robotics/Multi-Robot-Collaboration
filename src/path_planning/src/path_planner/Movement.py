@@ -15,20 +15,39 @@ class Movement:
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
         SF=100
-        start_pose=self.serv_helper.getJointPos(self.serv_helper.robot_ns,self.serv_helper.robot_ns,6)
+        start_pose=self.serv_helper.getJointPos(self.serv_helper.robot_ns,self.serv_helper.robot_ns,"/link6")
         startx = start_pose.position.x*SF #start position for arm (now relative)
         starty = start_pose.position.y*SF
-
+        
         # Get coordinates relative to robot instead of world
-        pos_robot_frame = self.serv_helper.frameConverter(self.serv_helper.robot_ns, "world", pos)
+        pos_robot_base_frame = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", pos)
+        
+        #print("Path Planner - Move - Publishing ", self.serv_helper.robot_ns, " to ", pos_robot_frame.position.x, "\t", pos_robot_frame.position.y, "\t", pos_robot_frame.position.z, "\t", pos_robot_frame.orientation.x, "\t", pos_robot_frame.orientation.y, "\t", pos_robot_frame.orientation.z, "\t", pos_robot_frame.orientation.w)
 
-        print("Path Planner - Move - Publishing ", self.serv_helper.robot_ns, " to ", pos_robot_frame.position.x, "\t", pos_robot_frame.position.y, "\t", pos_robot_frame.position.z, "\t", pos_robot_frame.orientation.x, "\t", pos_robot_frame.orientation.y, "\t", pos_robot_frame.orientation.z, "\t", pos_robot_frame.orientation.w)
-
-        xgoal = pos_robot_frame.position.x*SF #position of goal x
-        ygoal = pos_robot_frame.position.y*SF
-
-        xobj = [50] #obstacles will add for loop to look at other arm
-        yobj = [50]
+        xgoal = pos_robot_base_frame.position.x*SF #position of goal x
+        ygoal = pos_robot_base_frame.position.y*SF
+        #print("startxy->goalxy:",startx,starty,xgoal,ygoal)
+        
+        #getting other arm name to get obstacles
+        if self.serv_helper.robot_ns=="mover6_a":
+            obstacle_arm_ns="mover6_b"
+        elif self.serv_helper.robot_ns=="mover6_b":
+            obstacle_arm_ns="mover6_a"
+        else:
+            rospy.logerr("ERROR-Invalid Robot name")
+        
+        #finding other arm joints as obstacles #NEED TO MAKE A OBSTACLE FUNCTION TO JUMP BETWEEN TRANSFORMS
+        xobj=[]
+        yobj=[]
+        for obs in range(0,7):
+            if obs==0:
+                obs_link="/base_link"
+            else:
+                obs_link="/link"+str(obs)
+            pos_obstacle=self.serv_helper.getJointPos(self.serv_helper.robot_ns,obstacle_arm_ns,obs_link)
+            xobj.append(pos_obstacle.position.x *SF)
+            yobj.append(pos_obstacle.position.y *SF)
+        #print(xobj,yobj)
         Q = 15
         D = 10
 
@@ -36,12 +55,12 @@ class Movement:
         #X, Y, xline, yline, PotentialEnergy, EnergyPathTaken, PathTakenSF = self.serv_helper.Space_Generation(startx, starty, xgoal, ygoal, xobj, yobj, Q, D)
         #self.serv_helper.plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
         #self.serv_helper.plotPath(PathTakenSF)
+
         ##X,Y path the End effector will take
         PathTakenSF = self.serv_helper.PathPlanner(startx,starty,xgoal, ygoal, xobj, yobj, Q, D)
         
         PathTaken = [[x[0]/SF,x[1]/SF] for x in PathTakenSF]
-
-        print(len(PathTaken))
+        #print(len(PathTaken))
         
         ## add a while loop to move through the points?
         tempPos=Pose()
@@ -50,14 +69,13 @@ class Movement:
             incrx,incry=PathTaken[incr]
             tempPos.position.x=incrx
             tempPos.position.y=incry
-            tempPos.position.z= pos_robot_frame.position.z #temporary
-            tempPos.orientation.x= pos_robot_frame.orientation.x #temporary
-            tempPos.orientation.y= pos_robot_frame.orientation.y #temporary
-            tempPos.orientation.z= pos_robot_frame.orientation.z #temporary
-            tempPos.orientation.w= pos_robot_frame.orientation.w
-            self.serv_helper.move(tempPos)
+            tempPos.position.z= pos_robot_base_frame.position.z #temporary
+            tempPos.orientation.x= pos_robot_base_frame.orientation.x #temporary
+            tempPos.orientation.y= pos_robot_base_frame.orientation.y #temporary
+            tempPos.orientation.z= pos_robot_base_frame.orientation.z #temporary
+            tempPos.orientation.w= pos_robot_base_frame.orientation.w
+            #self.serv_helper.move(tempPos)
 
             #TODO: Force wait until robot has reached desired position. Temp fix:
-            rospy.sleep(0.00000001)
 
         return True
