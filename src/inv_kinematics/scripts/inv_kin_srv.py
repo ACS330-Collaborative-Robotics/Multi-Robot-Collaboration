@@ -45,7 +45,12 @@ def trac_ik_inverse_kinematics(pose: Pose):
 
     #print(pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
 
-    joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
+    coordinate_tolerance = 0.1
+    angle_tolerance = 0.05
+
+    # TODO: Make this gradually increase tolerance as smaller tolerances fail
+
+    joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
 
     if joints is None:
         return None
