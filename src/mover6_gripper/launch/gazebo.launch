@@ -10,7 +10,7 @@
     name="spawn_model"
     pkg="gazebo_ros"
     type="spawn_model"
-    args="-file $(find mover6_gripper)/urdf/GreiferZF_2016.urdf -urdf -model GreiferZF_2016"
+    args="-file $(find mover6_gripper)/urdf/GreiferZF_2016.SLDASM.urdf -urdf -model GreiferZF_2016"
     output="screen" />
   <node
     name="fake_joint_calibration"

@@ -3,7 +3,7 @@
     name="model" />
   <param
     name="robot_description"
-    textfile="$(find mover6_gripper)/urdf/GreiferZF_2016.urdf" />
+    textfile="$(find mover6_gripper)/urdf/GreiferZF_2016.SLDASM.urdf" />
   <node
     name="joint_state_publisher_gui"
     pkg="joint_state_publisher_gui"
