@@ -45,12 +45,22 @@ def trac_ik_inverse_kinematics(pose: Pose):
 
     #print(pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
 
-    coordinate_tolerance = 0.1
-    angle_tolerance = 0.05
+    coordinate_tolerance = 1e-5
+    angle_tolerance = 1e-5
 
     # TODO: Make this gradually increase tolerance as smaller tolerances fail
 
     joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
+
+    multiplier = 10
+    while joints is None:
+        coordinate_tolerance = coordinate_tolerance * multiplier
+        angle_tolerance = angle_tolerance * multiplier
+
+        print("Inverse Kinematics - Trac Ik: Failed to find solution, increasing tolerance by 10 times to", coordinate_tolerance, angle_tolerance)
+
+        joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
+        
 
     if joints is None:
         return None
@@ -67,7 +77,7 @@ def service(req):
 
     # IF trac_ik does not find an adequate solution, use ikpy to find a nearby approximation
     if joints is None:
-        print("Inverse Kinematics - ERROR - Accurate IK not found, using fallback method")
+        print("Inverse Kinematics - ERROR - Accurate IK not found, using fallback method.")
         start_time = time()
         joints = ikpy_inverse_kinematics(req.state.pose)
         print("Inverse Kinematics - ikpy: ", joints, " Computed in: ", round(time()-start_time, 4))
