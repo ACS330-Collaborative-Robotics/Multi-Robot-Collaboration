@@ -92,7 +92,12 @@ def main():
     rospy.init_node('inverse_kinematics_server')
 
     s = rospy.Service('inverse_kinematics', InvKin, service)
-    
+
+    # Setup publish topics to avoid missing messages
+    robot_namespaces = ["mover6_a", "mover6_b"]
+    for robot_name in robot_namespaces:
+      pub = rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10)  
+
     rospy.spin()
 
 if __name__ == "__main__":
