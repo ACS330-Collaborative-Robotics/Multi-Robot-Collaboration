@@ -6,6 +6,7 @@ import tf_conversions
 import ikpy.chain
 from trac_ik_python.trac_ik import IK
 from time import time
+from math import pi
 
 from pathlib import Path
 
@@ -45,10 +46,8 @@ def trac_ik_inverse_kinematics(pose: Pose):
 
     #print(pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
 
-    coordinate_tolerance = 1e-5
-    angle_tolerance = 1e-5
-
-    # TODO: Make this gradually increase tolerance as smaller tolerances fail
+    coordinate_tolerance = 1e-4 # Start with 1mm tolerance
+    angle_tolerance = pi/180/10 # Start with 0.1 degree tolerance
 
     joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
 
