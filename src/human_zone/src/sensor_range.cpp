@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 
-void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
+void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg)
 {
     // process the distance data
     for (int i = 0; i < msg->ranges.size(); i++) {
