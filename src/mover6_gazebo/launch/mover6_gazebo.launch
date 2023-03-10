@@ -24,4 +24,48 @@
 
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_b" type="static_tf2_broadcaster.py" args="mover6_b_base 0 0.5 0.02 0 0 0" output="screen"/>
 
+    <model name="camera">
+        <pose>0 0 1 0 0 0</pose>
+        <link name="link">
+            <pose>0 0 0 0 0 0</pose>
+            <sensor name="camera" type="camera">
+                <camera name="camera">
+                    <image>
+                        <width>640</width>
+                        <height>480</height>
+                        <format>R8G8B8</format>
+                    </image>
+                    <clip>
+                        <near>0.01</near>
+                        <far>1000.0</far>
+                    </clip>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                        <alwaysOn>true</alwaysOn>
+                        <updateRate>30.0</updateRate>
+                        <cameraName>camera</cameraName>
+                        <imageTopicName>camera/image_raw</imageTopicName>
+                        <cameraInfoTopicName>camera/camera_info</cameraInfoTopicName>
+                        <frameName>camera_link</frameName>
+                        <hackBaseline>0.07</hackBaseline>
+                        <CxPrime>0.0</CxPrime>
+                        <Cx>320.5</Cx>
+                        <Cy>240.5</Cy>
+                        <f>554.256</f>
+                        <hackBaseline>0.07</hackBaseline>
+                        <distortionK1>0.0</distortionK1>
+                        <distortionK2>0.0</distortionK2>
+                        <distortionK3>0.0</distortionK3>
+                        <distortionT1>0.0</distortionT1>
+                        <distortionT2>0.0</distortionT2>
+                    </plugin>
+                </camera>
+            </sensor>
+        </link>
+    </model>
+
 </launch>
