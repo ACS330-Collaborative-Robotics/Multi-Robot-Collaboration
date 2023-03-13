@@ -4,6 +4,7 @@
 import rospy
 
 from geometry_msgs.msg import Pose
+#import matplotlib.pyplot as plt
 
 class Movement:
     def __init__(self, serv_helper):
@@ -36,12 +37,11 @@ class Movement:
         else:
             rospy.logerr("ERROR-Invalid Robot name")
         
-        #finding other arm joints as obstacles #NEED TO MAKE A OBSTACLE FUNCTION TO JUMP BETWEEN TRANSFORMS
         xobj=[]
         yobj=[]
         for obs in range(0,7):
             if obs==0:
-                obs_link="/base_link"
+              obs_link="/base_link"
             else:
                 obs_link="/link"+str(obs)
             pos_obstacle=self.serv_helper.getJointPos(self.serv_helper.robot_ns,obstacle_arm_ns,obs_link)
@@ -51,21 +51,20 @@ class Movement:
         Q = 15
         D = 10
 
-        ##Visual Commands
-        #X, Y, xline, yline, PotentialEnergy, EnergyPathTaken, PathTakenSF = self.serv_helper.Space_Generation(startx, starty, xgoal, ygoal, xobj, yobj, Q, D)
-        #self.serv_helper.plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
-        #self.serv_helper.plotPath(PathTakenSF)
-
         ##X,Y path the End effector will take
         PathTakenSF = self.serv_helper.PathPlanner(startx,starty,xgoal, ygoal, xobj, yobj, Q, D)
         
         PathTaken = [[x[0]/SF,x[1]/SF] for x in PathTakenSF]
         #print(len(PathTaken))
-        
-        ## add a while loop to move through the points?
+
+        ##Visual Commands
+        #X, Y, xline, yline, PotentialEnergy, EnergyPathTaken = self.serv_helper.Space_Generation(PathTakenSF, xgoal, ygoal, xobj, yobj, Q, D)
+        #self.serv_helper.plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
+        #self.serv_helper.plotPath(PathTakenSF)
+
         tempPos=Pose()
         for incr in range(len(PathTaken)): #move incrementally through positions
-            rospy.loginfo("move to: %s",PathTaken[incr])
+            #rospy.loginfo("move to: %s",PathTaken[incr])
             incrx,incry=PathTaken[incr]
             tempPos.position.x=incrx
             tempPos.position.y=incry

@@ -14,11 +14,12 @@ from std_msgs.msg import Header
 
 #from APF dependancies
 import numpy as np
+from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+
 
 import math
-from math import atan2, asin
+from math import *
 
 class ServiceHelper:
     def __init__(self, robot_ns):
@@ -83,13 +84,13 @@ class ServiceHelper:
         while not rospy.is_shutdown():
             try:
                 new_pose = self.tfBuffer.transform(start_pose, target_frame)
+                print("Frame Converter - New pose:", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 print("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
                 continue
         
-        print("Frame Converter - New pose:", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
         #print(new_pose)
 
         return new_pose.pose
@@ -130,7 +131,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.95 #scaling factor (step size)
+        SF = 0.85 #scaling factor (step size)
         d= self.EuclidianDistance(x,y,xgoal,ygoal)
         if d <= D:
             PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal)
@@ -159,8 +160,8 @@ class ServiceHelper:
         """
         SF = 5000
         PotentialRep = 0
-        for object in range(len(xobj)):
-            d = self.EuclidianDistance(x,y,xobj[object],yobj[object])
+        for objNum in range(len(xobj)):
+            d = self.EuclidianDistance(x,y,xobj[objNum],yobj[objNum])
             if d <= Q:
                 PotentialRepcurrent = SF*((1/d)-(1/Q))
             else:
@@ -178,10 +179,10 @@ class ServiceHelper:
         allvectorsx = 0
         allvectorsy = 0
         repulsionangle = 0
-        for object in range(len(xobj)):
+        for objNum in range(len(xobj)):
 
             homevect = (xgoal-x,ygoal-y)
-            objvect = (xobj[object]-x,yobj[object]-y)
+            objvect = (xobj[objNum]-x,yobj[objNum]-y)
             anglegoal = math.atan2(homevect[1],homevect[0])
             angleobj = math.atan2(objvect[1],objvect[0])
             angle = angleobj-anglegoal
@@ -189,7 +190,7 @@ class ServiceHelper:
                 repulsionangle = anglegoal - 90
             if angle < 0:
                 repulsionangle = anglegoal + 90
-            d = self.EuclidianDistance(x,y,xobj[object],yobj[object])
+            d = self.EuclidianDistance(x,y,xobj[objNum],yobj[objNum])
             SF = 5*(d-Q)
             repulsionvect = SF*math.cos(angle)*math.cos(repulsionangle),SF*math.cos(angle)*math.sin(repulsionangle)
             if d > Q:
@@ -216,12 +217,12 @@ class ServiceHelper:
             d = self.EuclidianDistance(x,y,xgoal,ygoal)
             if abs(difx) <0.2 and abs(dify) <0.2 and d < 0.5:#
                 PathComplete = 1
-            if abs(difx) < 0.1 and abs(dify) < 0.1:
+            if abs(difx) < 0.1 and abs(dify) < 0.1: #local minima can occur with big gradients that oscillate back and forth
                 pass
                 rospy.logwarn("LOCAL MINIMA")
                 #add get out of minima here
             else:
-                print('Iteration: ',i,' x,y: ',PathPointsx[i],PathPointsy[i],' Distance: ',d)
+                rospy.loginfo("Iteration: %.0f x,y: %.2f %.2f Gradient x,y: %.2f %.2f Distance: %.2f",i,PathPointsx[i],PathPointsy[i],difx,dify,d)
                 nextx = PathPointsx[i] - 0.2*difx
                 nexty = PathPointsy[i] - 0.2*dify
                 x = nextx
@@ -232,7 +233,7 @@ class ServiceHelper:
         PathPoints = list(zip(PathPointsx,PathPointsy))
         return PathPoints  
 
-    def Space_Generation(self,startx,starty,xgoal,ygoal,xobj,yobj,Q,D): #### needs to ad objx and objy
+    def Space_Generation(self,PathTaken,xgoal,ygoal,xobj,yobj,Q,D): #### needs to ad objx and objy
         x = np.linspace(-50, 50, 100)  # Creating X and Y axis
         y = np.linspace(-50, 50, 100)
         X, Y = np.meshgrid(x, y)  # Creates 2 arrays with respective x any y coordination for each point
@@ -241,7 +242,7 @@ class ServiceHelper:
             for j in range(len(Y)):
                 PotentialEnergy[i, j] = self.PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D)+ self.PotentialRepulsion(X[i,j],Y[i,j],xobj,yobj,Q)
                             # PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
-        PathTaken = self.PathPlanner(startx, starty, xgoal, ygoal, xobj, yobj,Q, D)  ## you are here ^^^
+        #PathTaken = self.PathPlanner(startx, starty, xgoal, ygoal, xobj, yobj,Q, D)  ## you are here ^^^
         EnergyPathTaken = []
         xline = []
         yline = []
@@ -251,7 +252,7 @@ class ServiceHelper:
             yline.append(y)
             TotalPotential = self.PotentialAttraction(x, y, xgoal, ygoal, D) + self.PotentialRepulsion(x, y, xobj, yobj, Q)
             EnergyPathTaken.append(TotalPotential)
-        return X,Y, xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
+        return X,Y, xline, yline, PotentialEnergy, EnergyPathTaken
 
     def plotAPF(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
         # Making 3d Plot
@@ -261,8 +262,9 @@ class ServiceHelper:
         ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
-        plt.show()
+        
         print("Successfuly run")
+        plt.show()
 
     def plotPath(self,PathTaken):
         fig = plt.figure()

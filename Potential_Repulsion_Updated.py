@@ -8,8 +8,8 @@ import numpy as np
 def PotentialRepulsion(x,y,xobj,yobj,Q):
     SF = 5000
     PotentialRep = 0
-    for object in range(len(xobj)):
-        d = EuclidianDistance(x,y,xobj[object],yobj[object])
+    for objNum in range(len(xobj)):
+        d = EuclidianDistance(x,y,xobj[objNum],yobj[objNum])
         if d <= Q:
             PotentialRepcurrent = SF*((1/d)-(1/Q))
         else:
@@ -23,10 +23,10 @@ def PotentialRepulsionChange(x,y,xobj,yobj,xgoal,ygoal,Q):
     allvectorsx = 0
     allvectorsy = 0
     repulsionangle = 0
-    for object in range(len(xobj)):
+    for objNum in range(len(xobj)):
 
         homevect = (xgoal-x,ygoal-y)
-        objvect = (xobj[object]-x,yobj[object]-y)
+        objvect = (xobj[objNum]-x,yobj[objNum]-y)
         anglegoal = math.atan2(homevect[1],homevect[0])
         angleobj = math.atan2(objvect[1],objvect[0])
         angle = angleobj-anglegoal
@@ -34,7 +34,7 @@ def PotentialRepulsionChange(x,y,xobj,yobj,xgoal,ygoal,Q):
             repulsionangle = anglegoal - 90
         if angle < 0:
             repulsionangle = anglegoal + 90
-        d = EuclidianDistance(x,y,xobj[object],yobj[object])
+        d = EuclidianDistance(x,y,xobj[objNum],yobj[objNum])
         SF = 5*(d-Q)
         repulsionvect = SF*math.cos(angle)*math.cos(repulsionangle),SF*math.cos(angle)*math.sin(repulsionangle)
         if d > Q:
