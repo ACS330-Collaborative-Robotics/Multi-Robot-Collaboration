@@ -102,28 +102,21 @@ catkin_package(
 ###########
 
 ## Specify additional locations of header files
-## Your package locations should be listed before other locations
+## Your package locations should be listed before other locations   
 include_directories( PUBLIC
   include
   ${catkin_INCLUDE_DIRS}
 )
 
-
 add_executable(mover6_driver 
   src/mover6_driver.cpp) 
 target_link_libraries(mover6_driver ${catkin_LIBRARIES})
 
-#add_executable(GripperControlV2
-#  src/GripperControlV2.cpp ) 
-#target_link_libraries(GripperControlV2 ${catkin_LIBRARIES})
-
 catkin_install_python(PROGRAMS 
   scripts/joint_controller.py
-  scripts/listener.py
-  scripts/talker.py
+  scripts/gripper_controller.py
+  scripts/manualGripperControll.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 add_dependencies(mover6_driver ${catkin_EXPORTED_TARGETS})
-# add_dependencies(GripperControlV2 ${catkin_EXPORTED_TARGETS})
-

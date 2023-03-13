@@ -21,7 +21,7 @@ def main():
     global robot_name
     robot_name =  "/" + argv[1]
     print("----------------------------------")
-    print(robot_name + " Initialised.")
+    print(robot_name + " Joints Initialised.")
     print("----------------------------------")
 
     # Setup subscriber for Joint Angle demand
@@ -32,8 +32,6 @@ def main():
     # Telling Simulation to move
     if enableSimulation:
         rospy.Subscriber(robot_name + "/joint_angles", Joints, callback_sim)
-
-    #TODO: Add multirobot support
 
     # Wait until a callback happens
     rospy.spin()
