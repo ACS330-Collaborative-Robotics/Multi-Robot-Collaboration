@@ -31,7 +31,7 @@ class Movement:
         xgoal = pos_robot_base_frame.position.x*SF 
         ygoal = pos_robot_base_frame.position.y*SF
         zgoal = pos_robot_base_frame.position.z*SF
-        #print("startxy->goalxy:",startx,starty,xgoal,ygoal)
+        print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         
         #Obstacle positions
         if self.serv_helper.robot_ns=="mover6_a":
@@ -53,35 +53,31 @@ class Movement:
             xobj.append(pos_obstacle.position.x *SF)
             yobj.append(pos_obstacle.position.y *SF)
             zobj.append(pos_obstacle.position.z *SF)
-        #print(xobj,yobj)
+        #print(len(xobj),len(yobj),len(zobj))
 
 
-        Q = [12,4,2]
+        Q = [12,12,10,8,6,4,2] #strength of field around each point?
         D = 10
-        xobj,yobj,zobj,Q = Link_Midpoints(xobj,yobj,zobj,Q)
-        #print(xobj,yobj,Q)
-        ##Visual Commands
-        X, Y,Z, xline, yline,zline, PotentialEnergy, EnergyPathTaken, PathTaken = Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
-        plotAPF(xobj, yobj,zobj, xline, yline,zline, PotentialEnergy, EnergyPathTaken)
-        #plotPath(PathTaken)
-        ##X,Y path the End effector will take
-        PathTaken = PathPlanner(startx,starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
-        #print(len(PathTaken))
-        PathTaken = [[x[0]/SF,x[1]/SF] for x in PathTakenSF]
-        #print(len(PathTaken))
+        xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q)
 
         ##Visual Commands
-        #X, Y, xline, yline, PotentialEnergy, EnergyPathTaken = self.serv_helper.Space_Generation(PathTakenSF, xgoal, ygoal, xobj, yobj, Q, D)
-        #self.serv_helper.plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
-        #self.serv_helper.plotPath(PathTakenSF)
+        #X,Y,Z, xline, yline,zline, PotentialEnergy, EnergyPathTaken, PathTaken = self.serv_helper.Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
+        #self.serv_helper.plotAPF(xobj, yobj,zobj, xline, yline,zline, PotentialEnergy, EnergyPathTaken)
+        #self.serv_helper.plotPath(PathTaken)
+
+        ##X,Y,Z path the End effector will take
+        PathTakenSFx, PathTakenSFy, PathTakenSFz = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D)
+        PathTakenx = [x/SF for x in PathTakenSFx]
+        PathTakeny = [y/SF for y in PathTakenSFy]
+        PathTakenz = [z/SF for z in PathTakenSFz]
+        
 
         tempPos=Pose()
-        for incr in range(len(PathTaken)): #move incrementally through positions
+        for incr in range(len(PathTakenx)): #move incrementally through positions
             #rospy.loginfo("move to: %s",PathTaken[incr])
-            incrx,incry=PathTaken[incr]
-            tempPos.position.x=incrx
-            tempPos.position.y=incry
-            tempPos.position.z= pos_robot_base_frame.position.z #temporary
+            tempPos.position.x=PathTakenx[incr]
+            tempPos.position.y=PathTakeny[incr]
+            tempPos.position.z=PathTakenz[incr]
             tempPos.orientation.x= pos_robot_base_frame.orientation.x #temporary
             tempPos.orientation.y= pos_robot_base_frame.orientation.y #temporary
             tempPos.orientation.z= pos_robot_base_frame.orientation.z #temporary

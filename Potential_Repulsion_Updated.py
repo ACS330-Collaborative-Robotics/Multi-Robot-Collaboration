@@ -24,6 +24,7 @@ def PotentialRepulsionChange(x,y,z,xobj,yobj,zobj,xgoal,ygoal,zgoal,Q):
     allvectorsz = 0
     repulsionangle = 0
     for objNum in range(len(xobj)):
+        
         homevect = [xgoal-x,ygoal-y,zgoal-z]
         objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z)
         anglegoal = math.atan2(homevect[1],homevect[0])

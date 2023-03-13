@@ -24,6 +24,7 @@ def PathPlanner(x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently 
             PathComplete = 1
         if abs(difx) < 0.1 and abs(dify) < 0.1:
             pass
+            print("LOCAL MINIMA")
             #add get out of minima here
         else:
             #print('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)

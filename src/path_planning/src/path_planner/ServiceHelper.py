@@ -101,10 +101,11 @@ class ServiceHelper:
         OUTPUT: Pose 
         """
         joint_pos = Pose()
-        joint_header = Header()
+        #joint_header = Header()
 
         BaseID=ref_arm_name+'/base_link'
         linkID=target_arm_name+link
+        print(BaseID,linkID)
         try:
             trans = self.tfBuffer.lookup_transform(linkID, BaseID, rospy.Time(0)) # get transform between base and link 
             joint_pos.position.x=trans.transform.translation.x #unit: meters
@@ -133,16 +134,17 @@ class ServiceHelper:
         newQ = []
         for i in range(no_links):
             vector = [xobj[i + 1] - xobj[i], yobj[i + 1] - yobj[i], zobj[i + 1] - zobj[i]]
-            detlaQ = Q[i+1]-Q[i]
+            deltaQ = Q[i+1]-Q[i]
             for j in range(10):
                 newxobj.append(xobj[i] + vector[0]*j/10)
                 newyobj.append(yobj[i] + vector[1] * j / 10)
                 newzobj.append(zobj[i] + vector[2] * j / 10)
-                newQ.append(Q[i] + detlaQ*j/10)
+                newQ.append(Q[i] + deltaQ*j/10)
+
         print('Midpoints Complete')
         return newxobj,newyobj,newzobj,newQ
 
-    def NoiseAddition(PathPointsx,PathPointsy,xgoal,ygoal,xobj,yobj): #what does this do?
+    def NoiseAddition(self,PathPointsx,PathPointsy,xgoal,ygoal,xobj,yobj): #what does this do?
         ObjAngle = math.atan2(ygoal-PathPointsy,xobj-xgoal)
         ObjAngle = math.degrees(ObjAngle)
         fig = plt.figure()
@@ -153,7 +155,7 @@ class ServiceHelper:
         return ObjAngle
 
 
-    def PotentialAttractionChange(x,y,z,xgoal,ygoal,zgoal,D): #attraction at a specific point (used to calculate)
+    def PotentialAttractionChange(self,x,y,z,xgoal,ygoal,zgoal,D): #attraction at a specific point (used to calculate)
         """ Calculates potential change from point to goal
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
@@ -167,7 +169,7 @@ class ServiceHelper:
         #print('attraction change:',PotentialChange)
         return PotentialChange
 
-    def PotentialAttraction(x,y,z,xgoal,ygoal,zgoal,D): #the attractive field as a whole (used to display)
+    def PotentialAttraction(self,x,y,z,xgoal,ygoal,zgoal,D): #the attractive field as a whole (used to display)
         """ Calculates potential from point to goal
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
@@ -180,23 +182,23 @@ class ServiceHelper:
             PotentialAtt = D*SF*d - 0.5*SF*D
         return PotentialAtt
 
-    def PotentialRepulsion(x,y,z,xobj,yobj,zobj,Q): #Repulsive field as a whole (used to display)
+    def PotentialRepulsion(self,x,y,z,xobj,yobj,zobj,Q): #Repulsive field as a whole (used to display)
         """ 
         INPUT: current position and obstacle postition XYs. 
         OUTPUT: PotentialRep (a single value for Potential at those coordinates)
         """
         SF = 100
-            PotentialRep = 0
-            for objNum in range(len(xobj)):
-                d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
-                if d <= Q[objNum]:
-                    PotentialRepcurrent = SF*((1/d)-(1/Q[objNum]))
-                else:
-                    PotentialRepcurrent = 0
-                if PotentialRepcurrent > 100:
-                    PotentialRepcurrent = 100
-                PotentialRep += PotentialRepcurrent
-            return PotentialRep
+        PotentialRep = 0
+        for objNum in range(len(xobj)):
+            d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
+            if d <= Q[objNum]:
+                PotentialRepcurrent = SF*((1/d)-(1/Q[objNum]))
+            else:
+                PotentialRepcurrent = 0
+            if PotentialRepcurrent > 100:
+                PotentialRepcurrent = 100
+            PotentialRep += PotentialRepcurrent
+        return PotentialRep
 
     def PotentialRepulsionChange(self,x,y,z,xobj,yobj,zobj,xgoal,ygoal,zgoal,Q): #repulsion at a specific point (used to calculate)
         """
@@ -232,7 +234,7 @@ class ServiceHelper:
         return allvectorsx,allvectorsy,allvectorsz
 
     
-    def PathPlanner(x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
+    def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
         """
         returned as an array of points
         INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)   
@@ -240,10 +242,12 @@ class ServiceHelper:
         """
         PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
         PathPointsx = [x] #First X and Y points
-        PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
+        PathPointsy = [y] 
         PathPointsz = [z]
+        print("INITIAL PATH POINT: ",PathPointsx,PathPointsy)
         i = 0
         while PathComplete == 0:
+            
             diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
             diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
             difx = diffatt[0] + diffrep[0]
@@ -253,6 +257,7 @@ class ServiceHelper:
             if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:
                 PathComplete = 1
             if abs(difx) < 0.1 and abs(dify) < 0.1:
+                rospy.loginfo("LOCAL MINIMA")
                 pass
                 #add get out of minima here
             else:
