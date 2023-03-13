@@ -202,9 +202,10 @@ namespace cpr_robot
         m_InputChannelsPublisher.publish(inputChannels);
         cpr_robot::ChannelStates outputChannels;
         outputChannels.Header.stamp = ros::Time::now();
-        for(size_t i=0;i<m_OutputChannels.size();i++)
+	//         
+	/* for(size_t i=0;i<m_OutputChannels.size();i++)
             outputChannels.state.push_back(get_Output(i));
-        m_OutputChannelsPublisher.publish(outputChannels);
+        m_OutputChannelsPublisher.publish(outputChannels); */
         cpr_robot::RobotState robot_state;
         robot_state.Header.stamp=ros::Time::now();
         robot_state.Override=m_Override;

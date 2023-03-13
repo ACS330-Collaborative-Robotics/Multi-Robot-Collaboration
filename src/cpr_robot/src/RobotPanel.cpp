@@ -227,6 +227,13 @@ namespace cpr_rviz
         for(size_t i=0;i<msg->state.size();i++)
         {
             m_pOutputs[i]->setChecked(msg->state[i]);
+
+	    // Partaking
+	    if(!m_pOutputs[i]->isChecked())
+            	RobotCommand(cpr_robot::Robot::COMMAND_DOUT_DISABLE, 0.0, i);
+            else
+            	RobotCommand(cpr_robot::Robot::COMMAND_DOUT_ENABLE, 0.0, i);
+
         }
     }
 
