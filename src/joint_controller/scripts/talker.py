@@ -7,12 +7,13 @@ from cpr_robot.msg import ChannelStates
 def talker():
     pub = rospy.Publisher('/mover6_a_p/OutputChannels', ChannelStates, queue_size=10)
     rospy.init_node('Gripper_Control')
-    rate = rospy.Rate(50) # 1hz
+    rate = rospy.Rate(10) # 1hz
     while not rospy.is_shutdown():
         temp = ChannelStates()
         temp.Header.stamp = rospy.get_rostime()
         temp.state = [False, False, False, False, True, True]
         pub.publish(temp)
+        print(True)
         rate.sleep()
 
 if __name__ == '__main__':
