@@ -77,6 +77,7 @@ class GUI:
 
     def update_mover6_a(self, data):
         joint_angles = data.data
+        print(joint_angles)
         rospy.loginfo(joint_angles)
         # Update the joint angle labels for Mover6 A
         self.joint1_label_a.configure(text=str(joint_angles[0]))
@@ -88,6 +89,7 @@ class GUI:
 
     def update_mover6_b(self, data):
         joint_angles = data.data
+        print(joint_angles)
 
         # Update the joint angle labels for Mover6 B
         self.joint1_label_b.configure(text=str(joint_angles[0]))
