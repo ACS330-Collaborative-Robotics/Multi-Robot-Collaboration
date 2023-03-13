@@ -4,34 +4,6 @@ Efficient coordination of a multi-robot team is the key challenge in robotic app
 
 This project shall look at the creation of a sophisticated model-based control algorithm for the effective and efficient interaction of multiple robots into their production processes.
 
-# How to Build and Run
-
-## ROS/Gazebo simulation build
-
-1. Navigate to `~/catkin_ws` in Ubuntu Terminal.
-
-2. Build the project by running `catkin_make`. Only the `src` and build scripts are stored in the GH Repo so this will build the `build` and `devel` folders.
-
-3. Each set of nodes is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each group of nodes has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
-
-## Startup Instructions
-
-Run each of the following in its own terminal tab, after running `cd ~/catkin_ws`.
-
- - `roscore` - ROS Core
- - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
- - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
-
-### Mover6 Dashboard with RViz
-
-```
-catkin_make clean
-catkin_make rebuild_cache
-catkin_make
-catkin_make install
-roslaunch cpr_robot CPRMover6.launch
-```
-
 # ROS Information
 
 Robot Namespaces - `robot_ns = ["mover6_a", "mover6_b]`
@@ -105,14 +77,42 @@ Robot Joints - `1 -> 6`
 | ikpy Inverse Kinematics | `inverse_kinematics` | `inv_kinematics inv_kin_srv.py` | `from inv_kinematics.srv import InvKin` | `gazebo_msgs ModelState` | `bool success` |
 | Path Planner | `path_planner` | `path_planning path_plan.py` | `from path_planning.srv import PathPlan` | `string robot-name`, `geometry_msg/Pose end_pos`, `string block_name` | `bool success` |
 
-# Connecting and setting up Network
+# How to Build and Run
+
+## ROS/Gazebo simulation build
+
+1. Navigate to `~/catkin_ws` in Ubuntu Terminal.
+
+2. Build the project by running `catkin_make`. Only the `src` and build scripts are stored in the GH Repo so this will build the `build` and `devel` folders.
+
+3. Each set of nodes is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each group of nodes has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
+
+## Startup Instructions
+
+Run each of the following in its own terminal tab, after running `cd ~/catkin_ws`.
+
+ - `roscore` - ROS Core
+ - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
+ - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
+
+### Mover6 Dashboard with RViz
+
+```
+catkin_make clean
+catkin_make rebuild_cache
+catkin_make
+catkin_make install
+roslaunch cpr_robot CPRMover6.launch
+```
+
+# Connecting and setting up Networking
 
 ## Connecting Linux machine to robotwlan
 
 ```
-nmcli show
-nmcli down eduroam
-nmcli up robotwlan
+nmcli c show
+nmcli c down eduroam
+nmcli c up robotwlan
 ```
 
 You will need to conect your device to the `robotwlan` network, accessable in certain areas of the university or the wired university network.
@@ -297,7 +297,6 @@ Probably dont have ifconfig
 apt install net-tools
 ```
 
-
 **Failed to launch joint_position_controller**
 
 Need to install ros-control and ros-controllers using: `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
@@ -315,5 +314,10 @@ pub.publish(joints)
 pub = rospy.Publisher("/topic_name", Joints, queue_size=10)
 # Delay or run calculations
 pub.publish(joints)
-
 ```
+
+**Gazebo Black Screen on Launch in WSL**
+
+First, try install/update your graphics card drivers following [these instructions](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps#prerequisites).
+
+If this doesnt fix the issues, or you have an Intel Xe Graphics card, you will need disable GPU acceleration, rendering only on your CPU. This will be very slow but better than nothing. Add `export  LIBGL_ALWAYS_SOFTWARE=1` to the end of your `.bashrc` file. Restart your terminal and it should work.
