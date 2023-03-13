@@ -11,7 +11,7 @@ def talker():
     while not rospy.is_shutdown():
         temp = ChannelStates()
         temp.Header.stamp = rospy.get_rostime()
-        temp.state = [False, False, False, False, True, True]
+        temp.state = [False, False, False, False, False, True]
         pub.publish(temp)
         print(True)
         rate.sleep()
