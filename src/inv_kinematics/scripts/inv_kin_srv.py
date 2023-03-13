@@ -46,15 +46,15 @@ def trac_ik_inverse_kinematics(pose: Pose):
 
     #print(pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
 
-    coordinate_tolerance = 1e-4 # Start with 1mm tolerance
-    angle_tolerance = pi/180/10 # Start with 0.1 degree tolerance
+    coordinate_tolerance = 1e-3 # Start with 1mm tolerance
+    angle_tolerance = pi/180 # Start with 1 degree tolerance
 
     joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
 
     multiplier = 10
     while joints is None:
         coordinate_tolerance = coordinate_tolerance * multiplier
-        angle_tolerance = angle_tolerance * multiplier
+        #angle_tolerance = angle_tolerance * multiplier
 
         print("Inverse Kinematics - Trac Ik: Failed to find solution, increasing tolerance by 10 times to", coordinate_tolerance, angle_tolerance)
 
