@@ -6,7 +6,9 @@ import tf2_ros
 import tf
 
 from gazebo_msgs.msg import ModelState
+from gazebo_msgs.msg import LinkState
 from gazebo_msgs.srv import GetModelState
+from gazebo_msgs.srv import GetLinkState
 from geometry_msgs.msg import Pose
 from tf2_geometry_msgs import PoseStamped
 from inv_kinematics.srv import InvKin
@@ -31,6 +33,9 @@ class ServiceHelper:
         # Setup get_model_state service
         rospy.wait_for_service('gazebo/get_model_state')
         self.model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
+
+        rospy.wait_for_service('gazebo/get_link_state')
+        self.link_state_service = rospy.ServiceProxy('gazebo/get_link_state', GetLinkState)
 
         # Setup tf2
         self.tfBuffer = tf2_ros.Buffer()
@@ -89,12 +94,9 @@ class ServiceHelper:
                 print("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
                 continue
-        
         #print(new_pose)
-
         return new_pose.pose
     
-
     def getJointPos(self, ref_arm_name:str,target_arm_name:str,link:str) -> Pose:
         """ Get target cartesian joint coordinates from reference point
         INPUT: string ref_arm_name, string target_arm_name, string link
@@ -122,17 +124,17 @@ class ServiceHelper:
             rospy.logerr("GetJointPos: Error Transformation not found between %s to %s",BaseID,linkID)
         return joint_pos
 
-    def getJointPos2(self, arm_name:str,link_name:str) -> Pose:
+    def getLinkPos(self, arm_name:str,link_name:str) -> Pose:
         """ Get Joint position relative to current robot arm
         INPUT: string arm_name string link_name
         OUTPUT: gazebo_msgs Pose() - Orientation in Euler angles not quaternions
-        Uses gazebo/get_model_state service.
+        Uses gazebo/get_link_state service.
         """
         # TODO: Replace with data from /blocks
-        rospy.wait_for_service('gazebo/get_model_state')
+        rospy.wait_for_service('gazebo/get_link_state')
         # Extract Pose() object
-        specific_model_name=arm_name+"/"+link_name
-        data = self.model_state_service(specific_model_name, "world").pose
+        specific_link_name=arm_name+"::"+link_name
+        data = self.link_state_service(specific_link_name, "world").link_state.pose
         return data
 
     def EuclidianDistance(self,x,y,z,xgoal,ygoal,zgoal):
@@ -173,7 +175,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.95 #scaling factor
+        SF = 0.9 #scaling factor
         d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialChange = [SF*x-SF*xgoal,SF*y-SF*ygoal,SF*z-SF*zgoal]
@@ -187,7 +189,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
         """
-        SF = 0.25 #scaling factor
+        SF = 0.2 #scaling factor
         d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialAtt = 0.5*SF*(d**2)
@@ -234,7 +236,7 @@ class ServiceHelper:
             if angle < 0:
                 repulsionangle = anglegoal + 90
             d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
-            SF = 4*(d-Q[objNum])
+            SF = 5*(d-Q[objNum])
             repulsionvect = SF*math.cos(angle)*math.cos(repulsionangle),SF*math.cos(angle)*math.sin(repulsionangle)
             if d > Q[objNum]:
                 repulsionvect = 0,0
@@ -267,9 +269,9 @@ class ServiceHelper:
             dify = diffatt[1] + diffrep[1]
             difz = diffatt[2] + diffrep[2]
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
-            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:
+            if abs(difx) <0.1 and abs(dify) <0.1 and abs(difz) <0.1 and d < 0.5:
                 PathComplete = 1
-            if abs(difx) < 0.1 and abs(dify) < 0.1 and d > 2:
+            if abs(difx) < 0.05 and abs(dify) < 0.05 and d > 0.5:
                 rospy.loginfo("LOCAL MINIMA")
                 pass
                 #add get out of minima here

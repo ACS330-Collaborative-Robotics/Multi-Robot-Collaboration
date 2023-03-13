@@ -16,17 +16,15 @@ class Movement:
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
         SF=100 #distance scale factor
-        ##Start position
-        start_pose_world=self.serv_helper.getJointPos2(self.serv_helper.robot_ns,"link6")
+        ##Start position relative to world then arm
+        start_pose_world=self.serv_helper.getLinkPos(self.serv_helper.robot_ns,"link6") 
         start_pose = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", start_pose_world)
-        startx = start_pose.position.x*SF #start position for arm (now relative)
+        startx = start_pose.position.x*SF #start coords for end effector (now relative)
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF
         
-        # Get coordinates relative to robot instead of world
+        # Get block coordinates relative to robot instead of world
         pos_robot_base_frame = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", pos)
-        
-        #print("Path Planner - Move - Publishing ", self.serv_helper.robot_ns, " to ", pos_robot_frame.position.x, "\t", pos_robot_frame.position.y, "\t", pos_robot_frame.position.z, "\t", pos_robot_frame.orientation.x, "\t", pos_robot_frame.orientation.y, "\t", pos_robot_frame.orientation.z, "\t", pos_robot_frame.orientation.w)
 
         ##Goal position
         xgoal = pos_robot_base_frame.position.x*SF 
@@ -34,8 +32,9 @@ class Movement:
         zgoal = pos_robot_base_frame.position.z*SF +1
         print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         
-        #Obstacle positions
-        if self.serv_helper.robot_ns=="mover6_a":
+        #Obstacle positions relative to world then arm
+
+        if self.serv_helper.robot_ns=="mover6_a": 
             obstacle_arm_ns="mover6_b"
         elif self.serv_helper.robot_ns=="mover6_b":
             obstacle_arm_ns="mover6_a"
@@ -50,17 +49,18 @@ class Movement:
               obs_link="base_link"
             else:
                 obs_link="link"+str(obs)
-            pos_obstacle_world=self.serv_helper.getJointPos2(self.serv_helper.robot_ns,obs_link)
+
+            pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
             pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", pos_obstacle_world)
-            xobj.append(pos_obstacle.position.x *SF)
+            xobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
             yobj.append(pos_obstacle.position.y *SF)
             zobj.append(pos_obstacle.position.z *SF)
         #print(len(xobj),len(yobj),len(zobj))
 
 
-        Q = [12,12,10,8,6,4,2] #strength of field around each point?
+        Q = [12,12,10,8,6,4,2] #strength of field around each arm joint?
         D = 10
-        xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q)
+        xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #????
 
         ##Visual Commands
         #X,Y,Z, xline, yline,zline, PotentialEnergy, EnergyPathTaken, PathTaken = self.serv_helper.Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
@@ -69,10 +69,29 @@ class Movement:
 
         ##X,Y,Z path the End effector will take
         PathTakenSFx, PathTakenSFy, PathTakenSFz = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D)
-        PathTakenx = [x/SF for x in PathTakenSFx]
+        PathTakenx = [x/SF for x in PathTakenSFx] #rescale back to meters
         PathTakeny = [y/SF for y in PathTakenSFy]
         PathTakenz = [z/SF for z in PathTakenSFz]
         
+        ##FILTERING
+        PathTakenLen=len(PathTakenx)
+        FilterPathTakenLen=20 #approximately, configurable constant
+        SamplePeriod=round(PathTakenLen/FilterPathTakenLen) #sample period
+        FilterPathTakenx=[]
+        FilterPathTakeny=[]
+        FilterPathTakenz=[]
+        if PathTakenLen>FilterPathTakenLen:
+            j=0
+            for i in range(PathTakenLen):
+                if i%SamplePeriod == 0: #take a sample every SamplePeriod iterations
+                    FilterPathTakenx.append(PathTakenx[i])
+                    FilterPathTakeny.append(PathTakeny[i])
+                    FilterPathTakenz.append(PathTakenz[i])
+            print("FILTERED PATH LENGTH=",len(FilterPathTakenx))
+        else:
+            FilterPathTakenx=PathTakenx
+            FilterPathTakeny=PathTakeny
+            FilterPathTakenz=PathTakenz
 
         tempPos=Pose()
         for incr in range(len(PathTakenx)): #move incrementally through positions
