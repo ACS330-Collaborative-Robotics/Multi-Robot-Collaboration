@@ -105,7 +105,7 @@ class ServiceHelper:
 
         BaseID=ref_arm_name+'/base_link'
         linkID=target_arm_name+link
-        print(BaseID,linkID)
+        #print(BaseID,linkID)
         try:
             trans = self.tfBuffer.lookup_transform(linkID, BaseID, rospy.Time(0)) # get transform between base and link 
             joint_pos.position.x=trans.transform.translation.x #unit: meters
@@ -119,7 +119,7 @@ class ServiceHelper:
             #rospy.loginfo("Position of %s is %f, %f, %f in reference to %s",linkID, joint_pos.position.x,joint_pos.position.y,joint_pos.position.z,ref_arm_name)
             
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException): 
-            rospy.logerr("GetJointPos: Error Transformation not found")
+            rospy.logerr("GetJointPos: Error Transformation not found between %s to %s",BaseID,linkID)
         return joint_pos
 
     def EuclidianDistance(self,x,y,z,xgoal,ygoal,zgoal):
@@ -244,7 +244,7 @@ class ServiceHelper:
         PathPointsx = [x] #First X and Y points
         PathPointsy = [y] 
         PathPointsz = [z]
-        print("INITIAL PATH POINT: ",PathPointsx,PathPointsy)
+        #print("INITIAL PATH POINT: ",PathPointsx,PathPointsy)
         i = 0
         while PathComplete == 0:
             
@@ -256,12 +256,12 @@ class ServiceHelper:
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
             if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:
                 PathComplete = 1
-            if abs(difx) < 0.1 and abs(dify) < 0.1:
+            if abs(difx) < 0.1 and abs(dify) < 0.1 and d > 2:
                 rospy.loginfo("LOCAL MINIMA")
                 pass
                 #add get out of minima here
             else:
-                #print('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
+                print('Iteration: ',i,'x,y,z: ',PathPointsx[i],PathPointsy[i],PathPointsz[i],' Dist:' ,d)
                 nextx = PathPointsx[i] - 1.5*difx
                 nexty = PathPointsy[i] - 1.5*dify
                 nextz = PathPointsz[i] - 1.5*difz

@@ -30,7 +30,7 @@ class Movement:
         ##Goal position
         xgoal = pos_robot_base_frame.position.x*SF 
         ygoal = pos_robot_base_frame.position.y*SF
-        zgoal = pos_robot_base_frame.position.z*SF
+        zgoal = pos_robot_base_frame.position.z*SF +1
         print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         
         #Obstacle positions
@@ -82,7 +82,7 @@ class Movement:
             tempPos.orientation.y= pos_robot_base_frame.orientation.y #temporary
             tempPos.orientation.z= pos_robot_base_frame.orientation.z #temporary
             tempPos.orientation.w= pos_robot_base_frame.orientation.w
-            #self.serv_helper.move(tempPos)
+            self.serv_helper.move(tempPos)
 
             #TODO: Force wait until robot has reached desired position. Temp fix:
 
