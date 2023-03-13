@@ -17,7 +17,6 @@ import numpy as np
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 
-
 import math
 from math import *
 
@@ -251,7 +250,7 @@ class ServiceHelper:
             dify = diffatt[1] + diffrep[1]
             difz = diffatt[2] + diffrep[2]
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
-            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:#
+            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:
                 PathComplete = 1
             if abs(difx) < 0.1 and abs(dify) < 0.1:
                 pass
@@ -268,53 +267,51 @@ class ServiceHelper:
                 PathPointsy.append(y)
                 PathPointsz.append(z)
             i += 1
-            #print(PathPointsx[i],PathPointsy[i])
-        #PathPoints = list(zip(PathPointsx,PathPointsy))
         print('Path Complete')
         print(len(PathPointsx))
         return PathPointsx,PathPointsy,PathPointsz
 
  
-    def Space_Generation(self,PathTaken,xgoal,ygoal,xobj,yobj,Q,D): #### needs to ad objx and objy
-        x = np.linspace(-50, 50, 100)  # Creating X and Y axis
-        y = np.linspace(-50, 50, 100)
-        X, Y = np.meshgrid(x, y)  # Creates 2 arrays with respective x any y coordination for each point
-        PotentialEnergy = np.ndarray(shape=(len(x), len(y)))  # this acts as the z axis on graphs. Works better for visualisation
-        for i in range(len(X)):  # gets Z values for the X Y positions
-            for j in range(len(Y)):
-                PotentialEnergy[i, j] = self.PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D)+ self.PotentialRepulsion(X[i,j],Y[i,j],xobj,yobj,Q)
-                            # PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
-        #PathTaken = self.PathPlanner(startx, starty, xgoal, ygoal, xobj, yobj,Q, D)  ## you are here ^^^
+    def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to add objx and objy
+        PathTaken = self.PathPlanner(startx, starty,startz, xgoal, ygoal,zgoal, xobj, yobj,zobj,Q, D)  ## you are here ^^^
         EnergyPathTaken = []
         xline = []
         yline = []
+        zline = []
         for i in range(len(PathTaken)):
-            x, y = PathTaken[i]
-            xline.append(x)
-            yline.append(y)
-            TotalPotential = self.PotentialAttraction(x, y, xgoal, ygoal, D) + self.PotentialRepulsion(x, y, xobj, yobj, Q)
+            xp = PathTaken[0]
+            yp = PathTaken[1]
+            zp =PathTaken[2]
+            xline.append(xp[i])
+            yline.append(yp[i])
+            zline.append(zp[i])
+            TotalPotential = self.PotentialAttraction(xp, yp, zp, xgoal, ygoal, zgoal, D) + self.PotentialRepulsion(xp, yp,zp, xobj, yobj,zobj, Q)
             EnergyPathTaken.append(TotalPotential)
-        return X,Y, xline, yline, PotentialEnergy, EnergyPathTaken
+        print('Space Generation Complete')
+        return xline, yline,zline, EnergyPathTaken, PathTaken
 
-    def plotAPF(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
+    def plotAPF(self,X,Y,Z, xline, yline,zline, PotentialEnergy,EnergyPathTaken):
         # Making 3d Plot
         fig = plt.figure()
         ax = plt.axes(projection='3d')
-        ax.plot_surface(X, Y, PotentialEnergy)
-        ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
+        ax.plot_surface(X, Y, Z,PotentialEnergy)
+        ax.plot(xline, yline, zline,EnergyPathTaken, color='red', linewidth=4.5)
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
-        
-        print("Successfuly run")
+        ax.set_zlabel('Z axis')
         plt.show()
+        print("PlotAPF complete")
 
     def plotPath(self,PathTaken):
         fig = plt.figure()
         ax = plt.axes()
         xpoints =[]
         ypoints = []
+        zpoints = []
         for point in PathTaken:
             xpoints.append(point[0])
             ypoints.append(point[1])
-        ax.plot(xpoints,ypoints)
+            zpoints.append(point[2])
+        ax.plot(xpoints,ypoints,zpoints)
         plt.show()
+        print('PlotPath Complete')
