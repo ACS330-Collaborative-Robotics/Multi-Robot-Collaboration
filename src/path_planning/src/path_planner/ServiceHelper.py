@@ -122,6 +122,19 @@ class ServiceHelper:
             rospy.logerr("GetJointPos: Error Transformation not found between %s to %s",BaseID,linkID)
         return joint_pos
 
+    def getJointPos2(self, arm_name:str,link_name:str) -> Pose:
+        """ Get Joint position relative to current robot arm
+        INPUT: string arm_name string link_name
+        OUTPUT: gazebo_msgs Pose() - Orientation in Euler angles not quaternions
+        Uses gazebo/get_model_state service.
+        """
+        # TODO: Replace with data from /blocks
+        rospy.wait_for_service('gazebo/get_model_state')
+        # Extract Pose() object
+        specific_model_name=arm_name+"/"+link_name
+        data = self.model_state_service(specific_model_name, "world").pose
+        return data
+
     def EuclidianDistance(self,x,y,z,xgoal,ygoal,zgoal):
         d = ((x-xgoal)**2+(y-ygoal)**2+(z-zgoal)**2)**0.5 #absolute distance
         return d
@@ -160,7 +173,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.9 #scaling factor
+        SF = 0.95 #scaling factor
         d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialChange = [SF*x-SF*xgoal,SF*y-SF*ygoal,SF*z-SF*zgoal]
@@ -174,7 +187,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
         """
-        SF = 0.2 #scaling factor
+        SF = 0.25 #scaling factor
         d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialAtt = 0.5*SF*(d**2)
@@ -221,7 +234,7 @@ class ServiceHelper:
             if angle < 0:
                 repulsionangle = anglegoal + 90
             d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
-            SF = 5*(d-Q[objNum])
+            SF = 4*(d-Q[objNum])
             repulsionvect = SF*math.cos(angle)*math.cos(repulsionangle),SF*math.cos(angle)*math.sin(repulsionangle)
             if d > Q[objNum]:
                 repulsionvect = 0,0

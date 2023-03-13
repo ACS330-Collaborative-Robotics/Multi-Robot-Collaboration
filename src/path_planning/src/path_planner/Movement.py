@@ -17,7 +17,8 @@ class Movement:
         """
         SF=100 #distance scale factor
         ##Start position
-        start_pose=self.serv_helper.getJointPos(self.serv_helper.robot_ns,self.serv_helper.robot_ns,"/link6")
+        start_pose_world=self.serv_helper.getJointPos2(self.serv_helper.robot_ns,"link6")
+        start_pose = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", start_pose_world)
         startx = start_pose.position.x*SF #start position for arm (now relative)
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF
@@ -46,10 +47,11 @@ class Movement:
         zobj=[]
         for obs in range(0,7):
             if obs==0:
-              obs_link="/base_link"
+              obs_link="base_link"
             else:
-                obs_link="/link"+str(obs)
-            pos_obstacle=self.serv_helper.getJointPos(self.serv_helper.robot_ns,obstacle_arm_ns,obs_link)
+                obs_link="link"+str(obs)
+            pos_obstacle_world=self.serv_helper.getJointPos2(self.serv_helper.robot_ns,obs_link)
+            pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", pos_obstacle_world)
             xobj.append(pos_obstacle.position.x *SF)
             yobj.append(pos_obstacle.position.y *SF)
             zobj.append(pos_obstacle.position.z *SF)
