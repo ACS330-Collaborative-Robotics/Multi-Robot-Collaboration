@@ -122,85 +122,118 @@ class ServiceHelper:
             rospy.logerr("GetJointPos: Error Transformation not found")
         return joint_pos
 
-    def EuclidianDistance(self,x,y,xgoal,ygoal):
-        d = ((x-xgoal)**2+(y-ygoal)**2)**0.5 #absolute distance
+    def EuclidianDistance(self,x,y,z,xgoal,ygoal,zgoal):
+        d = ((x-xgoal)**2+(y-ygoal)**2+(z-zgoal)**2)**0.5 #absolute distance
         return d
 
-    def PotentialAttractionChange(self,x,y,xgoal,ygoal,D): #attraction at a specific point (used to calculate)
+    def Link_Midpoints(self,xobj,yobj,zobj,Q): #what does this do?
+        no_links = len(xobj) -1
+        newxobj = []
+        newyobj = []
+        newzobj = []
+        newQ = []
+        for i in range(no_links):
+            vector = [xobj[i + 1] - xobj[i], yobj[i + 1] - yobj[i], zobj[i + 1] - zobj[i]]
+            detlaQ = Q[i+1]-Q[i]
+            for j in range(10):
+                newxobj.append(xobj[i] + vector[0]*j/10)
+                newyobj.append(yobj[i] + vector[1] * j / 10)
+                newzobj.append(zobj[i] + vector[2] * j / 10)
+                newQ.append(Q[i] + detlaQ*j/10)
+        print('Midpoints Complete')
+        return newxobj,newyobj,newzobj,newQ
+
+    def NoiseAddition(PathPointsx,PathPointsy,xgoal,ygoal,xobj,yobj): #what does this do?
+        ObjAngle = math.atan2(ygoal-PathPointsy,xobj-xgoal)
+        ObjAngle = math.degrees(ObjAngle)
+        fig = plt.figure()
+        ax = plt.axes()
+        ax.plot([xgoal,PathPointsx,xobj],[ygoal,PathPointsy,yobj])
+        ax.set_xlabel(ObjAngle)
+        plt.show()
+        return ObjAngle
+
+
+    def PotentialAttractionChange(x,y,z,xgoal,ygoal,zgoal,D): #attraction at a specific point (used to calculate)
         """ Calculates potential change from point to goal
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.85 #scaling factor (step size)
-        d= self.EuclidianDistance(x,y,xgoal,ygoal)
+        SF = 0.9 #scaling factor
+        d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
-            PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal)
+            PotentialChange = [SF*x-SF*xgoal,SF*y-SF*ygoal,SF*z-SF*zgoal]
         if d > D:
-            PotentialChange = ((SF*x-SF*xgoal)/d,(SF*y-SF*ygoal)/d)
-        #print('attraction change:',PotentialChange,'distance:',d)
+            PotentialChange = [(SF*x-SF*xgoal)/d,(SF*y-SF*ygoal)/d,(SF*z-SF*zgoal)/d]
+        #print('attraction change:',PotentialChange)
         return PotentialChange
 
-    def PotentialAttraction(self,x,y,xgoal,ygoal,D): #the attractive field as a whole (used to display)
+    def PotentialAttraction(x,y,z,xgoal,ygoal,zgoal,D): #the attractive field as a whole (used to display)
         """ Calculates potential from point to goal
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
         """
         SF = 0.2 #scaling factor
-        d = self.EuclidianDistance(x,y,xgoal,ygoal)
+        d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialAtt = 0.5*SF*(d**2)
         else:
-            PotentialAtt = D*SF*d - 0.5*SF*D**2
+            PotentialAtt = D*SF*d - 0.5*SF*D
         return PotentialAtt
 
-    def PotentialRepulsion(self,x,y,xobj,yobj,Q): #Repulsive field as a whole (used to display)
+    def PotentialRepulsion(x,y,z,xobj,yobj,zobj,Q): #Repulsive field as a whole (used to display)
         """ 
         INPUT: current position and obstacle postition XYs. 
         OUTPUT: PotentialRep (a single value for Potential at those coordinates)
         """
-        SF = 5000
-        PotentialRep = 0
-        for objNum in range(len(xobj)):
-            d = self.EuclidianDistance(x,y,xobj[objNum],yobj[objNum])
-            if d <= Q:
-                PotentialRepcurrent = SF*((1/d)-(1/Q))
-            else:
-                PotentialRepcurrent = 0
-            if PotentialRepcurrent > 100:
-                PotentialRepcurrent = 100
-            PotentialRep += PotentialRepcurrent
-        return PotentialRep
+        SF = 100
+            PotentialRep = 0
+            for objNum in range(len(xobj)):
+                d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
+                if d <= Q[objNum]:
+                    PotentialRepcurrent = SF*((1/d)-(1/Q[objNum]))
+                else:
+                    PotentialRepcurrent = 0
+                if PotentialRepcurrent > 100:
+                    PotentialRepcurrent = 100
+                PotentialRep += PotentialRepcurrent
+            return PotentialRep
 
-    def PotentialRepulsionChange(self,x,y,xobj,yobj,xgoal,ygoal,Q): #repulsion at a specific point (used to calculate)
+    def PotentialRepulsionChange(self,x,y,z,xobj,yobj,zobj,xgoal,ygoal,zgoal,Q): #repulsion at a specific point (used to calculate)
         """
         INPUT: current position and obstacle position XYs. 
         OUTPUT: is repulsion at a specific point
         """
         allvectorsx = 0
         allvectorsy = 0
+        allvectorsz = 0
         repulsionangle = 0
         for objNum in range(len(xobj)):
-
-            homevect = (xgoal-x,ygoal-y)
-            objvect = (xobj[objNum]-x,yobj[objNum]-y)
+            homevect = [xgoal-x,ygoal-y,zgoal-z]
+            objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z)
             anglegoal = math.atan2(homevect[1],homevect[0])
             angleobj = math.atan2(objvect[1],objvect[0])
             angle = angleobj-anglegoal
+            zheight = objvect[2]-homevect[2]
             if angle > 0 or angle == 0:
                 repulsionangle = anglegoal - 90
             if angle < 0:
                 repulsionangle = anglegoal + 90
-            d = self.EuclidianDistance(x,y,xobj[objNum],yobj[objNum])
-            SF = 5*(d-Q)
+            d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
+            SF = 5*(d-Q[objNum])
             repulsionvect = SF*math.cos(angle)*math.cos(repulsionangle),SF*math.cos(angle)*math.sin(repulsionangle)
-            if d > Q:
+            if d > Q[objNum]:
                 repulsionvect = 0,0
+                zrep = 0
+            else:
+                zrep = zheight*1/(d-Q[objNum])
             allvectorsx += repulsionvect[0]
             allvectorsy += repulsionvect[1]
-        return allvectorsx,allvectorsy
+            allvectorsz += zrep
+        return allvectorsx,allvectorsy,allvectorsz
 
     
-    def PathPlanner(self,x,y,xgoal,ygoal,xobj,yobj,Q,D): #you are currently trying to add this in, this is the path from a point using position and force ads velocity
+    def PathPlanner(x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
         """
         returned as an array of points
         INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)   
@@ -209,30 +242,39 @@ class ServiceHelper:
         PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
         PathPointsx = [x] #First X and Y points
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
+        PathPointsz = [z]
         i = 0
         while PathComplete == 0:
-            diffattx,diffatty = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],xgoal,ygoal,D)
-            diffrepx,diffrepy = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],xobj,yobj,xgoal,ygoal,Q)
-            difx, dify = diffattx + diffrepx,diffatty + diffrepy
-            d = self.EuclidianDistance(x,y,xgoal,ygoal)
-            if abs(difx) <0.2 and abs(dify) <0.2 and d < 0.5:#
+            diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
+            diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
+            difx = diffatt[0] + diffrep[0]
+            dify = diffatt[1] + diffrep[1]
+            difz = diffatt[2] + diffrep[2]
+            d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
+            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:#
                 PathComplete = 1
-            if abs(difx) < 0.1 and abs(dify) < 0.1: #local minima can occur with big gradients that oscillate back and forth
+            if abs(difx) < 0.1 and abs(dify) < 0.1:
                 pass
-                rospy.logwarn("LOCAL MINIMA")
                 #add get out of minima here
             else:
-                rospy.loginfo("Iteration: %.0f x,y: %.2f %.2f Gradient x,y: %.2f %.2f Distance: %.2f",i,PathPointsx[i],PathPointsy[i],difx,dify,d)
-                nextx = PathPointsx[i] - 0.2*difx
-                nexty = PathPointsy[i] - 0.2*dify
+                #print('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
+                nextx = PathPointsx[i] - 1.5*difx
+                nexty = PathPointsy[i] - 1.5*dify
+                nextz = PathPointsz[i] - 1.5*difz
                 x = nextx
                 y = nexty
+                z = nextz
                 PathPointsx.append(x)
                 PathPointsy.append(y)
+                PathPointsz.append(z)
             i += 1
-        PathPoints = list(zip(PathPointsx,PathPointsy))
-        return PathPoints  
+            #print(PathPointsx[i],PathPointsy[i])
+        #PathPoints = list(zip(PathPointsx,PathPointsy))
+        print('Path Complete')
+        print(len(PathPointsx))
+        return PathPointsx,PathPointsy,PathPointsz
 
+ 
     def Space_Generation(self,PathTaken,xgoal,ygoal,xobj,yobj,Q,D): #### needs to ad objx and objy
         x = np.linspace(-50, 50, 100)  # Creating X and Y axis
         y = np.linspace(-50, 50, 100)

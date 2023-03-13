@@ -19,6 +19,7 @@ class Movement:
         start_pose=self.serv_helper.getJointPos(self.serv_helper.robot_ns,self.serv_helper.robot_ns,"/link6")
         startx = start_pose.position.x*SF #start position for arm (now relative)
         starty = start_pose.position.y*SF
+        startz = start_pose.position.z*SF
         
         # Get coordinates relative to robot instead of world
         pos_robot_base_frame = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", pos)
@@ -27,6 +28,7 @@ class Movement:
 
         xgoal = pos_robot_base_frame.position.x*SF #position of goal x
         ygoal = pos_robot_base_frame.position.y*SF
+        zgoal = pos_robot_base_frame.position.z*SF
         #print("startxy->goalxy:",startx,starty,xgoal,ygoal)
         
         #getting other arm name to get obstacles
@@ -39,6 +41,7 @@ class Movement:
         
         xobj=[]
         yobj=[]
+        zobj=[]
         for obs in range(0,7):
             if obs==0:
               obs_link="/base_link"
@@ -47,6 +50,7 @@ class Movement:
             pos_obstacle=self.serv_helper.getJointPos(self.serv_helper.robot_ns,obstacle_arm_ns,obs_link)
             xobj.append(pos_obstacle.position.x *SF)
             yobj.append(pos_obstacle.position.y *SF)
+            zobj.append(pos_obstacle.position.z *SF)
         #print(xobj,yobj)
         Q = 15
         D = 10
