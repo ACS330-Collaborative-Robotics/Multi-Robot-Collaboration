@@ -91,9 +91,33 @@ def service(req):
     else:
         print("Inverse Kinematics - Trac IK: ", joints, " Computed in: ", round(time()-start_time, 4))
 
-        end_effector_position = forward_kinematics(joints)
-        print("Inverse Kinematics - Cartesian:", end_effector_position.pos, "Rotation:", end_effector_position.rot)
+        # Understanding IK accuracy 
+        target_position = [req.state.pose.position.x, req.state.pose.position.y, req.state.pose.position.z]
+        target_orientation = [req.state.pose.orientation.w, req.state.pose.orientation.x, req.state.pose.orientation.y, req.state.pose.orientation.z]
+        target = target_position + target_orientation
 
+        end_effector_position = forward_kinematics(joints)
+        final_position = list(end_effector_position.pos)
+        final_orientation = list(end_effector_position.rot)
+        final = final_position + final_orientation
+
+        print("")
+
+        print("Type\tx\ty\tz\trx\try\trz\trw")
+
+        print("Target\t", end="")
+        for value in target: {print(round(value,3), "\t", end="")}
+        print("")
+
+        print("Final\t", end="")
+        for value in final: {print(round(value,3), "\t", end="")}
+        print("")
+
+        print("Diff\t", end="")
+        for value_pos in range(len(final)):
+            print(round(target[value_pos] - final[value_pos] ,3), "\t", end="")
+        print("")        
+        
         # Publish joint positions
         pub.publish(joints)
 
