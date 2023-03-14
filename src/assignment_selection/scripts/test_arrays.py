@@ -14,7 +14,7 @@ n = 20
 layers = math.ceil(n/3)
 print(layers)
 tower_pos = [] #this has to be a 3 column * layers(value) matrix
-h=0
+h=0.5
 angle=0
 
 for i in range(layers):
@@ -35,7 +35,8 @@ for i in range(layers):
 
     
     
-
+height=len(tower_pos)
 print(tower_pos)
+print(str(height))
 
         

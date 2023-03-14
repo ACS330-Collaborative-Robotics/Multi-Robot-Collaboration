@@ -90,7 +90,7 @@ def choose_block():
         layers = math.ceil(n/3)
         print(layers)
         tower_pos = [] #this has to be a 3 column * layers(value) matrix
-        h=2
+        h=0.5
         angle=0
 
         for i in range(layers):
@@ -108,38 +108,26 @@ def choose_block():
                 angle=0
 
         # Publish assignments
-        for i in range(max(len(x) for x in goCollect)):
-            for j in range(len(robot_namespaces)):
-                if i < len(goCollect[j]):
-                    ## ////////////////////////////////////////////
-                    # Set End Position
-                    block_name = str(goCollect[j][i])
+        for i in range(len(tower_pos)):
+            block_name = str(blockNames[i])
 
-                    end_pos = Pose()
-        
+            end_pos = Pose()
+            end_pos.position.x = tower_pos[i][0]
+            end_pos.position.y = tower_pos[i][1]
+            end_pos.position.z = tower_pos[i][2]
+            end_pos.orientation.w = tower_pos[i][3]
                     
-                    end_pos.orientation.w = tower_pos[i][3]
-                    end_pos.position.z = tower_pos[i][2]
-                    #end_pos.position.z = tower_pos[i][2]
-
-                    if j == 0:
-                        end_pos.position.x = tower_pos[i][0]
-                        end_pos.position.y = tower_pos[i][1]
-                    else:
-                        end_pos.position.x = tower_pos[i][0]
-                        end_pos.position.y = tower_pos[i][1]
-
-                    robot_name = str(robot_namespaces[i])
-                    ## ////////////////////////////////////////////
+            robot_name = str(robot_namespaces[0])
+            ## ////////////////////////////////////////////
                     
-                    try:
-                        success = path_service(block_name, end_pos, robot_name)
+            try:
+                success = path_service(block_name, end_pos, robot_name)
 
-                        if not(success):
-                            rospy.loginfo("Block Selection - Service call returned False.")
+                if not(success):
+                    rospy.loginfo("Block Selection - Service call returned False.")
                             
-                    except rospy.ServiceException as e:
-                        rospy.loginfo("Block Selection - Service call failed: %s"%e)
+            except rospy.ServiceException as e:
+                rospy.loginfo("Block Selection - Service call failed: %s"%e)
 
                     
 
