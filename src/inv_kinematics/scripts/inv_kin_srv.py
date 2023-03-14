@@ -84,10 +84,6 @@ def service(req):
     # Publish joint positions
     pub.publish(joints)
 
-    print("Inverse Kinematics - Joint positions published. Time Taken:", time.time() - start_time)
-
-    print("\n")
-
     return True
 
 def main():
