@@ -21,7 +21,7 @@ def main():
     global robot_name
     robot_name =  "/" + argv[1]
     print("----------------------------------")
-    print(robot_name + " Initialised.")
+    print(robot_name + " Joints Initialised.")
     print("----------------------------------")
 
     # Setup subscriber for Joint Angle demand
