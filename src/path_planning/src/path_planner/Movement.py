@@ -75,7 +75,7 @@ class Movement:
         
         ##FILTERING
         PathTakenLen=len(PathTakenx)
-        FilterPathTakenLen=20 #approximately, configurable constant
+        FilterPathTakenLen=30 #approximately, configurable constant
         SamplePeriod=round(PathTakenLen/FilterPathTakenLen) #sample period
         FilterPathTakenx=[]
         FilterPathTakeny=[]
@@ -106,5 +106,5 @@ class Movement:
             self.serv_helper.move(tempPos)
 
             #TODO: Force wait until robot has reached desired position. Temp fix:
-
+            rospy.sleep(0.1)
         return True
