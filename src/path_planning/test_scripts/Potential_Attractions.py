@@ -26,3 +26,12 @@ def PotentialAttraction(x,y,z,xgoal,ygoal,zgoal,D):
     else:
         PotentialAtt = D*SF*d - 0.5*SF*D
     return PotentialAtt
+
+def PotentialAttraction2d(x,y,xgoal,ygoal,D):
+    SF = 0.2 #scaling factor
+    d = EuclidianDistance2d(x,y,xgoal,ygoal)
+    if d <= D:
+        PotentialAtt = 0.5*SF*(d**2)
+    else:
+        PotentialAtt = D*SF*d - 0.5*SF*D
+    return PotentialAtt
