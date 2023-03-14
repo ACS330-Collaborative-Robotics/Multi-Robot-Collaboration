@@ -18,6 +18,20 @@ def PotentialRepulsion(x,y,z,xobj,yobj,zobj,Q):
         PotentialRep += PotentialRepcurrent
     return PotentialRep
 
+def PotentialRepulsion2d(x,y,xobj,yobj,Q):
+    SF = 100
+    PotentialRep = 0
+    for objNum in range(len(xobj)):
+        d = EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
+        if d <= Q[objNum]:
+            PotentialRepcurrent = SF*((1/d)-(1/Q[objNum]))
+        else:
+            PotentialRepcurrent = 0
+        if PotentialRepcurrent > 100:
+            PotentialRepcurrent = 100
+        PotentialRep += PotentialRepcurrent
+    return PotentialRep
+
 def PotentialRepulsionChange(x,y,z,xobj,yobj,zobj,xgoal,ygoal,zgoal,Q):
     allvectorsx = 0
     allvectorsy = 0

@@ -12,7 +12,7 @@ def Space_Generation(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D):
     PotentialEnergy = np.ndarray(shape=(len(x), len(y)))  # this acts as the z axis on graphs. Works better for visualisation
     for i in range(len(X)):  # gets Z values for the X Y positions
         for j in range(len(Y)):
-            PotentialEnergy[i, j] = PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D)+ PotentialRepulsion(X[i,j],Y[i,j],xobj,yobj,Q)
+            PotentialEnergy[i, j] = PotentialAttraction2d(X[i,j],Y[i,j],xgoal,ygoal,D)+ PotentialRepulsion2d(X[i,j],Y[i,j],xobj,yobj,Q)
                          # PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
     PathTaken = PathPlanner(startx, starty,startz, xgoal, ygoal,zgoal, xobj, yobj,zobj,Q, D)  ## you are here ^^^
     EnergyPathTaken = []
@@ -22,14 +22,14 @@ def Space_Generation(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D):
     for i in range(len(PathTaken)):
         xp = PathTaken[0]
         yp = PathTaken[1]
-        zp =PathTaken[2]
+        #zp =PathTaken[2]
         xline.append(xp[i])
         yline.append(yp[i])
-        zline.append(zp[i])
-        TotalPotential = PotentialAttraction(xp, yp, zp, xgoal, ygoal, zgoal, D) + PotentialRepulsion(xp, yp,zp, xobj, yobj,zobj, Q)
+        #zline.append(zp[i])
+        TotalPotential = PotentialAttraction2d(xp[i], yp[i], xgoal, ygoal, D) + PotentialRepulsion2d(xp[i], yp[i], xobj, yobj, Q)
         EnergyPathTaken.append(TotalPotential)
     print('Space Generation Complete')
-    return xline, yline,zline, EnergyPathTaken, PathTaken
+    return X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
 
 
 def plotAPF(X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
