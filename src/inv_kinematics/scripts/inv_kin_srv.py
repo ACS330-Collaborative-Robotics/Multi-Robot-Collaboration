@@ -34,10 +34,7 @@ def ikpy_inverse_kinematics(pose: Pose):
     chain = ikpy.chain.Chain.from_urdf_file(Path.home().as_posix() + "/catkin_ws/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
 
     # x y z Co-ordinates
-    x = pose.position.x
-    y = pose.position.y
-    z = pose.position.z
-    target_position = [x, y, z]
+    target_position = [pose.position.x, pose.position.y, pose.position.z]
 
     # Convert from quaternions to 3x3 transformation matrix
     target_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
@@ -67,15 +64,14 @@ def trac_ik_inverse_kinematics(pose: Pose):
 
     joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
 
-    multiplier = 10
-    while joints is None:
-        coordinate_tolerance = coordinate_tolerance * multiplier
-        #angle_tolerance = angle_tolerance * multiplier
-
-        print("Inverse Kinematics - Trac Ik: Failed to find solution, increasing tolerance by 10 times to", coordinate_tolerance, angle_tolerance)
-
-        joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
-        
+    #multiplier = 10
+    #while joints is None:
+    #    coordinate_tolerance = coordinate_tolerance * multiplier
+    #    #angle_tolerance = angle_tolerance * multiplier
+    #
+    #    print("Inverse Kinematics - Trac Ik: Failed to find solution, increasing tolerance by 10 times to", coordinate_tolerance, angle_tolerance)
+    #
+    #    joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
 
     if joints is None:
         return None
@@ -88,18 +84,22 @@ def service(req):
 
     start_time = time()
     joints = trac_ik_inverse_kinematics(req.state.pose)
-    print("Inverse Kinematics - Trac IK: ", joints, " Computed in: ", round(time()-start_time, 4))
 
-    end_effector_position = forward_kinematics(joints)
+    if joints is None:
+        print("Inverse Kinematics - Failed to find a solution in ", round(time()-start_time, 4))
+        return False
+    else:
+        print("Inverse Kinematics - Trac IK: ", joints, " Computed in: ", round(time()-start_time, 4))
 
-    print("Inverse Kinematics - Cartesian: ", end_effector_position.pos, "Rotation: ", end_effector_position.rot)
+        end_effector_position = forward_kinematics(joints)
+        print("Inverse Kinematics - Cartesian:", end_effector_position.pos, "Rotation:", end_effector_position.rot)
 
-    # Publish joint positions
-    pub.publish(joints)
+        # Publish joint positions
+        pub.publish(joints)
 
-    print("Inverse Kinematics - Joint positions published.\n")
+        print("Inverse Kinematics - Joint positions published.\n")
 
-    return True
+        return True
 
 def main():
     rospy.init_node('inverse_kinematics_server')
