@@ -13,6 +13,7 @@ from geometry_msgs.msg import Pose
 
 import math
 from operator import itemgetter
+import tf_conversions
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -39,7 +40,7 @@ def choose_block():
     T = 5
     rate = rospy.Rate(1/T)
 
-    while blockData is None:
+    while (blockData is None) and not(rospy.is_shutdown()):
         rospy.loginfo("Block Selection - Waiting for data.")
         rospy.sleep(0.1)
     rospy.loginfo("Block Selection - Got block data,")
@@ -49,7 +50,7 @@ def choose_block():
         ## Making array of block names ##
 
         # Wait for blockData to read in by subscriber
-        while blockData is None:
+        while (blockData is None) and not(rospy.is_shutdown()):
             rospy.loginfo("Block Selection - Waiting for data.")
             rate.sleep()
         rospy.loginfo("Block Selection - Got block data,")
@@ -89,11 +90,14 @@ def choose_block():
                     block_name = str(goCollect[j][i])
 
                     end_pos = Pose()
+
+                    orientation_in_euler = [0,90*math.pi/180,0]
+                    orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
                     
-                    end_pos.orientation.x = 0
-                    end_pos.orientation.y = 0.707
-                    end_pos.orientation.z = 0
-                    end_pos.orientation.w = 0.707
+                    end_pos.orientation.x = orientation[0]
+                    end_pos.orientation.y = orientation[1]
+                    end_pos.orientation.z = orientation[2]
+                    end_pos.orientation.w = orientation[3]
                     
                     end_pos.position.z = 0.2
 

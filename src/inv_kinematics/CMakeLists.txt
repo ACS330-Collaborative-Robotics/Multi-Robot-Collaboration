@@ -9,6 +9,7 @@ project(inv_kinematics)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  roscpp
   std_msgs
   message_generation
   gazebo_msgs
@@ -204,3 +205,8 @@ catkin_install_python(PROGRAMS
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(inverse_kinematics_service
+  src/inverse_kinematics_service.cpp) 
+target_link_libraries(inverse_kinematics_service ${catkin_LIBRARIES})
+add_dependencies(inverse_kinematics_service ${catkin_EXPORTED_TARGETS})
