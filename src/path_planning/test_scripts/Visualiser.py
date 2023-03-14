@@ -16,17 +16,11 @@ def Space_Generation(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D):
                          # PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
     PathTaken = PathPlanner(startx, starty,startz, xgoal, ygoal,zgoal, xobj, yobj,zobj,Q, D)  ## you are here ^^^
     EnergyPathTaken = []
-    xline = []
-    yline = []
-    zline = []
-    xp = PathTaken[0]
-    yp = PathTaken[1]
-    for i in range(len(PathTaken)):
-        #zp =PathTaken[2]
-        xline.append(xp[i])
-        yline.append(yp[i])
-        #zline.append(zp[i])
-        TotalPotential = PotentialAttraction2d(xp[i], yp[i], xgoal, ygoal, D) + PotentialRepulsion2d(xp[i], yp[i], xobj, yobj, Q)
+    xline = PathTaken[0]
+    yline = PathTaken[1]
+    for i in range(len(PathTaken[0])):
+
+        TotalPotential = PotentialAttraction2d(xline[i], yline[i], xgoal, ygoal, D) + PotentialRepulsion2d(xline[i], yline[i], xobj, yobj, Q)
         EnergyPathTaken.append(TotalPotential)
     print(EnergyPathTaken)
     print('Space Generation Complete')
