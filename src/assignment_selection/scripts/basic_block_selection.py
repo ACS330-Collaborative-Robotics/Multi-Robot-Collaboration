@@ -60,9 +60,6 @@ def choose_block():
             blockNames.append("block" + str(blockData.block_data[block_num].block_number))
         rospy.loginfo("Block Selection - Block list built.")
 
-        print(blockNames)
-
-        ## ////////////////////////////////////////////
         # Getting distance from each robot to blocks and sellecting the smallest
         roboColect = []
         for blockName in blockNames:     
@@ -83,13 +80,11 @@ def choose_block():
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
         rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
-        ## ////////////////////////////////////////////
 
         # Publish assignments
         for i in range(max(len(x) for x in goCollect)):
             for j in range(len(robot_namespaces)):
                 if i < len(goCollect[j]):
-                    ## ////////////////////////////////////////////
                     # Set End Position
                     block_name = str(goCollect[j][i])
 
@@ -110,7 +105,6 @@ def choose_block():
                         end_pos.position.y = 0.5
 
                     robot_name = str(robot_namespaces[j])
-                    ## ////////////////////////////////////////////
                     
                     try:
                         success = path_service(block_name, end_pos, robot_name)
