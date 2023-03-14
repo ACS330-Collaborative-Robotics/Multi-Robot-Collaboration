@@ -90,13 +90,6 @@ def service(req):
     joints = trac_ik_inverse_kinematics(req.state.pose)
     print("Inverse Kinematics - Trac IK: ", joints, " Computed in: ", round(time()-start_time, 4))
 
-    # IF trac_ik does not find an adequate solution, use ikpy to find a nearby approximation
-    if joints is None:
-        print("Inverse Kinematics - ERROR - Accurate IK not found, using fallback method.")
-        start_time = time()
-        joints = ikpy_inverse_kinematics(req.state.pose)
-        print("Inverse Kinematics - ikpy: ", joints, " Computed in: ", round(time()-start_time, 4))
-
     end_effector_position = forward_kinematics(joints)
 
     print("Inverse Kinematics - Cartesian: ", end_effector_position.pos, "Rotation: ", end_effector_position.rot)
