@@ -19,15 +19,16 @@ def Space_Generation(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D):
     xline = []
     yline = []
     zline = []
+    xp = PathTaken[0]
+    yp = PathTaken[1]
     for i in range(len(PathTaken)):
-        xp = PathTaken[0]
-        yp = PathTaken[1]
         #zp =PathTaken[2]
         xline.append(xp[i])
         yline.append(yp[i])
         #zline.append(zp[i])
         TotalPotential = PotentialAttraction2d(xp[i], yp[i], xgoal, ygoal, D) + PotentialRepulsion2d(xp[i], yp[i], xobj, yobj, Q)
         EnergyPathTaken.append(TotalPotential)
+    print(EnergyPathTaken)
     print('Space Generation Complete')
     return X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
 
@@ -45,7 +46,7 @@ def plotAPF(X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
 
 def plotPath(PathTaken):
     fig = plt.figure()
-    ax = plt.axes()
+    ax = plt.axes(projection='3d')
     xpoints =[]
     ypoints = []
     zpoints = []
