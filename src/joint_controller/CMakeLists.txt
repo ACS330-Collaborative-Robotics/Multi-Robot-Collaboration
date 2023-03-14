@@ -115,7 +115,8 @@ target_link_libraries(mover6_driver ${catkin_LIBRARIES})
 catkin_install_python(PROGRAMS 
   scripts/joint_controller.py
   scripts/gripper_controller.py
-  scripts/manual_gripper_control.py
+  scripts/manual_gripper_control_b.py
+  scripts/manual_gripper_control_a.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

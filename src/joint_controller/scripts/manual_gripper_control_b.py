@@ -7,8 +7,8 @@ import rospy
 from std_msgs.msg import Bool
 
 def talker():
-    pub = rospy.Publisher('mover6_a_p/gripper_state', Bool, queue_size=10)
-    rospy.init_node('Gripper Control Test')
+    pub = rospy.Publisher('mover6_b_p/gripper_state', Bool, queue_size=10)
+    rospy.init_node('Gripper_ControlB')
 
     rate = rospy.Rate(10) # 10 Hz
     while not rospy.is_shutdown():
