@@ -5,6 +5,8 @@ import tf_conversions
 
 import ikpy.chain
 from trac_ik_python.trac_ik import IK
+import kinpy as kp
+
 from time import time
 from math import pi
 
@@ -13,6 +15,20 @@ from pathlib import Path
 from inv_kinematics.srv import InvKin
 from custom_msgs.msg import Joints
 from geometry_msgs.msg import Pose
+
+def forward_kinematics(joint_values):
+    chain = kp.build_chain_from_urdf(open(Path.home().as_posix() + "/catkin_ws/src/inv_kinematics/urdf/CPRMover6.urdf.xacro").read())
+
+    link_names = chain.get_joint_parameter_names()
+    
+    joints = {}
+    for joint_num in range(6):
+        joints[link_names[joint_num]] = joint_values[joint_num]
+
+    cartesian_coords = chain.forward_kinematics(joints)
+
+    return cartesian_coords["link6"]
+
 
 def ikpy_inverse_kinematics(pose: Pose):
     chain = ikpy.chain.Chain.from_urdf_file(Path.home().as_posix() + "/catkin_ws/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
@@ -80,6 +96,10 @@ def service(req):
         start_time = time()
         joints = ikpy_inverse_kinematics(req.state.pose)
         print("Inverse Kinematics - ikpy: ", joints, " Computed in: ", round(time()-start_time, 4))
+
+    end_effector_position = forward_kinematics(joints)
+
+    print("Inverse Kinematics - Cartesian: ", end_effector_position.pos, "Rotation: ", end_effector_position.rot)
 
     # Publish joint positions
     pub.publish(joints)
