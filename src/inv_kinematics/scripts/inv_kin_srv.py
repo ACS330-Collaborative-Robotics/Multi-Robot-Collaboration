@@ -84,6 +84,8 @@ def service(req):
     # Publish joint positions
     pub.publish(joints)
 
+    print("Inverse Kinematics - Joint positions published.\n")
+
     return True
 
 def main():
