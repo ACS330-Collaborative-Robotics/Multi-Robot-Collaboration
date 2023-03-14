@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Name: block_slection
-# Author: Tom Richards (tomtommrichards@gmail.com), Conor Nichols (cjnichols1@sheffield.ac.uk)
+# Author: Tom Richards (tomtommrichards@gmail.com), Conor Nichols (cjnichols1@sheffield.ac.uk), Annanthavel Santhanavel Ramesh(asanthanavelramesh1@sheffield.ac.uk)
 
 import rospy
 
@@ -83,7 +83,29 @@ def choose_block():
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
         rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
+        
         ## ////////////////////////////////////////////
+        
+        n = 20
+        layers = math.ceil(n/3)
+        print(layers)
+        tower_pos = [] #this has to be a 3 column * layers(value) matrix
+        h=2
+        angle=0
+
+        for i in range(layers):
+            w=0.25
+            home_pos = [w,0.25,h,angle]
+            for j in range(3):
+                home_pos = [w,0.25,h,angle]
+                tower_pos.append(home_pos)
+                w=w+1
+            h=h+1
+
+            if angle==0:
+                angle=90*(math.pi/180)
+            elif angle==90*(math.pi/180):
+                angle=0
 
         # Publish assignments
         for i in range(max(len(x) for x in goCollect)):
@@ -94,22 +116,20 @@ def choose_block():
                     block_name = str(goCollect[j][i])
 
                     end_pos = Pose()
+        
                     
-                    end_pos.orientation.x = 0
-                    end_pos.orientation.y = 0.707
-                    end_pos.orientation.z = 0
-                    end_pos.orientation.w = 0.707
-                    
-                    end_pos.position.z = 0.2
+                    end_pos.orientation.w = tower_pos[i][3]
+                    end_pos.position.z = tower_pos[i][2]
+                    #end_pos.position.z = tower_pos[i][2]
 
                     if j == 0:
-                        end_pos.position.x = 0.2
-                        end_pos.position.y = 0
+                        end_pos.position.x = tower_pos[i][0]
+                        end_pos.position.y = tower_pos[i][1]
                     else:
-                        end_pos.position.x = 0.2
-                        end_pos.position.y = 0.5
+                        end_pos.position.x = tower_pos[i][0]
+                        end_pos.position.y = tower_pos[i][1]
 
-                    robot_name = str(robot_namespaces[j])
+                    robot_name = str(robot_namespaces[i])
                     ## ////////////////////////////////////////////
                     
                     try:
