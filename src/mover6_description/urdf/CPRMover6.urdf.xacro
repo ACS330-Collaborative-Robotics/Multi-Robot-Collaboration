@@ -242,26 +242,26 @@
 		<axis xyz="0 0 1"/>
 		<parent link="link6"/>
 		<child link="link7"/>
-		<origin rpy="0 0 0" xyz="0 0 0"/>
+		<origin rpy="3.14159 0 1.5708" xyz="0 0 0"/>
 		<limit lower="-2.09" upper="2.09" effort="100" velocity="100"/>
 		<joint_properties damping="1.0" friction="1.0"/>
 	</joint>
 
 	<joint name="joint_gripper_a" type="revolute">
-		<axis xyz="0 0 1"/>
+		<axis xyz="0 0 0"/>
 		<parent link="link7"/>
 		<child link="gripper_a"/>
-		<origin rpy="0 1 0" xyz="0 0 0"/>
-		<limit lower="-2.09" upper="2.09" effort="100" velocity="100"/>
+		<origin rpy="1.5708 -0.33752 3.1416" xyz="-0.0055607 -0.0041434 -0.04688"/>
+		<limit lower="0" upper="0" effort="100" velocity="100"/>
 		<joint_properties damping="1.0" friction="1.0"/>
 	</joint>
 
 	<joint name="joint_gripper_b" type="revolute">
-		<axis xyz="0 0 1"/>
+		<axis xyz="0 0 0"/>
 		<parent link="link7"/>
 		<child link="gripper_b"/>
-		<origin rpy="0 0 1" xyz="0 0 0"/>
-		<limit lower="-2.09" upper="2.09" effort="100" velocity="100"/>
+		<origin rpy="1.5708 -0.33752 0" xyz="0.0055607 0.005 -0.04688"/>
+		<limit lower="0" upper="0" effort="100" velocity="100"/>
 		<joint_properties damping="1.0" friction="1.0"/>
 	</joint>
 
