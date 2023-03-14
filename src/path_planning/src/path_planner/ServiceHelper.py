@@ -141,7 +141,7 @@ class ServiceHelper:
         d = ((x-xgoal)**2+(y-ygoal)**2+(z-zgoal)**2)**0.5 #absolute distance
         return d
 
-    def Link_Midpoints(self,xobj,yobj,zobj,Q): #what does this do?
+    def Link_Midpoints(self,xobj,yobj,zobj,Q): #interpolate points to reat
         no_links = len(xobj) -1
         newxobj = []
         newyobj = []

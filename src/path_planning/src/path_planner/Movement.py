@@ -58,7 +58,7 @@ class Movement:
         #print(len(xobj),len(yobj),len(zobj))
 
 
-        Q = [12,12,10,8,6,4,2] #strength of field around each arm joint?
+        Q = [12,12,10,8,6,4,2] #'size' of the object
         D = 10
         xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #????
 
