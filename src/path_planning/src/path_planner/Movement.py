@@ -22,9 +22,12 @@ class Movement:
         print("Path Planner - Move - Publishing ", self.serv_helper.robot_ns, " to ", pos_robot_frame.position.x, "\t", pos_robot_frame.position.y, "\t", pos_robot_frame.position.z, "\t", pos_robot_frame.orientation.x, "\t", pos_robot_frame.orientation.y, "\t", pos_robot_frame.orientation.z, "\t", pos_robot_frame.orientation.w)
 
         # Move robot to new position, in robot reference frame
-        self.serv_helper.move(pos_robot_frame)
+        status = self.serv_helper.move(pos_robot_frame)
+
+        if not(status):
+            print("Path Planner - Error - Target unreachable.")
         
         #TODO: Force wait until robot has reached desired position. Temp fix:
-        rospy.sleep(3)
+        rospy.sleep(5)
 
-        return True #TODO: Implement zone checks
+        return status #TODO: Implement zone checks
