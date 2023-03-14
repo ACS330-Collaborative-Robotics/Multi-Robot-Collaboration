@@ -87,6 +87,7 @@ def service(req):
 
     if joints is None:
         print("Inverse Kinematics - Failed to find a solution in ", round(time()-start_time, 4))
+        print("")
         return False
     else:
         print("Inverse Kinematics - Trac IK: ", joints, " Computed in: ", round(time()-start_time, 4))
