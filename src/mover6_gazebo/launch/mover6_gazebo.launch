@@ -20,8 +20,8 @@
     <!-- Run Block Spawner -->
     <node name="block_spawner" pkg="block_controller" type="spawn_blocks.py" output="screen"/>
 
-    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_a" type="static_tf2_broadcaster.py" args="mover6_a_base 0 0 0.02 0 0 0" output="screen"/>
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_a" type="static_tf2_broadcaster.py" args="mover6_a_base 0 0 0.02 0 0 1.5708" output="screen"/>
 
-    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_b" type="static_tf2_broadcaster.py" args="mover6_b_base 0 0.5 0.02 0 0 0" output="screen"/>
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_b" type="static_tf2_broadcaster.py" args="mover6_b_base 0 0.5 0.02 0 0 -1.5708" output="screen"/>
 
 </launch>
