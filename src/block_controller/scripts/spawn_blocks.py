@@ -33,32 +33,29 @@ def spawner():
     min_range = 0.15
     max_range = 0.35
     
-    back_reach_maximum = 0.2
-
     pos = Pose() # Pose object to be filled randomly
     for block_num in range(20):
+        # Select a robot base randomly
+        robot_num = randint(0, len(robot_base_coords)-1)
+
         # Using angle + distance to select random location within range
-        angle = 2*pi*random()
+        if robot_num == 0:
+            angle = 1.5*pi*random() - 1.25*pi
+        elif robot_num == 1:
+            angle = 1.5*pi*random() - 0.25*pi
+        else:
+            angle = 2*pi*random()
+
         distance = (max_range-min_range)*random() + min_range
 
         # Standard 2x2 rotation matrix transformation
         x = cos(angle) * distance + sin(angle) * 0
         y = -sin(angle) * distance + cos(angle) * 0
 
-        # Select a robot base randomly
-        robot_num = randint(0, len(robot_base_coords)-1)
-
         # Assign position, offset by robot base coordinates
         pos.position.x = x + robot_base_coords[robot_num][0]
         pos.position.y = y + robot_base_coords[robot_num][1]
         pos.position.z = 0.01
-
-        # Ensure blocks do not spawn "behind" robot becoming unreachable
-        if robot_num == 0 and pos.position.y < robot_base_coords[robot_num][1] - back_reach_maximum:
-            pos.position.y = robot_base_coords[robot_num][1] - back_reach_maximum
-        
-        if robot_num == 1 and pos.position.y > robot_base_coords[robot_num][1] + back_reach_maximum:
-            pos.position.y = robot_base_coords[robot_num][1] + back_reach_maximum
 
         # quaternion roation w x y z
         pos.orientation.w = 2*random() - 1
