@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<robot
-	xmlns:xacro="http://ros.org/wiki/xacro" name="CPRMover6">
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="CPRMover6">
 	<!-- URDF file for the Commonplace Robotics Mover4 robot arm -->
 	<!-- Version 1.1 from Oct. 04th, 2016. -->
 	<!-- Used for fixing robot to Gazebo 'base_link' -->
