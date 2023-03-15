@@ -30,7 +30,7 @@ def spawner():
     robot_namespaces = ["mover6_a", "mover6_b"]
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
     
-    min_range = 0.15
+    min_range = 0.2
     max_range = 0.35
     
     pos = Pose() # Pose object to be filled randomly
@@ -40,9 +40,9 @@ def spawner():
 
         # Using angle + distance to select random location within range
         if robot_num == 0:
-            angle = 1.5*pi*random() - 1.25*pi
+            angle = 1*pi*random() - 1*pi
         elif robot_num == 1:
-            angle = 1.5*pi*random() - 0.25*pi
+            angle = 1*pi*random()
         else:
             angle = 2*pi*random()
 
