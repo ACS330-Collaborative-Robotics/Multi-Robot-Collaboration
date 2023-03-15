@@ -13,6 +13,7 @@ from geometry_msgs.msg import Pose
 
 import math
 from operator import itemgetter
+import tf2_ros
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -25,15 +26,16 @@ def choose_block():
     # Setup block_pos listener
     rospy.Subscriber('/blocks_pos', Blocks, callback)
 
-    # Define robot namespaces being used - also defines number of robots
-    robot_namespaces = ["mover6_a", "mover6_b"]
-    
     # Setup path_planner service
     rospy.wait_for_service('path_planner')
     path_service = rospy.ServiceProxy('path_planner', PathPlan)
 
     # Declare ROS Node name
     rospy.init_node('block_selector')
+
+    # Define robot namespaces being used - also defines number of robots
+    robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
 
     # Set Loop rate
     T = 5
@@ -141,6 +143,24 @@ def specific_block_pos(specific_model_name, reference_model_name):
 
     # Return ModelState object with position relative to world 
     return [data.x, data.y, data.z]
+
+def getRobotBaseCoordinates(robot_namespaces):
+    tfBuffer = tf2_ros.Buffer()
+    listener = tf2_ros.TransformListener(tfBuffer)
+
+    base_coordinates = []
+    for robot_name in robot_namespaces:
+        robot_base_coordinates = []
+        while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)):
+            print("Cannot find robot base transform - spawn_blocks.py. Retrying now.")
+            rospy.sleep(0.1)
+        
+        transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
+
+        robot_base_coordinates.append(transform_response.transform.translation.x)
+        robot_base_coordinates.append(transform_response.transform.translation.y)
+
+        base_coordinates.append(robot_base_coordinates)
 
 if __name__ == '__main__':
     try:
