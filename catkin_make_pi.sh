@@ -1,0 +1,1 @@
+catkin_make --only-pkg-with-deps cpr_robot

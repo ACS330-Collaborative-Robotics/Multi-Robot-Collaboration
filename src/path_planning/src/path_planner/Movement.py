@@ -103,8 +103,12 @@ class Movement:
             tempPos.orientation.y= pos_robot_base_frame.orientation.y #temporary
             tempPos.orientation.z= pos_robot_base_frame.orientation.z #temporary
             tempPos.orientation.w= pos_robot_base_frame.orientation.w
-            self.serv_helper.move(tempPos)
+            status = self.serv_helper.move(tempPos)
+
+            if not(status):
+                print("Path Planner - Error - Target unreachable.")
 
             #TODO: Force wait until robot has reached desired position. Temp fix:
             rospy.sleep(0.1)
-        return True
+            
+        return status #TODO: Implement zone checks

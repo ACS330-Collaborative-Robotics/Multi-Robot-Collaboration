@@ -8,7 +8,10 @@ from gazebo_msgs.srv import SpawnModel
 from geometry_msgs.msg import Pose
 from pathlib import Path
 
-from random import random
+import tf2_ros
+
+from random import random, randint
+from math import pi, cos, sin
 
 def spawner():
     # Setup Node
@@ -22,14 +25,36 @@ def spawner():
     f = open(str(Path.home()) + '/catkin_ws/src/block_controller/urdf/block.urdf')
     urdf = f.read()
 
+    # Spawn blocks in radius around each robot base with a minimum and maximum distance
+
+    robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
+    
+    min_range = 0.2
+    max_range = 0.35
+    
     pos = Pose() # Pose object to be filled randomly
     for block_num in range(20):
-        # position x y z
-        x_range = 0.6
-        y_range = 1
+        # Select a robot base randomly
+        robot_num = randint(0, len(robot_base_coords)-1)
 
-        pos.position.x = x_range*random() - x_range/2
-        pos.position.y = y_range*random() - y_range/4
+        # Using angle + distance to select random location within range
+        if robot_num == 0:
+            angle = 1*pi*random() - 1*pi
+        elif robot_num == 1:
+            angle = 1*pi*random()
+        else:
+            angle = 2*pi*random()
+
+        distance = (max_range-min_range)*random() + min_range
+
+        # Standard 2x2 rotation matrix transformation
+        x = cos(angle) * distance + sin(angle) * 0
+        y = -sin(angle) * distance + cos(angle) * 0
+
+        # Assign position, offset by robot base coordinates
+        pos.position.x = x + robot_base_coords[robot_num][0]
+        pos.position.y = y + robot_base_coords[robot_num][1]
         pos.position.z = 0.01
 
         # quaternion roation w x y z
@@ -41,6 +66,26 @@ def spawner():
         #urdf_spawner(model_name, model_xml, model_namespace, Pose initial_pose, reference_frame)
         print(urdf_spawner("block"  + str(block_num), urdf, "blocks", pos, "world"))
         
+def getRobotBaseCoordinates(robot_namespaces):
+    tfBuffer = tf2_ros.Buffer()
+    listener = tf2_ros.TransformListener(tfBuffer)
+
+    base_coordinates = []
+    for robot_name in robot_namespaces:
+        robot_base_coordinates = []
+        while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)):
+            print("Cannot find robot base transform - spawn_blocks.py. Retrying now.")
+            rospy.sleep(0.1)
+        
+        transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
+
+        robot_base_coordinates.append(transform_response.transform.translation.x)
+        robot_base_coordinates.append(transform_response.transform.translation.y)
+
+        base_coordinates.append(robot_base_coordinates)
+    
+    return base_coordinates
+
 if __name__ == '__main__':
     try:
         spawner()

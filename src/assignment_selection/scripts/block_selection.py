@@ -102,10 +102,10 @@ def choose_block():
                     end_pos.position.z = 0.2
 
                     if j == 0:
-                        end_pos.position.x = 0.2
+                        end_pos.position.x = 0.25
                         end_pos.position.y = 0
                     else:
-                        end_pos.position.x = 0.2
+                        end_pos.position.x = 0.25
                         end_pos.position.y = 0.5
 
                     robot_name = str(robot_namespaces[j])

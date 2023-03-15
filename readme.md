@@ -30,7 +30,8 @@ Robot Joints - `1 -> 6`
 | `./run_demo.sh` |  |  |  |
 | Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
 | Inverse kinematics | inv_kinematics | Runs service `inverse-kinematics` and publish inverse kinematics to relevant joint position controller | `rosrun inv_kinematics inv_kin_srv.py` |
-| Joint Controller | joint_controller | Controls whether or not simulation and physical robots recieve commands as required. Runs once per robot. | `rosrun joint_controller joint_controller.py` |
+| Joint Controller | joint_controller | Controls whether or not simulation and physical robots recieve commands as required. Runs once per robot. Needs lauch file. | `rosrun joint_controller joint_controller.py` |
+| Gripper Controller | joint_controller | Controlls the Gripper based on the selection channel. Runs once per robot. Needs lauch file. | `rosrun joint_controller gripper_controller.py` |
 | Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
 | Path Planner | path_planning | Mega node using OOP to plan and execute pick and place operations. | `rosrun path_planning path_plan.py` |
 | Block Fiducial Detector | fiducial_recognition | Runs camera setup, image processing, apriltag detection and cartesian block coordinates relative to mover6a | `roslaunch fiducial_recognition fiducial_recognition.launch camera_name:=/usb_cam image_topic:=image_rect_color` |
@@ -67,6 +68,7 @@ Robot Joints - `1 -> 6`
 | Desired Joint Angles | `/robot_ns_p/physical/joint_angles` | custom_msgs/Joints |  | /mover6_a_p/mover6_driver |  |
 | Current Moving State | `/robot_ns_p/physical/moving_state` | std_msgs/String |  | /mover6_a_p/mover6_driver |  |
 | CPR Robot State | `/robot_ns_p/robot_state` | cpr_robot/RobotState |  | /mover6_a_p/CPRMover6 | /mover6_a_p/rviz |
+| Mover6 gripper Controller | /robot_ns_p/gripper_state | std_msgs/Bool | `from std_msgs.msg import Bool` |  | /mover6_a_p/gripper_controller |
 
 ## Services
 
