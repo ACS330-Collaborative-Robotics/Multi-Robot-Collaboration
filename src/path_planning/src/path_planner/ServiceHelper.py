@@ -141,6 +141,10 @@ class ServiceHelper:
         d = ((x-xgoal)**2+(y-ygoal)**2+(z-zgoal)**2)**0.5 #absolute distance
         return d
 
+    def EuclidianDistance2d(self,x,y,xgoal,ygoal):
+        d = ((x-xgoal)**2+(y-ygoal)**2)**0.5
+        return d
+
     def Link_Midpoints(self,xobj,yobj,zobj,Q): #interpolate points to reat
         no_links = len(xobj) -1
         newxobj = []
@@ -197,6 +201,15 @@ class ServiceHelper:
             PotentialAtt = D*SF*d - 0.5*SF*D
         return PotentialAtt
 
+    def PotentialAttraction2d(self,x,y,xgoal,ygoal,D):
+        SF = 0.2 #scaling factor
+        d = EuclidianDistance2d(self,x,y,xgoal,ygoal)
+        if d <= D:
+            PotentialAtt = 0.5*SF*(d**2)
+        else:
+            PotentialAtt = D*SF*d - 0.5*SF*D
+        return PotentialAtt
+    
     def PotentialRepulsion(self,x,y,z,xobj,yobj,zobj,Q): #Repulsive field as a whole (used to display)
         """ 
         INPUT: current position and obstacle postition XYs. 
@@ -206,6 +219,20 @@ class ServiceHelper:
         PotentialRep = 0
         for objNum in range(len(xobj)):
             d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
+            if d <= Q[objNum]:
+                PotentialRepcurrent = SF*((1/d)-(1/Q[objNum]))
+            else:
+                PotentialRepcurrent = 0
+            if PotentialRepcurrent > 100:
+                PotentialRepcurrent = 100
+            PotentialRep += PotentialRepcurrent
+        return PotentialRep
+
+    def PotentialRepulsion2d(self,x,y,xobj,yobj,Q):
+        SF = 100
+        PotentialRep = 0
+        for objNum in range(len(xobj)):
+            d = EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             if d <= Q[objNum]:
                 PotentialRepcurrent = SF*((1/d)-(1/Q[objNum]))
             else:
@@ -292,39 +319,41 @@ class ServiceHelper:
         return PathPointsx,PathPointsy,PathPointsz
 
  
-    def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to add objx and objy
-        PathTaken = self.PathPlanner(startx, starty,startz, xgoal, ygoal,zgoal, xobj, yobj,zobj,Q, D)  ## you are here ^^^
+    def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy
+        x = np.linspace(-50, 50, 100)  # Creating X and Y axis
+        y = np.linspace(-50, 50, 100)
+        X, Y = np.meshgrid(x, y)  # Creates 2 arrays with respective x any y coordination for each point
+        PotentialEnergy = np.ndarray(shape=(len(x), len(y)))  # this acts as the z axis on graphs. Works better for visualisation
+        for i in range(len(X)):  # gets Z values for the X Y positions
+            for j in range(len(Y)):
+                PotentialEnergy[i, j] = PotentialAttraction2d(X[i,j],Y[i,j],xgoal,ygoal,D)+ PotentialRepulsion2d(X[i,j],Y[i,j],xobj,yobj,Q)
+                         # PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
+        PathTaken = PathPlanner(startx, starty,startz, xgoal, ygoal,zgoal, xobj, yobj,zobj,Q, D)  ## you are here ^^^
         EnergyPathTaken = []
-        xline = []
-        yline = []
-        zline = []
-        for i in range(len(PathTaken)):
-            xp = PathTaken[0]
-            yp = PathTaken[1]
-            zp =PathTaken[2]
-            xline.append(xp[i])
-            yline.append(yp[i])
-            zline.append(zp[i])
-            TotalPotential = self.PotentialAttraction(xp, yp, zp, xgoal, ygoal, zgoal, D) + self.PotentialRepulsion(xp, yp,zp, xobj, yobj,zobj, Q)
-            EnergyPathTaken.append(TotalPotential)
-        print('Space Generation Complete')
-        return xline, yline,zline, EnergyPathTaken, PathTaken
+        xline = PathTaken[0]
+        yline = PathTaken[1]
+        for i in range(len(PathTaken[0])):
 
-    def plotAPF(self,X,Y,Z, xline, yline,zline, PotentialEnergy,EnergyPathTaken):
-        # Making 3d Plot
+            TotalPotential = PotentialAttraction2d(xline[i], yline[i], xgoal, ygoal, D) + PotentialRepulsion2d(xline[i], yline[i], xobj, yobj, Q)
+            EnergyPathTaken.append(TotalPotential)
+        print(EnergyPathTaken)
+        print('Space Generation Complete')
+        return X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
+
+    def plotAPF(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
+    # Making 3d Plot
         fig = plt.figure()
         ax = plt.axes(projection='3d')
-        ax.plot_surface(X, Y, Z,PotentialEnergy)
-        ax.plot(xline, yline, zline,EnergyPathTaken, color='red', linewidth=4.5)
+        ax.plot_surface(X, Y, PotentialEnergy)
+        ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
-        ax.set_zlabel('Z axis')
         plt.show()
-        print("PlotAPF complete")
+        print("Successfuly run")
 
     def plotPath(self,PathTaken):
         fig = plt.figure()
-        ax = plt.axes()
+        ax = plt.axes(projection='3d')
         xpoints =[]
         ypoints = []
         zpoints = []
