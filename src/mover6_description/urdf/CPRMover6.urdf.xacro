@@ -248,7 +248,7 @@
 	</joint>
 
 	<joint name="joint_gripper_a" type="revolute">
-		<axis xyz="0 0 0"/>
+		<axis xyz="0 0 1"/>
 		<parent link="link7"/>
 		<child link="gripper_a"/>
 		<origin rpy="1.5708 -0.33752 3.1416" xyz="-0.0055607 -0.0041434 -0.04688"/>
@@ -257,7 +257,7 @@
 	</joint>
 
 	<joint name="joint_gripper_b" type="revolute">
-		<axis xyz="0 0 0"/>
+		<axis xyz="0 0 1"/>
 		<parent link="link7"/>
 		<child link="gripper_b"/>
 		<origin rpy="1.5708 -0.33752 0" xyz="0.0055607 0.005 -0.04688"/>
