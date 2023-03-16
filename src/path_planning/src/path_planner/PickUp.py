@@ -2,6 +2,8 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
+import tf_conversions
+from math import pi
 from path_planner import Movement
 
 class PickUp(Movement.Movement):
@@ -16,19 +18,20 @@ class PickUp(Movement.Movement):
         """
         pose = self.serv_helper.getBlockPos(block_name)
         
-        # Move 8cm above block
-        pose.position.z += 0.08
+        # Move 5cm above block
+        pose.position.z += 0.15
 
         # Set End Effector orientation to point downwards using quaternions
-        pose.orientation.x = 0
-        pose.orientation.y = 1
-        pose.orientation.z = 0
-        pose.orientation.w = 0
-
-
+        orientation_in_euler = [0,180*pi/180,0]
+        orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
-        if self.move(pose):
-            rospy.loginfo("Path Planner - Succesfully positioned above block.")
+        pose.orientation.x = orientation[0]
+        pose.orientation.y = orientation[1]
+        pose.orientation.z = orientation[2]
+        pose.orientation.w = orientation[3]
+        print("Path Planner - Pick Up - Moving to ", block_name)
+        
+        self.move(pose)
 
     def moveGripper(self, state):
         pass

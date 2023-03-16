@@ -13,6 +13,7 @@ from geometry_msgs.msg import Pose
 
 import math
 from operator import itemgetter
+import tf_conversions
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -36,14 +37,20 @@ def choose_block():
     rospy.init_node('block_selector')
 
     # Set Loop rate
-    rate = rospy.Rate(0.5)
+    T = 5
+    rate = rospy.Rate(1/T)
+
+    while (blockData is None) and not(rospy.is_shutdown()):
+        rospy.loginfo("Block Selection - Waiting for data.")
+        rospy.sleep(0.1)
+    rospy.loginfo("Block Selection - Got block data,")
 
     # Loop Selection until script is terminated
     while not rospy.is_shutdown():
         ## Making array of block names ##
 
         # Wait for blockData to read in by subscriber
-        while blockData is None:
+        while (blockData is None) and not(rospy.is_shutdown()):
             rospy.loginfo("Block Selection - Waiting for data.")
             rate.sleep()
         rospy.loginfo("Block Selection - Got block data,")
@@ -83,24 +90,32 @@ def choose_block():
                     block_name = str(goCollect[j][i])
 
                     end_pos = Pose()
-                    end_pos.position.x = 0.3
-                    end_pos.position.z = 0.3
-                    end_pos.orientation.y = 1
+
+                    orientation_in_euler = [0,90*math.pi/180,0]
+                    orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+                    
+                    end_pos.orientation.x = orientation[0]
+                    end_pos.orientation.y = orientation[1]
+                    end_pos.orientation.z = orientation[2]
+                    end_pos.orientation.w = orientation[3]
+                    
+                    end_pos.position.z = 0.2
 
                     if j == 0:
-                        end_pos.position.y = -0.3
+                        end_pos.position.x = 0.25
+                        end_pos.position.y = 0
                     else:
-                        end_pos.position.y = 0.3
+                        end_pos.position.x = 0.25
+                        end_pos.position.y = 0.5
 
                     robot_name = str(robot_namespaces[j])
                     
                     try:
                         success = path_service(block_name, end_pos, robot_name)
 
-                        if success:
-                            rospy.loginfo("Block Selection - " + robot_namespaces[j] + " to " + goCollect[j][i])
-                        else:
+                        if not(success):
                             rospy.loginfo("Block Selection - Service call returned False.")
+                            
                     except rospy.ServiceException as e:
                         rospy.loginfo("Block Selection - Service call failed: %s"%e)
 

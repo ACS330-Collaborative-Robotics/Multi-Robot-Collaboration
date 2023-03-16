@@ -14,12 +14,14 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
+
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>control_msgs</build_depend>
   <build_depend>rviz</build_depend>
   <build_depend>custom_msgs</build_depend>
+
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>sensor_msgs</build_export_depend>
@@ -34,6 +36,10 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>control_msgs</exec_depend>
   <exec_depend>custom_msgs</exec_depend>
+
+  <build_depend>cpr_robot</build_depend>
+  <build_export_depend>cpr_robot</build_export_depend>
+  <exec_depend>cpr_robot</exec_depend>
 
 
 </package>
