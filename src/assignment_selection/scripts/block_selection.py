@@ -122,7 +122,7 @@ def choose_block():
             end_pos.position.z = tower_pos[i][2]
 
             quat = tf.transformations.quaternion_from_euler(
-                tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
+                float(tower_pos[i][3]),float(tower_pos[i][4]),float(tower_pos[i][5]))
             end_pos.orientation.x = quat[0]
             end_pos.orientation.y = quat[1]
             end_pos.orientation.z = quat[2]
