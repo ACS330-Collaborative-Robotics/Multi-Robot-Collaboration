@@ -10,7 +10,8 @@ from block_controller.msg import Blocks
 from path_planning.srv import PathPlan
 from std_msgs.msg import String
 from geometry_msgs.msg import Pose
-
+import tf
+import tf2_ros
 import math
 from operator import itemgetter
 
@@ -86,26 +87,28 @@ def choose_block():
         
         ## ////////////////////////////////////////////
         
-        n = 20
-        layers = math.ceil(n/3)
-        print(layers)
+        n = len(blockNames) #num of blocks
+        layers = math.ceil(n/3) #num of layers
         tower_pos = [] #this has to be a 3 column * layers(value) matrix
-        h=0.5
-        angle=0
+        h=0.1 #height of blocks
+        a=0
+        b=0
+        c=0
 
+        #generate coordinates
         for i in range(layers):
-            w=0.25
-            home_pos = [w,0.25,h,angle]
+            w=0.25 #width of blocks
+            home_pos = [w,0.25,h,a,b,c]
             for j in range(3):
-                home_pos = [w,0.25,h,angle]
+                home_pos = [w,0.25,h,a,b,c]
                 tower_pos.append(home_pos)
-                w=w+1
-            h=h+1
+                w=w+0.2
+            h=h+0.1
 
-            if angle==0:
-                angle=90*(math.pi/180)
-            elif angle==90*(math.pi/180):
-                angle=0
+            if c==0:
+                c=-90*(math.pi/180)
+            elif c==-90*(math.pi/180):
+                c=0
 
         # Publish assignments
         for i in range(len(tower_pos)):
@@ -115,8 +118,17 @@ def choose_block():
             end_pos.position.x = tower_pos[i][0]
             end_pos.position.y = tower_pos[i][1]
             end_pos.position.z = tower_pos[i][2]
-            end_pos.orientation.w = tower_pos[i][3]
-                    
+
+            quat = tf.transformations.quaternion_from_euler(
+                tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
+            end_pos.orientation.x = quat[0]
+            end_pos.orientation.y = quat[1]
+            end_pos.orientation.z = quat[2]
+            end_pos.orientation.w = quat[3]
+
+            
+            
+            
             robot_name = str(robot_namespaces[0])
             ## ////////////////////////////////////////////
                     
