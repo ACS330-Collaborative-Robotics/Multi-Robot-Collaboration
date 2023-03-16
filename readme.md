@@ -327,3 +327,6 @@ If this doesnt fix the issues, or you have an Intel Xe Graphics card, you will n
 **apriltag_ros missing a camera calibration file**
 
 In the Google Drive in the 'Techincal Documentation' folder there is a 'camera calibration' folder containing a calibration file. 'head_camera.yaml' must be placed in a folder called 'camera_info' in 'home/.ros'
+
+**roslaunch not finding packages that exist**
+run - 'source /home/uos/catkin_ws/devel/setup.bash' (or other path)
