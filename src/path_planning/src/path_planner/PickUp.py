@@ -23,7 +23,7 @@ class PickUp(Movement.Movement):
         pose = self.serv_helper.getBlockPos(block_name)
         
         # Move 5cm above block
-        pose.position.z += 0.1
+        pose.position.z += 0.15
 
         # Set End Effector orientation to point downwards using quaternions
         orientation_in_euler = [0,180*pi/180,0]

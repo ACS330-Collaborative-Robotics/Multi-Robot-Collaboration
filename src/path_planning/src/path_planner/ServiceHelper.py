@@ -57,7 +57,7 @@ class ServiceHelper:
         arm_pos.model_name = self.robot_ns
         arm_pos.pose = pos
         # Call inverse_kinematics service and log ArmPos
-        self.inv_kin(arm_pos)
+        return self.inv_kin(arm_pos)
 
     def getBlockPos(self, specific_model_name:str) -> Pose:
         """ Get block position relative to current robot arm
