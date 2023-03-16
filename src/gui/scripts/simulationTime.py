@@ -17,25 +17,26 @@ class GUI:
         # create a label for the simulation
         self.label1 = tk.Label(master, text="Simulation: ")
         self.label1.grid(row=0, column=0, sticky="w")
-        # Create a canvas to display the video
         self.canvas = tk.Canvas(master, width=640, height=480)
-        self.canvas.grid(row=1, column=0, columnspan=2)
-        
-        # Create a label widget to display the simulation time
+        self.canvas.grid(row=1, column=0, sticky="nsew")
         self.time_label = tk.Label(master, text="")
-        self.time_label.grid(row=3, column=0, sticky="w")
+        self.time_label.grid(row=2, column=0, sticky="w")
+
+        self.stop_all_button = tk.Button(master, text="Stop Sim and Phys Robots", bg="red", fg="white", command=self.stop_physical_clicked)
+        self.stop_all_button.grid(row=3, column=0, )
+        self.stop_physical_button = tk.Button(master, text="Stop Phys Robots", bg="red", fg="white", command=self.stop_physical_clicked)
+        self.stop_physical_button.grid(row=4, column=0, )
         
-        # create a blank label
         self.label1 = tk.Label(master, text="")
-        self.label1.grid(row=4, column=0, sticky="w")
+        self.label1.grid(row=5, column=0, sticky="w")
 
         # Create labels for joint angles
         self.angles= tk.Label(master, text="Joint angles from base to end-effector: ")
-        self.angles.grid(row=5, column=0, sticky="w")
+        self.angles.grid(row=6, column=0, sticky="w")
         self.angles_A = tk.Label(master, text="Robot A joint angles (rad): ")
-        self.angles_A.grid(row=6, column=0, sticky="w")
+        self.angles_A.grid(row=7, column=0, sticky="w")
         self.angles_B = tk.Label(master, text="Robot B joint angles (rad): ")
-        self.angles_B.grid(row=7, column=0, sticky="w")
+        self.angles_B.grid(row=8, column=0, sticky="w")
 
         # Create a listener for the clock topic
         rospy.init_node('listener', anonymous=True)
@@ -92,6 +93,8 @@ class GUI:
         joint_angles_str = ["{:.1f}".format(joint_angle) for joint_angle in joint_angles]
         self.angles_B.configure(text="Robot B joint angles (rad): " + ", ".join(joint_angles_str))
 
+    def stop_physical_clicked(self):
+        self.stop_physical_button.config(text="Revert Sim to Phys", bg="#ffff66", fg="black")
    
         
 if __name__ == '__main__':
