@@ -6,6 +6,10 @@ import tf_conversions
 import ikpy.chain
 from trac_ik_python.trac_ik import IK
 
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+
 disable_fk = False
 try:
     import kinpy as kp
@@ -57,7 +61,11 @@ def ikpy_inverse_kinematics(pose: Pose):
     return joints
 
 def trac_ik_inverse_kinematics(pose: Pose):
-    urdf_str = rospy.get_param('/robot_description')
+    try:
+        urdf_str = rospy.get_param('/robot_description')
+    except:
+        file = open(Path.home().as_posix() + "/catkin_ws/src/inv_kinematics/urdf/CPRMover6.urdf.xacro")
+        urdf_str = file.read()
 
     ik_solver = IK("base_link", "link6", urdf_string=urdf_str)
 
@@ -68,13 +76,13 @@ def trac_ik_inverse_kinematics(pose: Pose):
 
     joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
 
-    multiplier = 10
-    while joints is None:
-        coordinate_tolerance = coordinate_tolerance * multiplier
-
-        print("Inverse Kinematics - Trac Ik: Failed to find solution, increasing tolerance by 10 times to", coordinate_tolerance, angle_tolerance)
-
-        joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
+    #multiplier = 10
+    #while joints is None:
+    #    coordinate_tolerance = coordinate_tolerance * multiplier
+    #
+    #    print("Inverse Kinematics - Trac Ik: Failed to find solution, increasing tolerance by 10 times to", coordinate_tolerance, angle_tolerance)
+    #
+    #    joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
         
     if joints is None:
         return None
@@ -129,9 +137,64 @@ def service(req):
         print("Inverse Kinematics - Joint positions published.\n")
 
         return True
+    
+def analyse_robot_workspace():
+    x_range = [-0.5, 0.5]
+    y_range = [-0.5, 0.5]
+    z_range = [0, 0.3]
+
+    number_of_points = 20
+    number_of_points -= 1
+
+    x_step = (max(x_range) - min(x_range))/number_of_points
+    y_step = (max(y_range) - min(y_range))/number_of_points
+    z_step = (max(z_range) - min(z_range))/number_of_points
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+
+    pose_object = Pose()
+
+    orientation_in_euler = [0,180*pi/180,0]
+    orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+    
+    pose_object.orientation.x = orientation[0]
+    pose_object.orientation.y = orientation[1]
+    pose_object.orientation.z = orientation[2]
+    pose_object.orientation.w = orientation[3]
+
+    for x_multiplier in range(0, number_of_points+1):
+        x = x_multiplier*x_step + min(x_range)
+
+        for y_multiplier in range(0, number_of_points+1):
+            y = y_multiplier*y_step + min(y_range)
+
+            for z_multiplier in range(0, number_of_points+1):
+                z = z_multiplier*z_step + min(z_range)
+                
+                pose_object.position.x = x
+                pose_object.position.y = y
+                pose_object.position.z = z
+
+                status = trac_ik_inverse_kinematics(pose_object)
+                if status:
+                    ax.scatter(x, y, z, cmap="black")
+
+        print((x_multiplier+1)/number_of_points*100, "% Done")
+
+        if rospy.is_shutdown():
+            break
+
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+
+    plt.show()
 
 def main():
     rospy.init_node('inverse_kinematics_server')
+
+    analyse_robot_workspace()
 
     s = rospy.Service('inverse_kinematics', InvKin, service)
 
