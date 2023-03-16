@@ -16,14 +16,16 @@ class PickUp(Movement.Movement):
         """
         pose = self.serv_helper.getBlockPos(block_name)
         
-        # Move 5cm above block
-        pose.position.z += 0.05
+        # Move 8cm above block
+        pose.position.z += 0.08
 
         # Set End Effector orientation to point downwards using quaternions
         pose.orientation.x = 0
         pose.orientation.y = 1
         pose.orientation.z = 0
         pose.orientation.w = 0
+
+
         
         if self.move(pose):
             rospy.loginfo("Path Planner - Succesfully positioned above block.")
