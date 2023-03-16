@@ -141,7 +141,7 @@ def service(req):
 def analyse_robot_workspace():
     x_range = [-0.5, 0.5]
     y_range = [-0.5, 0.5]
-    z_range = [0, 0.3]
+    z_range = [-0.1, 0.3]
 
     number_of_points = 20
     number_of_points -= 1
@@ -178,12 +178,18 @@ def analyse_robot_workspace():
 
                 status = trac_ik_inverse_kinematics(pose_object)
                 if status:
-                    ax.scatter(x, y, z, cmap="black")
+                    ax.scatter(x, y, z, c='k')
 
-        print((x_multiplier+1)/number_of_points*100, "% Done")
+        print((x_multiplier+1)/(number_of_points+1)*100, "% Done")
 
         if rospy.is_shutdown():
             break
+
+    ax.scatter(0, 0, 0, c="r")
+
+    ax.axis(x_range + y_range)
+
+    ax.set_title('Plot of Mover6 Reachable Workspace\nwith End Effector downwards facing')
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
