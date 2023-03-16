@@ -14,7 +14,7 @@ import cv2
 
 class GUI:
     def __init__(self, master):
-        # create a label for the simulation
+        # simulation
         self.label1 = tk.Label(master, text="Simulation: ")
         self.label1.grid(row=0, column=0, sticky="w")
         self.canvas = tk.Canvas(master, width=640, height=480)
@@ -22,21 +22,24 @@ class GUI:
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
 
+        # buttons
         self.stop_all_button = tk.Button(master, text="Stop Sim and Phys Robots", bg="red", fg="white", command=self.stop_physical_clicked)
         self.stop_all_button.grid(row=3, column=0, )
         self.stop_physical_button = tk.Button(master, text="Stop Phys Robots", bg="red", fg="white", command=self.stop_physical_clicked)
         self.stop_physical_button.grid(row=4, column=0, )
         
+        # blank space
         self.label1 = tk.Label(master, text="")
         self.label1.grid(row=5, column=0, sticky="w")
 
-        # Create labels for joint angles
+        # joint angles
         self.angles= tk.Label(master, text="Joint angles from base to end-effector: ")
         self.angles.grid(row=6, column=0, sticky="w")
         self.angles_A = tk.Label(master, text="Robot A joint angles (rad): ")
         self.angles_A.grid(row=7, column=0, sticky="w")
         self.angles_B = tk.Label(master, text="Robot B joint angles (rad): ")
         self.angles_B.grid(row=8, column=0, sticky="w")
+
 
         # Create a listener for the clock topic
         rospy.init_node('listener', anonymous=True)
