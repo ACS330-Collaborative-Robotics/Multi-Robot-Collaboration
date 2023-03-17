@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   message_generation
   custom_msgs
+  cpr_robot
 )
 
 ## System dependencies are found with CMake's conventions
@@ -101,28 +102,22 @@ catkin_package(
 ###########
 
 ## Specify additional locations of header files
-## Your package locations should be listed before other locations
+## Your package locations should be listed before other locations   
 include_directories( PUBLIC
   include
   ${catkin_INCLUDE_DIRS}
 )
 
-
 add_executable(mover6_driver 
   src/mover6_driver.cpp) 
 target_link_libraries(mover6_driver ${catkin_LIBRARIES})
 
-add_executable(listenerincpp 
-  src/listenerincpp.cpp) 
-target_link_libraries(listenerincpp ${catkin_LIBRARIES})
-
 catkin_install_python(PROGRAMS 
   scripts/joint_controller.py
-  scripts/listener.py
-  scripts/talker.py
+  scripts/gripper_controller.py
+  scripts/manual_gripper_control_b.py
+  scripts/manual_gripper_control_a.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 add_dependencies(mover6_driver ${catkin_EXPORTED_TARGETS})
-
-add_dependencies(listenerincpp ${catkin_EXPORTED_TARGETS})

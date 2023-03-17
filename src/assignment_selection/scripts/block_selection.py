@@ -15,6 +15,7 @@ import tf2_ros
 import math
 from operator import itemgetter
 import tf2_ros
+import tf_conversions
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -42,7 +43,7 @@ def choose_block():
     T = 5
     rate = rospy.Rate(1/T)
 
-    while blockData is None:
+    while (blockData is None) and not(rospy.is_shutdown()):
         rospy.loginfo("Block Selection - Waiting for data.")
         rospy.sleep(0.1)
     rospy.loginfo("Block Selection - Got block data,")
@@ -52,7 +53,7 @@ def choose_block():
         ## Making array of block names ##
 
         # Wait for blockData to read in by subscriber
-        while blockData is None:
+        while (blockData is None) and not(rospy.is_shutdown()):
             rospy.loginfo("Block Selection - Waiting for data.")
             rate.sleep()
         rospy.loginfo("Block Selection - Got block data,")
@@ -121,16 +122,12 @@ def choose_block():
             end_pos.position.y = tower_pos[i][1]
             end_pos.position.z = tower_pos[i][2]
 
-            quat = tf.transformations.quaternion_from_euler(
-                tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
+            quat = tf.transformations.quaternion_from_euler(tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
             end_pos.orientation.x = quat[0]
             end_pos.orientation.y = quat[1]
             end_pos.orientation.z = quat[2]
             end_pos.orientation.w = quat[3]
 
-            
-            
-            
             robot_name = str(robot_namespaces[0])
             ## ////////////////////////////////////////////
                     
