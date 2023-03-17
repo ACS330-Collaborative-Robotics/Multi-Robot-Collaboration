@@ -17,28 +17,32 @@ class GUI:
         # simulation
         self.label1 = tk.Label(master, text="Simulation: ")
         self.label1.grid(row=0, column=0, sticky="w")
-        self.canvas = tk.Canvas(master, width=640, height=480)
+        self.canvas = tk.Canvas(master, width=540, height=380)
         self.canvas.grid(row=1, column=0, sticky="nsew")
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
 
+        
         # buttons
-        self.stop_all_button = tk.Button(master, text="Stop Sim and Phys Robots", bg="red", fg="white", command=self.stop_physical_clicked)
-        self.stop_all_button.grid(row=3, column=0, )
-        self.stop_physical_button = tk.Button(master, text="Stop Phys Robots", bg="red", fg="white", command=self.stop_physical_clicked)
-        self.stop_physical_button.grid(row=4, column=0, )
+        self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
+        self.emergency_stop_button.grid(row=3, column=0, )
+        self.pause_button = tk.Button(master, text="PAUSE", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.pause_physical_clicked)
+        self.pause_button.grid(row=4, column=0, )
+        self.sim_preview_button = tk.Button(master, text="SIM PREVIEW", bg="yellow", fg="black", font=("Calibri", 10, "bold"), command=self.sim_preview_clicked)
+        self.sim_preview_button.grid(row=5, column=0, )
+    
         
         # blank space
         self.label1 = tk.Label(master, text="")
-        self.label1.grid(row=5, column=0, sticky="w")
+        self.label1.grid(row=6, column=0, sticky="w")
 
         # joint angles
         self.angles= tk.Label(master, text="Joint angles from base to end-effector: ")
-        self.angles.grid(row=6, column=0, sticky="w")
+        self.angles.grid(row=7, column=0, sticky="w")
         self.angles_A = tk.Label(master, text="Robot A joint angles (rad): ")
-        self.angles_A.grid(row=7, column=0, sticky="w")
+        self.angles_A.grid(row=8, column=0, sticky="w")
         self.angles_B = tk.Label(master, text="Robot B joint angles (rad): ")
-        self.angles_B.grid(row=8, column=0, sticky="w")
+        self.angles_B.grid(row=9, column=0, sticky="w")
 
 
         # Create a listener for the clock topic
@@ -96,9 +100,16 @@ class GUI:
         joint_angles_str = ["{:.1f}".format(joint_angle) for joint_angle in joint_angles]
         self.angles_B.configure(text="Robot B joint angles (rad): " + ", ".join(joint_angles_str))
 
-    def stop_physical_clicked(self):
-        self.stop_physical_button.config(text="Revert Sim to Phys", bg="#ffff66", fg="black")
+    def emergency_stop_clicked(self):
+        self.emergency_stop_button.config(text="START", bg="green", fg="black")
+    
+    def pause_physical_clicked(self):
+        self.pause_button.config(text="START", bg="green", fg="black")
    
+    def sim_preview_clicked(self):
+        self.sim_preview_button.config(text="STOP PREVIEW", bg="red", fg="black")
+   
+
         
 if __name__ == '__main__':
     root = tk.Tk()
