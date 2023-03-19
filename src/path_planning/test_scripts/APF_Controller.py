@@ -5,21 +5,21 @@ from Object_Creation import *
 startx = -50
 starty = -50
 startz = 50
-xgoal = 40
-ygoal = 40
+xgoal = 50
+ygoal = 50
 zgoal = 0
-xobj = [0,10,-2]
-yobj = [-40,-10,15]
-zobj = [20,15,10]
-Q = [12,4,2]
+xobj = [3]
+yobj = [0]
+zobj = [10]
+Q = [15]
 D = 5
 xobj,yobj,zobj,Q = Link_Midpoints(xobj,yobj,zobj,Q)
 ##Visual Commands
 X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken = Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
-plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
-plotPath(PathTaken)
+#plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
+plotPath(PathTaken,xobj,yobj,zobj )
 ##X,Y path the End effector will take
-PathTakenx, PathTakeny, PathTakenz = PathPlanner(startx,starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
+#PathTakenx, PathTakeny, PathTakenz = PathPlanner(startx,starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
 
 #print(PathTakenx)
 #print(PathTakeny)

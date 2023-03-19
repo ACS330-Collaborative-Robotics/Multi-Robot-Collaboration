@@ -12,14 +12,20 @@ def Link_Midpoints(xobj,yobj,zobj,Q): ####you are here
     newyobj = []
     newzobj = []
     newQ = []
-    for i in range(no_links):
-        vector = [xobj[i + 1] - xobj[i], yobj[i + 1] - yobj[i], zobj[i + 1] - zobj[i]]
-        detlaQ = Q[i+1]-Q[i]
-        for j in range(10):
-            newxobj.append(xobj[i] + vector[0]*j/10)
-            newyobj.append(yobj[i] + vector[1] * j / 10)
-            newzobj.append(zobj[i] + vector[2] * j / 10)
-            newQ.append(Q[i] + detlaQ*j/10)
+    if no_links ==0:
+        newxobj = xobj
+        newyobj = yobj
+        newzobj = zobj
+        newQ = Q
+    else:
+        for i in range(no_links):
+            vector = [xobj[i + 1] - xobj[i], yobj[i + 1] - yobj[i], zobj[i + 1] - zobj[i]]
+            detlaQ = Q[i+1]-Q[i]
+            for j in range(20):
+                newxobj.append(xobj[i] + vector[0]*j/20)
+                newyobj.append(yobj[i] + vector[1] * j / 20)
+                newzobj.append(zobj[i] + vector[2] * j / 20)
+                newQ.append(Q[i] + detlaQ*j/10)
 
     #for i in range(no_links):
      #   vector = [xobj[i+1]-xobj[i],yobj[i+1]-yobj[i],zobj[i+1]-zobj[i]]

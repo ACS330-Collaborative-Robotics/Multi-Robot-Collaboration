@@ -22,7 +22,7 @@ def Space_Generation(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D):
 
         TotalPotential = PotentialAttraction2d(xline[i], yline[i], xgoal, ygoal, D) + PotentialRepulsion2d(xline[i], yline[i], xobj, yobj, Q)
         EnergyPathTaken.append(TotalPotential)
-    print(EnergyPathTaken)
+    #print(EnergyPathTaken)
     print('Space Generation Complete')
     return X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
 
@@ -35,20 +35,26 @@ def plotAPF(X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
     ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
+    ax.set_title('X, Y Potential Fields Representation')
     plt.show()
     print("Successfuly run")
 
-def plotPath(PathTaken):
+def plotPath(PathTaken,xobj,yobj,zobj):
     fig = plt.figure()
     ax = plt.axes(projection='3d')
-    xpoints =[]
-    ypoints = []
-    zpoints = []
-    for point in PathTaken:
-        xpoints.append(point[0])
-        ypoints.append(point[1])
-        zpoints.append(point[2])
-    ax.plot(xpoints,ypoints,zpoints)
+    xpoints = PathTaken[0]
+    ypoints = PathTaken[1]
+    zpoints = PathTaken[2]
+
+    #for point in PathTaken[0]:
+     #   xpoints.append(point[0])
+      #  ypoints.append(point[1])
+       # zpoints.append(point[2])
+    ax.scatter(xobj,yobj,zobj,color='red',linewidth=10)
+    ax.plot(xpoints,ypoints,zpoints,linewidth=2.5)
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_title('End Effector Path in 3D space')
     plt.show()
     print('PlotPath Complete')
 

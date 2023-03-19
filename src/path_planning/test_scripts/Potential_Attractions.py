@@ -5,7 +5,7 @@
 #Author: Steven Craig
 from Distance_Euclidian import *
 def PotentialAttractionChange(x,y,z,xgoal,ygoal,zgoal,D):
-    SF = 0.9 #scaling factor
+    SF = 0.7 #scaling factor
     d= EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
     if d <= D:
         PotentialChange = [SF*x-SF*xgoal,SF*y-SF*ygoal,SF*z-SF*zgoal]
