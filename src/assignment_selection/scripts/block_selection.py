@@ -86,13 +86,14 @@ def choose_block():
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
         rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
-        
+        print(goCollect)
         ## ////////////////////////////////////////////
         
         n = len(blockNames) #num of blocks
         layers = math.ceil(n/3) #num of layers
         tower_pos = [] #this has to be a 3 column * layers(value) matrix
         h=0.1 #height of blocks
+        #euler rotation comp
         a=0
         b=0
         c=0
@@ -114,6 +115,7 @@ def choose_block():
 
         # Publish assignments
         for i in range(len(tower_pos)):
+            for j in range
             block_name = str(blockNames[i])
 
             end_pos = Pose()
