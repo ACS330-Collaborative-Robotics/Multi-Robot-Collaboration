@@ -71,7 +71,7 @@ def choose_block():
 
         # Getting distance from each robot to blocks and sellecting the smallest
         roboColect = []
-        for blockName in blockNames:     
+        for blockName in blockNames:
             reldist = []
             for robot in robot_namespaces:
                 temp_pose =  specific_block_pose(blockName, robot)
@@ -128,8 +128,6 @@ def choose_block():
                     except rospy.ServiceException as e:
                         rospy.loginfo("Block Selection - Service call failed: %s"%e)
 
-                    
-
                 rate.sleep()
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
@@ -141,7 +139,7 @@ def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Return ModelState object with position relative to world 
     return data
 
-def is_block_reachable(block_name, robot_namespaces):
+def is_block_reachable(block_name, robot_namespaces) -> bool:
     rospy.wait_for_service('inverse_kinematics_reachability')
     inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
 
@@ -160,11 +158,9 @@ def is_block_reachable(block_name, robot_namespaces):
         model_state.pose.orientation.w = orientation[3]
 
         model_state.pose.position.z += 0.15
-        
-        print(inv_kin_is_reachable(model_state).success)
 
         if inv_kin_is_reachable(model_state).success:
-            #print("Block Selection - is_block_reachable - ", block_name, "reachable by", robot_name)
+            print("Block Selection -", block_name, "reachable by", robot_name)
             return True
         
     return False
