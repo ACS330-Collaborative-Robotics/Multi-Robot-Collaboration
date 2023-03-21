@@ -46,85 +46,91 @@ def choose_block():
         rospy.sleep(0.1)
     rospy.loginfo("Block Selection - Got block data,")
 
-    # Loop Selection until script is terminfrom std_msgs.msg import String
-    rospy.loginfo("Block Selection - Got block data,")
+    # Loop Selection until script is terminated
+    while not rospy.is_shutdown():
+        ## Making array of block names ##
 
-    # Iterate through blockData and retrieve list of block names
-    blockNames = []
-    for block_num in range(len(blockData.block_data)):
-        block_name = "block" + str(blockData.block_data[block_num].block_number)
-
-        if is_block_reachable(block_name, robot_namespaces):
-            blockNames.append(block_name)
-            print("Block Selection - Adding", block_name, "as it is reachable.")
-        else:
-            print("Block Selection - Ignoring", block_name, "as it is unreachable.")
-
-    rospy.loginfo("Block Selection - Block list built.")
-
-    # Getting distance from each robot to blocks and sellecting the smallest
-    roboColect = []
-    for blockName in blockNames:     
-        reldist = []
-        for robot in robot_namespaces:
-            temp_pose =  specific_block_pose(blockName, robot)
-            temp = [temp_pose.position.x, temp_pose.position.y, temp_pose.position.z]
-
-            reldist.append(math.sqrt(temp[0]**2+temp[1]**2+temp[2]**2))
-        roboColect.append([blockName, reldist.index(min(reldist)), min(reldist)])
-    
-    # Ordering list on nearest
-    sorted(roboColect,key=itemgetter(2))
-    
-    # Splitting into seperate lists
-    goCollect = []
-    for i in range(len(robot_namespaces)):
-        goCollect.append([])
-        for nextBlock in roboColect:
-            if nextBlock[1] == i:
-                goCollect[i].append(nextBlock[0])
-    rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
-
-    # Publish assignments
-    for i in range(max(len(x) for x in goCollect)):
-        for j in range(len(robot_namespaces)):
-            if i < len(goCollect[j]):
-                # Set End Position
-                block_name = str(goCollect[j][i])
-
-                end_pos = Pose()
-
-                orientation_in_euler = [0,90*math.pi/180,0]
-                orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
-                
-                end_pos.orientation.x = orientation[0]
-                end_pos.orientation.y = orientation[1]
-                end_pos.orientation.z = orientation[2]
-                end_pos.orientation.w = orientation[3]
-                
-                end_pos.position.z = 0.2
-
-                if j == 0:
-                    end_pos.position.x = 0.25
-                    end_pos.position.y = 0
-                else:
-                    end_pos.position.x = 0.25
-                    end_pos.position.y = 0.5
-
-                robot_name = str(robot_namespaces[j])
-                
-                try:
-                    success = path_service(block_name, end_pos, robot_name)
-
-                    if not(success):
-                        rospy.loginfo("Block Selection - Service call returned False.")
-                        
-                except rospy.ServiceException as e:
-                    rospy.loginfo("Block Selection - Service call failed: %s"%e)
-
-                
-
+        # Wait for blockData to read in by subscriber
+        while (blockData is None) and not(rospy.is_shutdown()):
+            rospy.loginfo("Block Selection - Waiting for data.")
             rate.sleep()
+        rospy.loginfo("Block Selection - Got block data,")
+
+        # Iterate through blockData and retrieve list of block names
+        blockNames = []
+        for block_num in range(len(blockData.block_data)):
+            block_name = "block" + str(blockData.block_data[block_num].block_number)
+
+            if is_block_reachable(block_name, robot_namespaces):
+                blockNames.append(block_name)
+                print("Block Selection - Adding", block_name, "as it is reachable.")
+            else:
+                print("Block Selection - Ignoring", block_name, "as it is unreachable.")
+
+        rospy.loginfo("Block Selection - Block list built.")
+
+        # Getting distance from each robot to blocks and sellecting the smallest
+        roboColect = []
+        for blockName in blockNames:     
+            reldist = []
+            for robot in robot_namespaces:
+                temp_pose =  specific_block_pose(blockName, robot)
+                temp = [temp_pose.position.x, temp_pose.position.y, temp_pose.position.z]
+                reldist.append(math.sqrt(temp[0]**2+temp[1]**2+temp[2]**2))
+            roboColect.append([blockName, reldist.index(min(reldist)), min(reldist)])
+        
+        # Ordering list on nearest
+        sorted(roboColect,key=itemgetter(2))
+        
+        # Splitting into seperate lists
+        goCollect = []
+        for i in range(len(robot_namespaces)):
+            goCollect.append([])
+            for nextBlock in roboColect:
+                if nextBlock[1] == i:
+                    goCollect[i].append(nextBlock[0])
+        rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
+
+        # Publish assignments
+        for i in range(max(len(x) for x in goCollect)):
+            for j in range(len(robot_namespaces)):
+                if i < len(goCollect[j]):
+                    # Set End Position
+                    block_name = str(goCollect[j][i])
+
+                    end_pos = Pose()
+
+                    orientation_in_euler = [0,90*math.pi/180,0]
+                    orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+                    
+                    end_pos.orientation.x = orientation[0]
+                    end_pos.orientation.y = orientation[1]
+                    end_pos.orientation.z = orientation[2]
+                    end_pos.orientation.w = orientation[3]
+                    
+                    end_pos.position.z = 0.2
+
+                    if j == 0:
+                        end_pos.position.x = 0.25
+                        end_pos.position.y = 0
+                    else:
+                        end_pos.position.x = 0.25
+                        end_pos.position.y = 0.5
+
+                    robot_name = str(robot_namespaces[j])
+                    
+                    try:
+                        success = path_service(block_name, end_pos, robot_name)
+
+                        if not(success):
+                            rospy.loginfo("Block Selection - Service call returned False.")
+                            
+                    except rospy.ServiceException as e:
+                        rospy.loginfo("Block Selection - Service call failed: %s"%e)
+
+                    
+
+                rate.sleep()
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Use service to get position of specific block named
@@ -158,7 +164,6 @@ def is_block_reachable(block_name, robot_namespaces):
             return True
         
     return False
-
 
 if __name__ == '__main__':
     try:
