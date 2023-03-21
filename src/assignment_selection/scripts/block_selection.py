@@ -148,6 +148,7 @@ def is_block_reachable(block_name, robot_namespaces):
     model_state = ModelState()
 
     for robot_name in robot_namespaces:
+        #print("\nBlock Selection - is_block_reachable", block_name, robot_name)
         model_state.pose = specific_block_pose(block_name, robot_name)
 
         orientation_in_euler = [0,90*math.pi/180,0]
@@ -160,7 +161,10 @@ def is_block_reachable(block_name, robot_namespaces):
 
         model_state.pose.position.z += 0.15
         
-        if inv_kin_is_reachable(model_state):
+        print(inv_kin_is_reachable(model_state).success)
+
+        if inv_kin_is_reachable(model_state).success:
+            #print("Block Selection - is_block_reachable - ", block_name, "reachable by", robot_name)
             return True
         
     return False
