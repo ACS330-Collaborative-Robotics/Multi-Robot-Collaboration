@@ -19,7 +19,7 @@ def spawner():
     # Setup Node
     rospy.init_node('block_spawner') 
 
-    rospy.Subscriber('/blocks_pos', Blocks, callback)
+    rospy.Subscriber('/blocks_pos_cam', Blocks, callback)
     # Setup URDF spawner service
     rospy.wait_for_service('gazebo/spawn_urdf_model')
     urdf_spawner = rospy.ServiceProxy('gazebo/spawn_urdf_model', SpawnModel)
@@ -32,7 +32,7 @@ def spawner():
     while (blockData is None) and not(rospy.is_shutdown()):
         rospy.loginfo("Block Spawner - Waiting for camera data.")
         rospy.sleep(0.1)
-    rospy.loginfo("Block Spawner - Got camera data,")
+    rospy.loginfo("Block Spawner - Got camera data.")
 
     # Spawn blocks in radius around each robot base with a minimum and maximum distance
     
@@ -51,7 +51,7 @@ def spawner():
         pos.orientation.z = orientation[2]
         pos.orientation.w = orientation[3]
 
-        print(urdf_spawner("block"  + str(blockData.block_data.block_number), urdf, "blocks", pos, "world"))
+        print(urdf_spawner("block"  + str(blockData.block_data[i].block_number), urdf, "blocks", pos, "world"))
         
 def callback(data):
     global blockData

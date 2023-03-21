@@ -15,7 +15,7 @@ if __name__ == '__main__':
     rospy.init_node('tf2_listener')
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer) #create transform listener
-    pub = rospy.Publisher('/blocks_pos', Blocks, queue_size=10)
+    pub = rospy.Publisher('/blocks_pos_cam', Blocks, queue_size=10)
     rate = rospy.Rate(float(sys.argv[1])) #default polling and publishing rate
 
     rospy.loginfo("Node started: tf2_listener - polling rate %s Hz",sys.argv[1])
