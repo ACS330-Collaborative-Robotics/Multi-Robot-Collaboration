@@ -89,7 +89,7 @@ def trac_ik_inverse_kinematics(pose: Pose):
     else:
         return list(joints)
 
-def service(req):
+def inverse_kinematics_service(req):
     print("Inverse Kinematics - Service call recieved.")
     pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
 
@@ -197,12 +197,21 @@ def analyse_robot_workspace():
 
     plt.show()
 
+def inverse_kinematics_reachability_service(req):
+    joints = trac_ik_inverse_kinematics(req.state.pose)
+
+    if joints is None:
+        return False
+    else:
+        return True
+
 def main():
     rospy.init_node('inverse_kinematics_server')
 
-    analyse_robot_workspace()
+    #analyse_robot_workspace()
 
-    s = rospy.Service('inverse_kinematics', InvKin, service)
+    s1 = rospy.Service('inverse_kinematics', InvKin, inverse_kinematics_service)
+    s2 = rospy.Service('inverse_kinematics_reachability', InvKin, inverse_kinematics_reachability_service)
 
     # Setup publish topics to avoid missing messages
     robot_namespaces = ["mover6_a", "mover6_b"]
