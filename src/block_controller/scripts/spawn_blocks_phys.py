@@ -7,16 +7,18 @@ import rospy
 from gazebo_msgs.srv import SpawnModel
 from geometry_msgs.msg import Pose
 from pathlib import Path
-
+from block_controller.msg import Blocks,Block
 import tf2_ros
 
 from random import random, randint
 from math import pi, cos, sin
+import tf_conversions
 
 def spawner():
     # Setup Node
     rospy.init_node('block_spawner') 
 
+    rospy.Subscriber('/blocks_pos', Blocks, callback)
     # Setup URDF spawner service
     rospy.wait_for_service('gazebo/spawn_urdf_model')
     urdf_spawner = rospy.ServiceProxy('gazebo/spawn_urdf_model', SpawnModel)
@@ -25,47 +27,35 @@ def spawner():
     f = open(str(Path.home()) + '/catkin_ws/src/block_controller/urdf/block.urdf')
     urdf = f.read()
 
-    # Spawn blocks in radius around each robot base with a minimum and maximum distance
+    #wait for data from camera
+    while (blockData is None) and not(rospy.is_shutdown()):
+        rospy.loginfo("Block Spawner - Waiting for camera data.")
+        rospy.sleep(0.1)
+    rospy.loginfo("Block Spawner - Got camera data,")
 
-    robot_namespaces = ["mover6_a", "mover6_b"]
-    robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
-    
-    min_range = 0.2
-    max_range = 0.35
+    # Spawn blocks in radius around each robot base with a minimum and maximum distance
     
     pos = Pose() # Pose object to be filled randomly
-    for block_num in range(20):
-        # Select a robot base randomly
-        robot_num = randint(0, len(robot_base_coords)-1)
+    for i in range(length(BlockData)):
+        pos.position.x=BlockData.block_data[i].x
+        pos.position.y=BlockData.block_data[i].y
+        pos.position.z=BlockData.block_data[i].z
+        a=BlockData.block_data[i].a
+        b=BlockData.block_data[i].b
+        c=BlockData.block_data[i].c
 
-        # Using angle + distance to select random location within range
-        if robot_num == 0:
-            angle = 1*pi*random() - 1*pi
-        elif robot_num == 1:
-            angle = 1*pi*random()
-        else:
-            angle = 2*pi*random()
+        orientation = tf_conversions.transformations.quaternion_from_euler(a,b,c)
+        pos.orientation.x = orientation[0]
+        pos.orientation.y = orientation[1]
+        pos.orientation.z = orientation[2]
+        pos.orientation.w = orientation[3]
 
-        distance = (max_range-min_range)*random() + min_range
-
-        # Standard 2x2 rotation matrix transformation
-        x = cos(angle) * distance + sin(angle) * 0
-        y = -sin(angle) * distance + cos(angle) * 0
-
-        # Assign position, offset by robot base coordinates
-        pos.position.x = x + robot_base_coords[robot_num][0]
-        pos.position.y = y + robot_base_coords[robot_num][1]
-        pos.position.z = 0.01
-
-        # quaternion roation w x y z
-        pos.orientation.w = 2*random() - 1
-        pos.orientation.x = 0 # a - Roll
-        pos.orientation.y = 0 # Lengthway vertically
-        pos.orientation.z = 2*random() - 1 # Flat rotation
+        print(urdf_spawner("block"  + str(BlockData.block_data.block_number), urdf, "blocks", pos, "world"))
         
-        #urdf_spawner(model_name, model_xml, model_namespace, Pose initial_pose, reference_frame)
-        print(urdf_spawner("block"  + str(block_num), urdf, "blocks", pos, "world"))
-        
+def callback(data):
+    global blockData
+    blockData = data
+
 def getRobotBaseCoordinates(robot_namespaces):
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
