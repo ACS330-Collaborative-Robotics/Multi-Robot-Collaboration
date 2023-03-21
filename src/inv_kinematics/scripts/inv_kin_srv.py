@@ -39,7 +39,6 @@ def forward_kinematics(joint_values):
 
     return cartesian_coords["link6"]
 
-
 def ikpy_inverse_kinematics(pose: Pose):
     chain = ikpy.chain.Chain.from_urdf_file(Path.home().as_posix() + "/catkin_ws/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
 
@@ -63,7 +62,7 @@ def ikpy_inverse_kinematics(pose: Pose):
 def trac_ik_inverse_kinematics(pose: Pose):
     try:
         urdf_str = rospy.get_param('/robot_description')
-    except:
+    except KeyError:
         file = open(Path.home().as_posix() + "/catkin_ws/src/inv_kinematics/urdf/CPRMover6.urdf.xacro")
         urdf_str = file.read()
 
@@ -143,7 +142,7 @@ def analyse_robot_workspace():
     y_range = [-0.5, 0.5]
     z_range = [-0.1, 0.3]
 
-    number_of_points = 20
+    number_of_points = 5
     number_of_points -= 1
 
     x_step = (max(x_range) - min(x_range))/number_of_points
@@ -208,7 +207,7 @@ def inverse_kinematics_reachability_service(req):
 def main():
     rospy.init_node('inverse_kinematics_server')
 
-    #analyse_robot_workspace()
+    analyse_robot_workspace()
 
     s1 = rospy.Service('inverse_kinematics', InvKin, inverse_kinematics_service)
     s2 = rospy.Service('inverse_kinematics_reachability', InvKin, inverse_kinematics_reachability_service)
