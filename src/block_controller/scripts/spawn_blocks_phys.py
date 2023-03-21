@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Name: Random block spawner from URDF
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
@@ -13,6 +13,7 @@ import tf2_ros
 from random import random, randint
 from math import pi, cos, sin
 import tf_conversions
+blockData = None
 
 def spawner():
     # Setup Node
@@ -36,13 +37,13 @@ def spawner():
     # Spawn blocks in radius around each robot base with a minimum and maximum distance
     
     pos = Pose() # Pose object to be filled randomly
-    for i in range(length(BlockData)):
-        pos.position.x=BlockData.block_data[i].x
-        pos.position.y=BlockData.block_data[i].y
-        pos.position.z=BlockData.block_data[i].z
-        a=BlockData.block_data[i].a
-        b=BlockData.block_data[i].b
-        c=BlockData.block_data[i].c
+    for i in range(len(blockData.block_data)):
+        pos.position.x=blockData.block_data[i].x
+        pos.position.y=blockData.block_data[i].y
+        pos.position.z=blockData.block_data[i].z
+        a=blockData.block_data[i].a
+        b=blockData.block_data[i].b
+        c=blockData.block_data[i].c
 
         orientation = tf_conversions.transformations.quaternion_from_euler(a,b,c)
         pos.orientation.x = orientation[0]
@@ -50,7 +51,7 @@ def spawner():
         pos.orientation.z = orientation[2]
         pos.orientation.w = orientation[3]
 
-        print(urdf_spawner("block"  + str(BlockData.block_data.block_number), urdf, "blocks", pos, "world"))
+        print(urdf_spawner("block"  + str(blockData.block_data.block_number), urdf, "blocks", pos, "world"))
         
 def callback(data):
     global blockData

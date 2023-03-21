@@ -6,7 +6,7 @@
     <!-- Run image_proc -->
     <node name="image_proc" pkg="image_proc" ns="usb_cam" type="image_proc" output="screen"/>
     <!-- Arguments for apriltag_ros -->
-    <arg name="camera_name" default="/camera_rect" />
+    <arg name="camera_name" default="/usb_cam" />
     <arg name="image_topic" default="image_rect_color" />
     <arg name="queue_size" default="1" />
     <!-- Run apriltag_ros -->
