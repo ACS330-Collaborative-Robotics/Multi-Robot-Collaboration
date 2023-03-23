@@ -32,7 +32,7 @@ def forward_kinematics(joint_values):
     link_names = chain.get_joint_parameter_names()
     
     joints = {}
-    for joint_num in range(6):
+    for joint_num in range(len(joint_values)):
         joints[link_names[joint_num]] = joint_values[joint_num]
 
     cartesian_coords = chain.forward_kinematics(joints)
