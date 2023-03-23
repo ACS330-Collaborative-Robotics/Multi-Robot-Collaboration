@@ -59,14 +59,14 @@ def ikpy_inverse_kinematics(pose: Pose):
 
     return joints
 
-def trac_ik_inverse_kinematics(pose: Pose):
+def trac_ik_inverse_kinematics(pose: Pose, final_link_name="link6"):
     try:
         urdf_str = rospy.get_param('/robot_description')
     except KeyError:
         file = open(Path.home().as_posix() + "/catkin_ws/src/inv_kinematics/urdf/CPRMover6.urdf.xacro")
         urdf_str = file.read()
 
-    ik_solver = IK("base_link", "link6", urdf_string=urdf_str)
+    ik_solver = IK("base_link", final_link_name, urdf_string=urdf_str)
 
     seed_state = [0.0]*ik_solver.number_of_joints #TODO: Update seed state to use current joint positions
 
@@ -93,7 +93,10 @@ def inverse_kinematics_service(req):
     pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
 
     start_time = time()
-    joints = trac_ik_inverse_kinematics(req.state.pose)
+    if req.state.reference_frame == "":
+        joints = trac_ik_inverse_kinematics(req.state.pose)
+    else:
+        joints = trac_ik_inverse_kinematics(req.state.pose, req.state.reference_frame)
 
     if joints is None:
         print("Inverse Kinematics - Failed to find a solution in ", round(time()-start_time, 4))
@@ -207,7 +210,7 @@ def inverse_kinematics_reachability_service(req):
 def main():
     rospy.init_node('inverse_kinematics_server')
 
-    analyse_robot_workspace()
+    #analyse_robot_workspace()
 
     s1 = rospy.Service('inverse_kinematics', InvKin, inverse_kinematics_service)
     s2 = rospy.Service('inverse_kinematics_reachability', InvKin, inverse_kinematics_reachability_service)
