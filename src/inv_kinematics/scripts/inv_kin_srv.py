@@ -118,23 +118,17 @@ def inverse_kinematics_service(req):
             final_orientation = list(end_effector_position.rot)
             final = final_position + final_orientation
 
-            print("")
+            rospy.logdebug("Type\tx\ty\tz\trx\try\trz\trw")
 
-            print("Type\tx\ty\tz\trx\try\trz\trw")
+            target_values_display = "\t".join([str(round(value, 3)) for value in target])
+            rospy.logdebug("Targ\t%s", target_values_display)
 
-            print("Target\t", end="")
-            for value in target: {print(round(value,3), "\t", end="")}
-            print("")
+            final_values_display = "\t".join([str(round(value, 3)) for value in final])
+            rospy.logdebug("Final\t%s", final_values_display)
 
-            print("Final\t", end="")
-            for value in final: {print(round(value,3), "\t", end="")}
-            print("")
+            diff_values_display = "\t".join([str(round(target[value_pos] - final[value_pos] ,3)) for value_pos in range(len(final))])
+            rospy.logdebug("Diff\t%s", diff_values_display)
 
-            print("Diff\t", end="")
-            for value_pos in range(len(final)):
-                print(round(target[value_pos] - final[value_pos] ,3), "\t", end="")
-            print("")        
-        
         # Publish joint positions
         pub.publish(joints)
 
@@ -184,7 +178,7 @@ def analyse_robot_workspace():
                 if status:
                     ax.scatter(x, y, z, c='k')
 
-        print((x_multiplier+1)/(number_of_points+1)*100, "% Done")
+        rospy.logdebug("%.0f%% Done", (x_multiplier+1)/(number_of_points+1)*100)
 
         if rospy.is_shutdown():
             break
@@ -210,9 +204,12 @@ def inverse_kinematics_reachability_service(req):
         return True
 
 def main():
-    rospy.init_node('inverse_kinematics_server')
+    if not disable_fk:
+        rospy.init_node('inverse_kinematics_server', log_level=rospy.DEBUG)
+    else:
+        rospy.init_node('inverse_kinematics_server')
 
-    #analyse_robot_workspace()
+    analyse_robot_workspace()
 
     s1 = rospy.Service('inverse_kinematics', InvKin, inverse_kinematics_service)
     s2 = rospy.Service('inverse_kinematics_reachability', InvKin, inverse_kinematics_reachability_service)
