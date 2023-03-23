@@ -28,7 +28,7 @@ class ServiceHelper:
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
-    def move(self, pos:Pose):
+    def move(self, pos:Pose, final_link_name):
         """ Move arm to specified position.
 
         INPUT: geometry_msgs Pose() - Orientation as quaternions
@@ -43,6 +43,7 @@ class ServiceHelper:
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
         arm_pos.model_name = self.robot_ns
+        arm_pos.reference_frame = final_link_name
 
         arm_pos.pose = pos
 

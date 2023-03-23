@@ -96,6 +96,7 @@ def inverse_kinematics_service(req):
     if req.state.reference_frame == "":
         joints = trac_ik_inverse_kinematics(req.state.pose)
     else:
+        print("Inverse Kinematics - Moving", req.state.reference_frame, "instead of end-effector.")
         joints = trac_ik_inverse_kinematics(req.state.pose, req.state.reference_frame)
 
     if joints is None:
