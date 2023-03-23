@@ -14,7 +14,7 @@ disable_fk = False
 try:
     import kinpy as kp
 except ModuleNotFoundError:
-    print("Inverse Kinematics - kinpy not found, forward kinematics diagnostics disabled.")
+    rospy.logwarn("Inverse Kinematics - kinpy not found, forward kinematics diagnostics disabled.")
     disable_fk = True
 
 from time import time
@@ -89,22 +89,23 @@ def trac_ik_inverse_kinematics(pose: Pose, final_link_name="link6"):
         return list(joints)
 
 def inverse_kinematics_service(req):
-    print("Inverse Kinematics - Service call recieved.")
+    rospy.loginfo("Inverse Kinematics - Service call recieved.")
+
     pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
 
     start_time = time()
     if req.state.reference_frame == "":
         joints = trac_ik_inverse_kinematics(req.state.pose)
     else:
-        print("Inverse Kinematics - Moving", req.state.reference_frame, "instead of end-effector.")
+        rospy.loginfo("Inverse Kinematics - Moving %s instead of end-effector.", req.state.reference_frame)
         joints = trac_ik_inverse_kinematics(req.state.pose, req.state.reference_frame)
 
     if joints is None:
-        print("Inverse Kinematics - Failed to find a solution in ", round(time()-start_time, 4))
-        print("")
+        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.2f", time()-start_time)
         return False
     else:
-        print("Inverse Kinematics - Trac IK: ", joints, " Computed in: ", round(time()-start_time, 4))
+        joints_display = " ".join([str(round(joint, 2)) for joint in joints])
+        rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.2f", joints_display, time()-start_time)
 
         if disable_fk != True:
             # Understanding IK accuracy 
@@ -137,7 +138,7 @@ def inverse_kinematics_service(req):
         # Publish joint positions
         pub.publish(joints)
 
-        print("Inverse Kinematics - Joint positions published.\n")
+        rospy.loginfo("Inverse Kinematics - Joint positions published.\n")
 
         return True
     
