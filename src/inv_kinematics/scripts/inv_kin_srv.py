@@ -93,11 +93,11 @@ def inverse_kinematics_service(req):
         joints = trac_ik_inverse_kinematics(req.state.pose, req.state.reference_frame)
 
     if joints is None:
-        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.2f\n", time()-start_time)
+        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f\n", time()-start_time)
         return False
     else:
         joints_display = " ".join([str(round(joint, 2)) for joint in joints])
-        rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.2f", joints_display, time()-start_time)
+        rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.4f", joints_display, time()-start_time)
 
         if disable_fk != True:
             # Understanding IK accuracy 

@@ -61,7 +61,7 @@ def choose_block():
             else:
                 rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
 
-        rospy.loginfo("Assignment Selection - Block list built.")
+        rospy.loginfo("Assignment Selection - Block list built.\n")
 
         # Getting distance from each robot to blocks and sellecting the smallest
         roboColect = []
