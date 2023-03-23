@@ -38,7 +38,5 @@ class PathPlanner:
         # Put down block
         #self.placeDown.pick(self.target_block, self.end_pos)
 
-        print("\n")
-
         return True
     

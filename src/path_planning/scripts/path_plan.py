@@ -12,7 +12,7 @@ from path_planner import PathPlanner
 
 def path_plan(req):
     # Initialise PathPlanner object
-    print("Path planner recieved instruction:\t", req.robot_name, "\t",req.block_name, "\t", req.end_pos.position.x, "\t", req.end_pos.position.y, "\t", req.end_pos.position.z)
+    rospy.loginfo("Path planner recieved instruction:\t%s\t%s\t\t%.2f\t%.2f\t%.2f", req.robot_name, req.block_name,  req.end_pos.position.x,  req.end_pos.position.y,  req.end_pos.position.z)
     pathPlanner = PathPlanner.PathPlanner(req.robot_name, req.block_name, req.end_pos)
 
     # Run Path planner and return state

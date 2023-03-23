@@ -101,7 +101,7 @@ def inverse_kinematics_service(req):
         joints = trac_ik_inverse_kinematics(req.state.pose, req.state.reference_frame)
 
     if joints is None:
-        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.2f", time()-start_time)
+        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.2f\n", time()-start_time)
         return False
     else:
         joints_display = " ".join([str(round(joint, 2)) for joint in joints])
@@ -121,7 +121,7 @@ def inverse_kinematics_service(req):
             rospy.logdebug("Type\tx\ty\tz\trx\try\trz\trw")
 
             target_values_display = "\t".join([str(round(value, 3)) for value in target])
-            rospy.logdebug("Targ\t%s", target_values_display)
+            rospy.logdebug("Goal\t%s", target_values_display)
 
             final_values_display = "\t".join([str(round(value, 3)) for value in final])
             rospy.logdebug("Final\t%s", final_values_display)
