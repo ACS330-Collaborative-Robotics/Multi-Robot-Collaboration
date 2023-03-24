@@ -96,7 +96,7 @@ class ServiceHelper:
         while not rospy.is_shutdown():
             try:
                 new_pose = self.tfBuffer.transform(start_pose, target_frame)
-                print("Frame Converter - New pose:", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
+                #rospy.loginfo("Frame Converter - New pose:%.2f,%.2f,%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 rospy.logerr("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
@@ -117,7 +117,7 @@ class ServiceHelper:
 
         BaseID=ref_arm_name+'/base_link'
         linkID=target_arm_name+link
-        #print(BaseID,linkID)
+        #rospy.loginfo(BaseID,linkID)
         try:
             trans = self.tfBuffer.lookup_transform(linkID, BaseID, rospy.Time(0)) # get transform between base and link 
             joint_pos.position.x=trans.transform.translation.x #unit: meters
@@ -189,7 +189,7 @@ class ServiceHelper:
             PotentialChange = [SF*x-SF*xgoal,SF*y-SF*ygoal,SF*z-SF*zgoal]
         if d > D:
             PotentialChange = [(SF*x-SF*xgoal)/d,(SF*y-SF*ygoal)/d,(SF*z-SF*zgoal)/d]
-        #print('attraction change:',PotentialChange)
+        #rospy.loginfo('attraction change:',PotentialChange)
         return PotentialChange
 
     def PotentialAttraction(self,x,y,z,xgoal,ygoal,zgoal,D): #the attractive field as a whole (used to display)
@@ -266,7 +266,7 @@ class ServiceHelper:
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
             zangle = math.atan2(zheight,d)
-            SF = 0.8
+            SF = 3
             # deciding the direction of the tangent
             if angle > 0 or angle == 0:
                 repulsionangle = anglegoal + 100
@@ -281,7 +281,7 @@ class ServiceHelper:
 
             #deciding whether the obstacle is in range
             #if D<Q[objNum]:
-                #print("in influence")
+                #rospy.loginfo("in influence")
             repulsionvect = SF*math.cos(math.radians(angle))*math.cos(math.radians(repulsionangle)),SF*math.cos(math.radians(angle))*math.sin(math.radians(repulsionangle))
             repulsionvect = list(repulsionvect)
             zrep = SF*math.cos(math.radians(zangle))*math.sin(math.radians(zrepangle))
@@ -327,12 +327,8 @@ class ServiceHelper:
 
             if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:#
                 PathComplete = 1
-            #if abs(difx) < 0.1 and abs(dify) < 0.1:
-            #   pass
-            #  print("LOCAL MINIMA")
-                #add get out of minima here
             else:
-                #print('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
+                #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
                 nextx = PathPointsx[i] - 2.5*difx
                 nexty = PathPointsy[i] - 2.5*dify
                 nextz = PathPointsz[i] - 2.5*difz
@@ -343,7 +339,7 @@ class ServiceHelper:
                 PathPointsy.append(y)
                 PathPointsz.append(z)
             i += 1
-            #print(PathPointsx[i],PathPointsy[i])
+            #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
         return PathPointsx,PathPointsy,PathPointsz
 
@@ -365,8 +361,7 @@ class ServiceHelper:
 
             TotalPotential = self.PotentialAttraction2d(xline[i], yline[i], xgoal, ygoal, D) + self.PotentialRepulsion2d(xline[i], yline[i], xobj, yobj, Q)
             EnergyPathTaken.append(TotalPotential)
-        print(EnergyPathTaken)
-        print('Space Generation Complete')
+        rospy.loginfo('Space Generation Complete')
         return X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
 
     def plotAPF(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
@@ -378,7 +373,6 @@ class ServiceHelper:
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
         plt.show()
-        print("Successfuly run")
 
     def plotPath(self,PathTaken):
         fig = plt.figure()
@@ -392,4 +386,4 @@ class ServiceHelper:
             zpoints.append(point[2])
         ax.plot(xpoints,ypoints,zpoints)
         plt.show()
-        print('PlotPath Complete')
+        rospy.loginfo('PlotPath Complete')

@@ -21,8 +21,9 @@ class Movement:
         Q = [12,12,10,8,6,4,2] #'size' of the object
         D = 10
         PathComplete=0
+        robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
         # Get block coordinates relative to robot instead of world
-        pos_robot_base_frame = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", pos)
+        pos_robot_base_frame = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos)
         ##Goal position
         xgoal = pos_robot_base_frame.position.x*SF 
         ygoal = pos_robot_base_frame.position.y*SF
@@ -30,7 +31,7 @@ class Movement:
         
         ##Start position relative to world then arm
         start_pose_world=self.serv_helper.getLinkPos(self.serv_helper.robot_ns,"link6") 
-        start_pose = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", start_pose_world)
+        start_pose = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", start_pose_world)
         startx = start_pose.position.x*SF #start coords for end effector (now relative)
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF
@@ -52,7 +53,7 @@ class Movement:
                         obs_link="link"+str(obs)
 
                     pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
-                    pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"_base"), "world", pos_obstacle_world)
+                    pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
                     xobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
                     yobj.append(pos_obstacle.position.y *SF)
                     zobj.append(pos_obstacle.position.z *SF)
@@ -85,7 +86,7 @@ class Movement:
                         FilterPathTakenx.append(PathTakenx[i])
                         FilterPathTakeny.append(PathTakeny[i])
                         FilterPathTakenz.append(PathTakenz[i])
-                print("FILTERED PATH LENGTH=",len(FilterPathTakenx))
+                rospy.loginfo("FILTERED PATH LENGTH= %d",len(FilterPathTakenx))
             else: #if fewer than 30 path points, just use produced path
                 FilterPathTakenx=PathTakenx
                 FilterPathTakeny=PathTakeny
@@ -101,13 +102,14 @@ class Movement:
             arm_pos.orientation.w= pos_robot_base_frame.orientation.w
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
-            rospy.loginfo("STEP CALCULATION TIME: %.2f",time()-start_time)
-            d=self.serv_helper.EuclidianDistance(arm_pos.position.x,arm_pos.position.y,arm_pos.position.z,xgoal,ygoal,zgoal)
+            
+            d=self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             if d <= 3: #when close, use precise orientation
                 precise_angle_flag=1 #orientation does matter - small tolerance
             else:
                 precise_angle_flag=0 #orientation does not matter - wide tolerance
 
+            rospy.loginfo("STEP CALCULATION TIME: %.4f",time()-start_time)
             # Move robot to new position, in robot reference frame
             status = self.serv_helper.move(arm_pos, final_link_name,precise_angle_flag)
             #TODO: Force wait until robot has reached desired position. Temp fix:
