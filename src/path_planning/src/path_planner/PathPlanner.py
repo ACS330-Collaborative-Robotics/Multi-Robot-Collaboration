@@ -1,5 +1,5 @@
 # Name: Path Planner Class Definition
-# Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
+# Authors: Conor Nichols (cjnichols1@sheffield.ac.uk) Joseph Fields (jfields1@sheffield.ac.uk)
 
 from path_planner import PickUp, PlaceDown, ServiceHelper, Movement
 
@@ -25,7 +25,6 @@ class PathPlanner:
 
     def pathPlan(self) -> bool:
         """ Plan and excute a complete block movement.
-
         INPUT: robot_ns, block_name, end_pos from object init
         OUTPUT: bool Success
         """

@@ -1,5 +1,5 @@
 # Name: Pick Up Class Definition
-# Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
+# Authors: Conor Nichols (cjnichols1@sheffield.ac.uk) Joseph Fields (jfields1@sheffield.ac.uk)
 
 import rospy
 import tf_conversions
@@ -10,7 +10,11 @@ class PickUp(Movement.Movement):
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
     
-    def pick(self, block_name):
+
+    def moveGripper(self, state):
+        pass
+
+    def pick(self, block_name): #same as pick but self.move is self.APFmove
         """ Pick up specified block
 
         INPUT: block_name
@@ -33,5 +37,3 @@ class PickUp(Movement.Movement):
         
         self.move(pose)
 
-    def moveGripper(self, state):
-        pass

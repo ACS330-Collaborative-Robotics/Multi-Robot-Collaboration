@@ -75,6 +75,7 @@ Robot Joints - `1 -> 6`
 | Nickname | Name | Location | Python Import | Input Format | Response Format |
 | - | - | - | - | - | - |
 | Specific Model Position | `gazebo/get_model_state'` | Gazebo | `from gazebo_msgs.srv import GetModelState` | `string model_name`, `string relative_entity_name` | `gazebo_msgs ModelState` |
+| Specific Link Position | `gazebo/get_link_state'` | Gazebo | `from gazebo_msgs.srv import GetLinkState` | `string model_name`, `string relative_entity_name` | `gazebo_msgs LinkState` |
 | URDF Spawner | `gazebo/spawn_urdf_model` | Gazebo | `from gazebo_msgs.srv import SpawnModel` | `gazebo_msgs SpawnModel` | `bool success`, `string status_message` |
 | ikpy Inverse Kinematics | `inverse_kinematics` | `inv_kinematics inv_kin_srv.py` | `from inv_kinematics.srv import InvKin` | `gazebo_msgs ModelState` | `bool success` |
 | Path Planner | `path_planner` | `path_planning path_plan.py` | `from path_planning.srv import PathPlan` | `string robot-name`, `geometry_msg/Pose end_pos`, `string block_name` | `bool success` |
