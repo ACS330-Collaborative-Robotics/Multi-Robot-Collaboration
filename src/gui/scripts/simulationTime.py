@@ -2,6 +2,7 @@
 
 import rospy
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk
 from PIL import Image, ImageTk
 from custom_msgs.msg import Joints
@@ -31,6 +32,17 @@ class GUI:
         self.sim_preview_button = tk.Button(master, text="SIM PREVIEW", bg="yellow", fg="black", font=("Calibri", 10, "bold"), command=self.sim_preview_clicked)
         self.sim_preview_button.grid(row=5, column=0, )
     
+        # status indicator lights
+        self.label1 = tk.Label(master, text="Hardware connected")
+        self.label1.grid(row=3, column=1, sticky="w")
+
+
+        self.label1 = tk.Label(master, text="Error status")
+        self.label1.grid(row=4, column=1, sticky="w")
+
+        self.label1 = tk.Label(master, text="Nodes configured")
+        self.label1.grid(row=5, column=1, sticky="w")
+   
         
         # blank space
         self.label1 = tk.Label(master, text="")
@@ -113,5 +125,6 @@ class GUI:
         
 if __name__ == '__main__':
     root = tk.Tk()
+    root.geometry("1120x715")
     gui = GUI(root)
     root.mainloop()
