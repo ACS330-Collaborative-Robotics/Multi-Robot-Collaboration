@@ -27,7 +27,7 @@ class Movement:
         ##Goal position
         xgoal = pos_robot_base_frame.position.x*SF 
         ygoal = pos_robot_base_frame.position.y*SF
-        zgoal = pos_robot_base_frame.position.z*SF +1
+        zgoal = pos_robot_base_frame.position.z*SF 
         
         ##Start position relative to world then arm
         start_pose_world=self.serv_helper.getLinkPos(self.serv_helper.robot_ns,"link6") 
@@ -35,7 +35,7 @@ class Movement:
         startx = start_pose.position.x*SF #start coords for end effector (now relative)
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF
-        print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
+        #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         
         while PathComplete==0:
             start_time = time()

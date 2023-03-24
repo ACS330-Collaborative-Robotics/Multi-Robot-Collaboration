@@ -24,8 +24,9 @@ import math
 from math import *
 
 class ServiceHelper:
-    def __init__(self, robot_ns):
+    def __init__(self, robot_ns,target_block):
         self.robot_ns = robot_ns
+        self.target_block=target_block
 
         # Setup inverse_kinematics service
         rospy.wait_for_service('inverse_kinematics')
@@ -51,7 +52,7 @@ class ServiceHelper:
         """
         rospy.wait_for_service('inverse_kinematics')
 
-        rospy.loginfo("Path Planner - Service Helper - Calling ik for %s", self.robot_ns)
+        rospy.loginfo("Path Planner - Service Helper - Calling ik for %s for %s", self.robot_ns,self.target_block)
 
         inv_kin_request = InvKinRequest()
 
@@ -86,7 +87,7 @@ class ServiceHelper:
         start_pose = PoseStamped()
         start_pose.pose = goal_pose
 
-        rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z)
+        #rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z)
 
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
@@ -103,7 +104,7 @@ class ServiceHelper:
                 rate.sleep()
                 continue
         
-        rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
+        #rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
 
         return new_pose.pose
     
@@ -289,7 +290,8 @@ class ServiceHelper:
                 repulsionvect = 0,0
                 zrep = 0
             else:
-                rospy.loginfo("zinfo: %.2f,%.2f,%.2f",zheight,zangle,zrepangle)
+                pass
+                #rospy.loginfo("zinfo: %.2f,%.2f,%.2f",zheight,zangle,zrepangle)
             #for x in range(len(repulsionvect)):
             #   if repulsionvect[x] > 3:
             #      repulsionvect[x]= 3
@@ -325,7 +327,7 @@ class ServiceHelper:
                 difz = diffatt[2]
                 rospy.loginfo("rep: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
 
-            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:#
+            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 1:#
                 PathComplete = 1
             else:
                 #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
