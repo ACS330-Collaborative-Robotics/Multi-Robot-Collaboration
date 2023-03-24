@@ -94,7 +94,7 @@ def choose_block():
 
                     end_pos = Pose()
 
-                    orientation_in_euler = [0,90*math.pi/180,0]
+                    orientation_in_euler = [0,180*math.pi/180,0]
                     orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
                     
                     end_pos.orientation.x = orientation[0]
