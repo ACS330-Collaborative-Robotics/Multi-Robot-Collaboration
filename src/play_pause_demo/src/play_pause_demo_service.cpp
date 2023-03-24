@@ -1,4 +1,5 @@
 #include "ros/ros.h"
+#include "custom_msgs/PlayPause.h"
 
 int main(int argc, char **argv)
 {
