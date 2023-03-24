@@ -14,7 +14,7 @@ class PickUp(Movement.Movement):
     def moveGripper(self, state):
         pass
 
-    def pick(self, block_name): #same as pick but self.move is self.APFmove
+    def pick(self, block_name): 
         """ Pick up specified block
 
         INPUT: block_name

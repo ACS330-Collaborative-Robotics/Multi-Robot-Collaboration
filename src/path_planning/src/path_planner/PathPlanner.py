@@ -36,7 +36,7 @@ class PathPlanner:
         self.movement.move(self.end_pos)
 
         # Put down block
-        self.placeDown.place(self.target_block, self.end_pos)
+        #self.placeDown.place(self.target_block, self.end_pos)
 
         return True
     
