@@ -9,6 +9,7 @@ project(inv_kinematics)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  roscpp
   std_msgs
   message_generation
   gazebo_msgs

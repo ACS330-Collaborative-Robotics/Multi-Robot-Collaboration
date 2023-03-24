@@ -4,34 +4,6 @@ Efficient coordination of a multi-robot team is the key challenge in robotic app
 
 This project shall look at the creation of a sophisticated model-based control algorithm for the effective and efficient interaction of multiple robots into their production processes.
 
-# How to Build and Run
-
-## ROS/Gazebo simulation build
-
-1. Navigate to `~/catkin_ws` in Ubuntu Terminal.
-
-2. Build the project by running `catkin_make`. Only the `src` and build scripts are stored in the GH Repo so this will build the `build` and `devel` folders.
-
-3. Each set of nodes is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each group of nodes has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
-
-## Startup Instructions
-
-Run each of the following in its own terminal tab, after running `cd ~/catkin_ws`.
-
- - `roscore` - ROS Core
- - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
- - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
-
-### Mover6 Dashboard with RViz
-
-```
-catkin_make clean
-catkin_make rebuild_cache
-catkin_make
-catkin_make install
-roslaunch cpr_robot CPRMover6.launch
-```
-
 # ROS Information
 
 Robot Namespaces - `robot_ns = ["mover6_a", "mover6_b]`
@@ -58,7 +30,8 @@ Robot Joints - `1 -> 6`
 | `./run_demo.sh` |  |  |  |
 | Block Position Publisher | block_pos_talker | Gathers block positions from gazebo and publishes them in `Blocks` message format to `/blocks_pos` | `rosrun block_controller block_pos_talker.py` |
 | Inverse kinematics | inv_kinematics | Runs service `inverse-kinematics` and publish inverse kinematics to relevant joint position controller | `rosrun inv_kinematics inv_kin_srv.py` |
-| Joint Controller | joint_controller | Controls whether or not simulation and physical robots recieve commands as required. Runs once per robot. | `rosrun joint_controller joint_controller.py` |
+| Joint Controller | joint_controller | Controls whether or not simulation and physical robots recieve commands as required. Runs once per robot. Needs lauch file. | `rosrun joint_controller joint_controller.py` |
+| Gripper Controller | joint_controller | Controlls the Gripper based on the selection channel. Runs once per robot. Needs lauch file. | `rosrun joint_controller gripper_controller.py` |
 | Nearest Block Assignment Selection | assignment_selection | Finds which robot is closest to each robot and publishes to `robot_namespace/next_block` with 2 second cadence. | `rosrun assignment_selection block_selection.py` |
 | Path Planner | path_planning | Mega node using OOP to plan and execute pick and place operations. | `rosrun path_planning path_plan.py` |
 | Block Fiducial Detector | fiducial_recognition | Runs camera setup, image processing, apriltag detection and cartesian block coordinates relative to mover6a | `roslaunch fiducial_recognition fiducial_recognition.launch camera_name:=/usb_cam image_topic:=image_rect_color` |
@@ -95,6 +68,7 @@ Robot Joints - `1 -> 6`
 | Desired Joint Angles | `/robot_ns_p/physical/joint_angles` | custom_msgs/Joints |  | /mover6_a_p/mover6_driver |  |
 | Current Moving State | `/robot_ns_p/physical/moving_state` | std_msgs/String |  | /mover6_a_p/mover6_driver |  |
 | CPR Robot State | `/robot_ns_p/robot_state` | cpr_robot/RobotState |  | /mover6_a_p/CPRMover6 | /mover6_a_p/rviz |
+| Mover6 gripper Controller | /robot_ns_p/gripper_state | std_msgs/Bool | `from std_msgs.msg import Bool` |  | /mover6_a_p/gripper_controller |
 
 ## Services
 
@@ -105,14 +79,42 @@ Robot Joints - `1 -> 6`
 | ikpy Inverse Kinematics | `inverse_kinematics` | `inv_kinematics inv_kin_srv.py` | `from inv_kinematics.srv import InvKin` | `gazebo_msgs ModelState` | `bool success` |
 | Path Planner | `path_planner` | `path_planning path_plan.py` | `from path_planning.srv import PathPlan` | `string robot-name`, `geometry_msg/Pose end_pos`, `string block_name` | `bool success` |
 
-# Connecting and setting up Network
+# How to Build and Run
+
+## ROS/Gazebo simulation build
+
+1. Navigate to `~/catkin_ws` in Ubuntu Terminal.
+
+2. Build the project by running `catkin_make`. Only the `src` and build scripts are stored in the GH Repo so this will build the `build` and `devel` folders.
+
+3. Each set of nodes is started separately, in its own Terminal tab to allow easier testing of individual nodes. This is **made much easier by using the Tabs feature** in your Terminal program. Each group of nodes has its own `.sh` script to start the node and can be stopped with `Ctrl+C`.
+
+## Startup Instructions
+
+Run each of the following in its own terminal tab, after running `cd ~/catkin_ws`.
+
+ - `roscore` - ROS Core
+ - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
+ - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
+
+### Mover6 Dashboard with RViz
+
+```
+catkin_make clean
+catkin_make rebuild_cache
+catkin_make
+catkin_make install
+roslaunch cpr_robot CPRMover6.launch
+```
+
+# Connecting and setting up Networking
 
 ## Connecting Linux machine to robotwlan
 
 ```
-nmcli show
-nmcli down eduroam
-nmcli up robotwlan
+nmcli c show
+nmcli c down eduroam
+nmcli c up robotwlan
 ```
 
 You will need to conect your device to the `robotwlan` network, accessable in certain areas of the university or the wired university network.
@@ -212,7 +214,7 @@ Close the terminal and reopen it.
 
 ```bash
 sudo apt-get update
-sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-apriltag ros-noetic-apriltag-ros ros-noetic-image-pipeline ros-noetic-usb-cam
+sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-apriltag ros-noetic-apriltag-ros ros-noetic-image-pipeline ros-noetic-usb-cam ros-noetic-trac-ik
 sudo apt install python3-pip
 pip install ikpy
 pip install numpy --upgrade
@@ -297,7 +299,6 @@ Probably dont have ifconfig
 apt install net-tools
 ```
 
-
 **Failed to launch joint_position_controller**
 
 Need to install ros-control and ros-controllers using: `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
@@ -315,5 +316,17 @@ pub.publish(joints)
 pub = rospy.Publisher("/topic_name", Joints, queue_size=10)
 # Delay or run calculations
 pub.publish(joints)
-
 ```
+
+**Gazebo Black Screen on Launch in WSL**
+
+First, try install/update your graphics card drivers following [these instructions](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps#prerequisites).
+
+If this doesnt fix the issues, or you have an Intel Xe Graphics card, you will need disable GPU acceleration, rendering only on your CPU. This will be very slow but better than nothing. Add `export  LIBGL_ALWAYS_SOFTWARE=1` to the end of your `.bashrc` file. Restart your terminal and it should work.
+
+**apriltag_ros missing a camera calibration file**
+
+In the Google Drive in the 'Techincal Documentation' folder there is a 'camera calibration' folder containing a calibration file. 'head_camera.yaml' must be placed in a folder called 'camera_info' in 'home/.ros'
+
+**roslaunch not finding packages that exist**
+run - 'source /home/uos/catkin_ws/devel/setup.bash' (or other path)
