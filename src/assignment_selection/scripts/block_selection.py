@@ -11,6 +11,7 @@ from path_planning.srv import PathPlan
 from geometry_msgs.msg import Pose
 from gazebo_msgs.msg import ModelState
 from inv_kinematics.srv import InvKin
+from inv_kinematics.srv import InvKinRequest
 
 import math
 from operator import itemgetter
@@ -136,7 +137,8 @@ def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
 def is_block_reachable(block_name, robot_namespaces) -> bool:
     rospy.wait_for_service('inverse_kinematics_reachability')
     inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
-
+    
+    inv_kin_request = InvKinRequest()
     model_state = ModelState()
 
     for robot_name in robot_namespaces:
@@ -152,7 +154,10 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
 
         model_state.pose.position.z += 0.15
 
-        if inv_kin_is_reachable(model_state).success:
+        inv_kin_request.state = model_state
+        inv_kin_request.precise_orientation = True
+
+        if inv_kin_is_reachable(inv_kin_request).success:
             rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
             return True
         

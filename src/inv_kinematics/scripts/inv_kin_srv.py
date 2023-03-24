@@ -192,7 +192,7 @@ def analyse_robot_workspace():
     plt.show()
 
 def inverse_kinematics_reachability_service(req):
-    joints = trac_ik_inverse_kinematics(req.state.pose)
+    joints = trac_ik_inverse_kinematics(req.state.pose, True)
 
     if joints is None:
         return False
