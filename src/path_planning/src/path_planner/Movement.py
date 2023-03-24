@@ -4,6 +4,7 @@
 import rospy
 
 from geometry_msgs.msg import Pose
+from time import time
 #import matplotlib.pyplot as plt
 
 class Movement:
@@ -15,6 +16,7 @@ class Movement:
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
+        
         SF = 100 #distance scale factor
         Q = [12,12,10,8,6,4,2] #'size' of the object
         D = 10
@@ -34,6 +36,7 @@ class Movement:
         startz = start_pose.position.z*SF
         
         while PathComplete==0:
+            start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
             xobj=[]
@@ -97,6 +100,7 @@ class Movement:
             arm_pos.orientation.w= pos_robot_base_frame.orientation.w
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
+            rospy.loginfo("STEP CALCULATION TIME: %.2f",time()-start_time)
             d=self.serv_helper.EuclidianDistance(arm_pos.position.x,arm_pos.position.y,arm_pos.position.z,xgoal,ygoal,zgoal)
             if d <= 3: #when close, use precise orientation
                 precise_angle_flag=1 #orientation does matter - small tolerance
