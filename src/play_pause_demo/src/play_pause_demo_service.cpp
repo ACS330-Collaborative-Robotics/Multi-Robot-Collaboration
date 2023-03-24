@@ -16,6 +16,19 @@ bool play_pause(custom_msgs::PlayPause::Request &req, custom_msgs::PlayPause::Re
         return false;
     }
 
+    if (desired_state == "play") {
+        //** Resume physical robots **//
+
+        // Update block positions from physical setup
+
+        // Re-enable physical robots
+
+    } else {
+        //** Pause  physical robots **//
+
+        // Disable physical robots
+    }
+
     res.success = true;
 
     return true;
