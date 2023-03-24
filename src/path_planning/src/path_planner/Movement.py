@@ -87,32 +87,36 @@ class Movement:
                 FilterPathTakeny=PathTakeny
                 FilterPathTakenz=PathTakenz
 
-            tempPos=Pose()
-            tempPos.position.x=FilterPathTakenx[1]
-            tempPos.position.y=FilterPathTakeny[1]
-            tempPos.position.z=FilterPathTakenz[1]
-            tempPos.orientation.x= pos_robot_base_frame.orientation.x 
-            tempPos.orientation.y= pos_robot_base_frame.orientation.y 
-            tempPos.orientation.z= pos_robot_base_frame.orientation.z 
-            tempPos.orientation.w= pos_robot_base_frame.orientation.w
+            arm_pos=Pose() #pose for next coordinate
+            arm_pos.position.x=FilterPathTakenx[1]
+            arm_pos.position.y=FilterPathTakeny[1]
+            arm_pos.position.z=FilterPathTakenz[1]
+            arm_pos.orientation.x= pos_robot_base_frame.orientation.x 
+            arm_pos.orientation.y= pos_robot_base_frame.orientation.y 
+            arm_pos.orientation.z= pos_robot_base_frame.orientation.z 
+            arm_pos.orientation.w= pos_robot_base_frame.orientation.w
 
-            rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, tempPos.position.x, tempPos.position.y, tempPos.position.z, tempPos.orientation.x, tempPos.orientation.y, tempPos.orientation.z, tempPos.orientation.w)
-            d=self.serv_helper.EuclidianDistance(tempPos.position.x,tempPos.position.y,tempPos.position.z,xgoal,ygoal,zgoal)
+            rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
+            d=self.serv_helper.EuclidianDistance(arm_pos.position.x,arm_pos.position.y,arm_pos.position.z,xgoal,ygoal,zgoal)
             if d <= 5:
                 precise_angle_flag=1 #orientation does matter - small tolerance
             else:
                 precise_angle_flag=0 #orientation does not matter - wide tolerance
 
             # Move robot to new position, in robot reference frame
-            status = self.serv_helper.move(tempPos, final_link_name,precise_angle_flag)
+            status = self.serv_helper.move(arm_pos, final_link_name,precise_angle_flag)
             #TODO: Force wait until robot has reached desired position. Temp fix:
             rospy.sleep(0.1)
             if not(status):
                 rospy.logerr("Path Planner - Error, Target position unreachable.")
+            else: #check if movement ran
+                if d <= 2:
+                    PathComplete = 1
+                else:
+                    startx = arm_pos.position.x*SF #start coords for end effector (now next step)
+                    starty = arm_pos.position.y*SF
+                    startz = arm_pos.position.z*SF
 
-            if d <= 2:
-                PathComplete = 1
-            else:
-                PathComplete = 0
+
         
         return status #TODO: Implement zone checks
