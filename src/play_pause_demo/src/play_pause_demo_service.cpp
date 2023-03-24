@@ -1,8 +1,22 @@
 #include "ros/ros.h"
 #include "custom_msgs/PlayPause.h"
+#include <string.h>
+#include <ros/console.h>
 
-bool play_pause(custom_msgs::PlayPause::Request  &req, custom_msgs::PlayPause::Response &res) {
-    std::cout << req;
+using namespace std;
+
+bool play_pause(custom_msgs::PlayPause::Request &req, custom_msgs::PlayPause::Response &res) {
+    string desired_state = req.state;
+
+    ROS_INFO_STREAM("Play/Pause Service recieved:\t" << desired_state);
+
+    if ((desired_state != "play") && (desired_state != "pause")) {
+        res.success = false;
+        ROS_ERROR_STREAM("Play/Pause - Error, cannot use value:\t" << desired_state);
+        return false;
+    }
+
+    res.success = true;
 
     return true;
 }
