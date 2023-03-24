@@ -41,7 +41,7 @@ class Movement:
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
-            xobj=[]
+            xobj=[] #adding base as an object
             yobj=[]
             zobj=[]
             robot_namespaces.remove(self.serv_helper.robot_ns) #remove own name from list of arms to avoid
@@ -60,7 +60,9 @@ class Movement:
                 #print(len(xobj),len(yobj),len(zobj))
 
             xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
-
+            xobj.append(0) #own base as an object 
+            yobj.append(0)
+            zobj.append(0)
             ##Visual Commands
             #X,Y,Z, xline, yline,zline, PotentialEnergy, EnergyPathTaken, PathTaken = self.serv_helper.Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
             #self.serv_helper.plotAPF(xobj, yobj,zobj, xline, yline,zline, PotentialEnergy, EnergyPathTaken)
