@@ -324,3 +324,10 @@ pub.publish(joints)
 First, try install/update your graphics card drivers following [these instructions](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps#prerequisites).
 
 If this doesnt fix the issues, or you have an Intel Xe Graphics card, you will need disable GPU acceleration, rendering only on your CPU. This will be very slow but better than nothing. Add `export  LIBGL_ALWAYS_SOFTWARE=1` to the end of your `.bashrc` file. Restart your terminal and it should work.
+
+**apriltag_ros missing a camera calibration file**
+
+In the Google Drive in the 'Techincal Documentation' folder there is a 'camera calibration' folder containing a calibration file. 'head_camera.yaml' must be placed in a folder called 'camera_info' in 'home/.ros'
+
+**roslaunch not finding packages that exist**
+run - 'source /home/uos/catkin_ws/devel/setup.bash' (or other path)
