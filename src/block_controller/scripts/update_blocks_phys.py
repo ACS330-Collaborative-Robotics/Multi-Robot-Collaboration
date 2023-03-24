@@ -38,7 +38,7 @@ def update():
     # Spawn blocks in radius around each robot base with a minimum and maximum distance
     while not rospy.is_shutdown():
 
-        Tol=0.1
+        Tol=0.15
         TolAng=1
         for i in range(len(blockData.block_data)):
             fail=0
@@ -93,6 +93,7 @@ def update():
                 model.reference_frame="world"
 
                 block_updater(model)
+    rospy.sleep(0.5)
             
 
 def callback_cam(data):
