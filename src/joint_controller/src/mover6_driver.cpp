@@ -59,6 +59,8 @@ void listenerJointAngles(const custom_msgs::Joints::ConstPtr& msg){
 	know_demands = true;
 }
 
+void e_stopCallback(data)
+
 
 int main(int argc, char **argv) {
 	// setting up veriables
