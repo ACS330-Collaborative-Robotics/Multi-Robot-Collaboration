@@ -12,4 +12,5 @@ class PlaceDown(PickUp.PickUp):
 
     def place(self,target_block, end_pos):
         rospy.loginfo("Place block: %s",target_block)
+        rospy.sleep(1)
         pass
