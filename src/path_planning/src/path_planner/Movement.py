@@ -63,6 +63,7 @@ class Movement:
             xobj.append(0) #own base as an object 
             yobj.append(0)
             zobj.append(0)
+            Q.append(4)
             ##Visual Commands
             #X,Y,Z, xline, yline,zline, PotentialEnergy, EnergyPathTaken, PathTaken = self.serv_helper.Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
             #self.serv_helper.plotAPF(xobj, yobj,zobj, xline, yline,zline, PotentialEnergy, EnergyPathTaken)
