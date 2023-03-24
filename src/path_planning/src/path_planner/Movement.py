@@ -18,7 +18,7 @@ class Movement:
         """
         
         SF = 100 #distance scale factor
-        Q = [12,12,10,8,6,4,2] #'size' of the object
+        Q = [12,12,10,8,6,4,2] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = 10
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -63,7 +63,7 @@ class Movement:
             xobj.append(0) #own base as an object 
             yobj.append(0)
             zobj.append(0)
-            Q.append(4)
+            Q.append(0.1)
             ##Visual Commands
             #X,Y,Z, xline, yline,zline, PotentialEnergy, EnergyPathTaken, PathTaken = self.serv_helper.Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
             #self.serv_helper.plotAPF(xobj, yobj,zobj, xline, yline,zline, PotentialEnergy, EnergyPathTaken)
