@@ -26,7 +26,7 @@ def choose_block():
     end_pos.orientation.z = 0
     end_pos.orientation.w = 0.707
     
-    print("Test Kinematic Chain - Calling path planner")
+    rospy.loginfo("Test Kinematic Chain - Calling path planner")
     
     try:
         success = path_service(block_name, end_pos, robot_name)

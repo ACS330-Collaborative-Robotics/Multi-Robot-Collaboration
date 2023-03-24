@@ -41,20 +41,15 @@ def choose_block():
     T = 5
     rate = rospy.Rate(1/T)
 
-    while (blockData is None) and not(rospy.is_shutdown()):
-        rospy.loginfo("Block Selection - Waiting for data.")
-        rospy.sleep(0.1)
-    rospy.loginfo("Block Selection - Got block data,")
-
     # Loop Selection until script is terminated
     while not rospy.is_shutdown():
         ## Making array of block names ##
 
         # Wait for blockData to read in by subscriber
         while (blockData is None) and not(rospy.is_shutdown()):
-            rospy.loginfo("Block Selection - Waiting for data.")
+            rospy.loginfo_once("Assignment Selection - Waiting for data.")
             rate.sleep()
-        rospy.loginfo("Block Selection - Got block data,")
+        rospy.loginfo("Assignment Selection - Got block data.")
 
         # Iterate through blockData and retrieve list of block names
         blockNames = []
@@ -63,11 +58,10 @@ def choose_block():
 
             if is_block_reachable(block_name, robot_namespaces):
                 blockNames.append(block_name)
-                print("Block Selection - Adding", block_name, "as it is reachable.")
             else:
-                print("Block Selection - Ignoring", block_name, "as it is unreachable.")
+                rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
 
-        rospy.loginfo("Block Selection - Block list built.")
+        rospy.loginfo("Assignment Selection - Block list built.\n")
 
         # Getting distance from each robot to blocks and sellecting the smallest
         roboColect = []
@@ -89,7 +83,7 @@ def choose_block():
             for nextBlock in roboColect:
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
-        rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
+        rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
         # Publish assignments
         for i in range(max(len(x) for x in goCollect)):
@@ -123,10 +117,10 @@ def choose_block():
                         success = path_service(block_name, end_pos, robot_name)
 
                         if not(success):
-                            rospy.loginfo("Block Selection - Service call returned False.")
+                            rospy.logerr("Assignment Selection - Service call returned False.")
                             
                     except rospy.ServiceException as e:
-                        rospy.loginfo("Block Selection - Service call failed: %s"%e)
+                        rospy.logfatal("Assignment Selection - Service call failed: %s"%e)
 
                 rate.sleep()
 
@@ -146,7 +140,6 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
     model_state = ModelState()
 
     for robot_name in robot_namespaces:
-        #print("\nBlock Selection - is_block_reachable", block_name, robot_name)
         model_state.pose = specific_block_pose(block_name, robot_name)
 
         orientation_in_euler = [0,90*math.pi/180,0]
@@ -160,7 +153,7 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
         model_state.pose.position.z += 0.15
 
         if inv_kin_is_reachable(model_state).success:
-            print("Block Selection -", block_name, "reachable by", robot_name)
+            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
             return True
         
     return False
