@@ -10,6 +10,8 @@ from sys import argv
 
 global activateGripper
 activateGripper = None
+global e_stop
+estop = False
 
 def main():
     rospy.init_node('gripper_controller')
@@ -29,15 +31,21 @@ def main():
         pubGripper = rospy.Publisher(robot_name + '_p/OutputChannels', ChannelStates, queue_size=10)
 
         rospy.Subscriber(robot_name + "_p/gripper_state", Bool, callback_gripper)
+        rospy.Subscriber("/emergancy_stop", Bool, callback_emercency_stop)
+        rospy.Subscriber(robot_name + "/e_stop", Bool, callback_spec_gripper_e_stop)
+
 
         gripperstate = ChannelStates()
         gripperstate.Header.stamp = rospy.get_rostime()
 
-        if activateGripper == True:
+        if e_stop == True:
+            gripperstate.state = [False, False, False, False, False, False]
+            rospy.loginfo(robot_name + "Gripper Stopped")
+        elif activateGripper == True:
             gripperstate.state = [False, False, False, False, True, True]
             rospy.loginfo(robot_name + "Gripper Open")
 
-        if activateGripper == False:
+        elif activateGripper == False:
             gripperstate.state = [False, False, False, False, False, True]
             rospy.loginfo(robot_name + "Gripper Closed")
 
@@ -47,6 +55,14 @@ def main():
 def callback_gripper(data):
     global activateGripper
     activateGripper = data.data
+
+def callback_emercency_stop(data):
+    global e_stop
+    e_stop = data.data
+
+def callback_spec_gripper_e_stop(data):
+    global e_stop
+    e_stop = data.data
         
 if __name__ == '__main__':
     try:

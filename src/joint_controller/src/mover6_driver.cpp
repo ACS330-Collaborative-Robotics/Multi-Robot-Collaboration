@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
+#include "std_msgs/Bool.h"
 #include "control_msgs/JointJog.h"
 #include "sensor_msgs/JointState.h"
 #include "custom_msgs/Joints.h"
@@ -8,9 +9,7 @@
 #include <iostream>
 #include <stdio.h>
 
-// TODO:
-// Add Gripper Control - //#include "custom_msgs/Joints.h"
-// Add topics to readme
+bool emergancy_stop = false;
 
 
 /* Create node */
@@ -59,7 +58,9 @@ void listenerJointAngles(const custom_msgs::Joints::ConstPtr& msg){
 	know_demands = true;
 }
 
-void e_stopCallback(data)
+void e_stopCallback(const std_msgs::Bool::ConstPtr& msg){
+	bool emergancy_stop = msg->data;
+}
 
 
 int main(int argc, char **argv) {
@@ -78,6 +79,7 @@ int main(int argc, char **argv) {
 	//Creating Subscribers
 	ros::Subscriber chatter_sub = n.subscribe("joint_states", 1000, jointsCallback);
 	ros::Subscriber joint_demands = n.subscribe("physical/joint_angles", 10000, listenerJointAngles);
+	ros::Subscriber e_stop = n.subscribe("/emergancy_stop",1000, e_stopCallback);
 	
 	ros::Rate loop_rate(10);
 
@@ -102,7 +104,19 @@ int main(int argc, char **argv) {
 			for (int i=0;i<6;i++){
 
 				// Moving joints
-				if(abs(joint_demands[i]-jointpos[i])>accuracy) {
+				if(emergancy_stop == true) {
+					ROS_INFO("E_stop Pressed");
+					control_msgs::JointJog msg_start;
+					std::stringstream ss;
+					ss << joints[i];
+
+					msg_start.joint_names.push_back(ss.str());
+					msg_start.velocities.push_back(0);
+					msg_start.duration=5; //Unfortunately duration isn't implemented...
+					chatter_pub.publish(msg_start);
+
+				}
+				else if(abs(joint_demands[i]-jointpos[i])>accuracy) {
 
 					//ROS_INFO("Setting message Go to set point point joint %d",i);
 					control_msgs::JointJog msg_start;
@@ -116,9 +130,8 @@ int main(int argc, char **argv) {
 					chatter_pub.publish(msg_start);
 					moving_state = true;
 				}
-
 				// Stopping joints
-				if(abs(joint_demands[i]-jointpos[i])<accuracy) {
+				else if(abs(joint_demands[i]-jointpos[i])<accuracy) {
 					//ROS_INFO("Setting message Stay Still point joint %d",i);
 					control_msgs::JointJog msg_start;
 					std::stringstream ss;
