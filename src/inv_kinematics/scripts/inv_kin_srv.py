@@ -91,10 +91,10 @@ def inverse_kinematics_service(req):
 
     start_time = time()
     if req.state.reference_frame == "":
-        joints = trac_ik_inverse_kinematics(req.state.pose, req.state.precise_orientation)
+        joints = trac_ik_inverse_kinematics(req.state.pose, req.precise_orientation)
     else:
         rospy.loginfo("Inverse Kinematics - Moving %s instead of end-effector.", req.state.reference_frame)
-        joints = trac_ik_inverse_kinematics(req.state.pose, req.state.precise_orientation, req.state.reference_frame)
+        joints = trac_ik_inverse_kinematics(req.state.pose, req.precise_orientation, req.state.reference_frame)
 
     if joints is None:
         rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f\n", time()-start_time)

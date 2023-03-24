@@ -183,7 +183,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.9 #scaling factor
+        SF = 0.5 #scaling factor
         d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialChange = [SF*x-SF*xgoal,SF*y-SF*ygoal,SF*z-SF*zgoal]
@@ -266,7 +266,7 @@ class ServiceHelper:
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
             zangle = math.atan2(zheight,d)
-            SF = 2
+            SF = 0.8
             # deciding the direction of the tangent
             if angle > 0 or angle == 0:
                 repulsionangle = anglegoal + 100
