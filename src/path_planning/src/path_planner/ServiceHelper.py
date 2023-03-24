@@ -12,6 +12,7 @@ from gazebo_msgs.srv import GetLinkState
 from geometry_msgs.msg import Pose
 from tf2_geometry_msgs import PoseStamped
 from inv_kinematics.srv import InvKin
+from inv_kinematics.srv import InvKinRequest
 from std_msgs.msg import Header
 
 #from APF dependancies
@@ -41,7 +42,7 @@ class ServiceHelper:
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
-    def move(self, pos:Pose, final_link_name):
+    def move(self, pos:Pose, final_link_name:str, precise_orientation:bool):
         """ Move arm to specified position.
 
         INPUT: geometry_msgs Pose() - Orientation as quaternions
@@ -52,14 +53,20 @@ class ServiceHelper:
 
         rospy.loginfo("Path Planner - Service Helper - Calling ik for %s", self.robot_ns)
 
+        inv_kin_request = InvKinRequest()
+
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
         arm_pos.model_name = self.robot_ns
         arm_pos.reference_frame = final_link_name
 
         arm_pos.pose = pos
+
+        inv_kin_request.state = arm_pos
+        inv_kin_request.precise_orientation = precise_orientation
+
         # Call inverse_kinematics service and log ArmPos
-        return self.inv_kin(arm_pos)
+        return self.inv_kin(inv_kin_request)
 
     def getBlockPos(self, specific_model_name:str) -> Pose:
         """ Get block position relative to current robot arm
