@@ -33,16 +33,20 @@ class GUI:
         self.sim_preview_button.grid(row=5, column=0, )
     
         # status indicator lights
-        self.label1 = tk.Label(master, text="Hardware connected")
+        self.label1 = tk.Label(master,bg="white", width=2, height=1)
         self.label1.grid(row=3, column=1, sticky="w")
+        self.label1 = tk.Label(master, text="Hardware connected")
+        self.label1.grid(row=3, column=2)
+        
 
-
-        self.label1 = tk.Label(master, text="Error status")
-        self.label1.grid(row=4, column=1, sticky="w")
 
         self.label1 = tk.Label(master, text="Nodes configured")
+        self.label1.grid(row=4, column=1, sticky="w")
+        
+        self.label1 = tk.Label(master, text="Error status")
         self.label1.grid(row=5, column=1, sticky="w")
-   
+        self.label1 = tk.Label(master, text="Error log")
+        self.label1.grid(row=7, column=1, sticky="w")
         
         # blank space
         self.label1 = tk.Label(master, text="")
