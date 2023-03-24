@@ -41,7 +41,7 @@ class ServiceHelper:
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
-    def move(self, pos:Pose):
+    def move(self, pos:Pose, final_link_name):
         """ Move arm to specified position.
 
         INPUT: geometry_msgs Pose() - Orientation as quaternions
@@ -50,11 +50,13 @@ class ServiceHelper:
         """
         rospy.wait_for_service('inverse_kinematics')
 
-        print("Path Planner - Service Helper - Calling ik for ", self.robot_ns)
+        rospy.loginfo("Path Planner - Service Helper - Calling ik for %s", self.robot_ns)
 
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
         arm_pos.model_name = self.robot_ns
+        arm_pos.reference_frame = final_link_name
+
         arm_pos.pose = pos
         # Call inverse_kinematics service and log ArmPos
         return self.inv_kin(arm_pos)
@@ -77,8 +79,7 @@ class ServiceHelper:
         start_pose = PoseStamped()
         start_pose.pose = goal_pose
 
-        print("Frame Converter - Start pose:", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z)
-        #print(start_pose)
+        rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z)
 
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
@@ -91,10 +92,12 @@ class ServiceHelper:
                 print("Frame Converter - New pose:", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                print("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
+                rospy.logerr("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
                 continue
-        #print(new_pose)
+        
+        rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
+
         return new_pose.pose
     
     def getJointPos(self, ref_arm_name:str,target_arm_name:str,link:str) -> Pose:

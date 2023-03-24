@@ -10,7 +10,7 @@ class Movement:
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
     
-    def move(self, pos:Pose):
+    def move(self, pos:Pose, final_link_name=""):
         """ Safely move to desired position using IK, checking robot will stay within zone
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
@@ -103,12 +103,16 @@ class Movement:
             tempPos.orientation.y= pos_robot_base_frame.orientation.y #temporary
             tempPos.orientation.z= pos_robot_base_frame.orientation.z #temporary
             tempPos.orientation.w= pos_robot_base_frame.orientation.w
-            status = self.serv_helper.move(tempPos)
 
-            if not(status):
-                print("Path Planner - Error - Target unreachable.")
+            rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, tempPos.position.x, tempPos.position.y, tempPos.position.z, tempPos.orientation.x, tempPos.orientation.y, tempPos.orientation.z, tempPos.orientation.w)
+
+            # Move robot to new position, in robot reference frame
+            status = self.serv_helper.move(tempPos, final_link_name)
 
             #TODO: Force wait until robot has reached desired position. Temp fix:
             rospy.sleep(0.1)
-            
+
+            if not(status):
+                rospy.logerr("Path Planner - Error, Target position unreachable.")
+                
         return status #TODO: Implement zone checks

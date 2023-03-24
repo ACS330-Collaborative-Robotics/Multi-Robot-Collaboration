@@ -33,7 +33,7 @@ class PickUp(Movement.Movement):
         pose.orientation.y = orientation[1]
         pose.orientation.z = orientation[2]
         pose.orientation.w = orientation[3]
-        print("Path Planner - Pick Up - Moving to ", block_name)
+        rospy.loginfo("Path Planner - Pick Up - Moving to %s", block_name)
         
         self.move(pose)
 
