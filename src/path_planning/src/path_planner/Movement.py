@@ -35,11 +35,11 @@ class Movement:
         
         while PathComplete==0:
             #Obstacle positions relative to world then arm
-            robot_namespaces = ["mover6_a", "mover6_b"]
+            robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
             xobj=[]
             yobj=[]
             zobj=[]
-            robot_namespaces.remove(self.serv_helper.robot_ns)
+            robot_namespaces.remove(self.serv_helper.robot_ns) #remove own name from list of arms to avoid
             for obstacle_arm_ns in robot_namespaces:
                 for obs in range(0,7):
                     if obs==0:
@@ -54,7 +54,7 @@ class Movement:
                     zobj.append(pos_obstacle.position.z *SF)
                 #print(len(xobj),len(yobj),len(zobj))
 
-            xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #????
+            xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
 
             ##Visual Commands
             #X,Y,Z, xline, yline,zline, PotentialEnergy, EnergyPathTaken, PathTaken = self.serv_helper.Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
@@ -69,20 +69,20 @@ class Movement:
             
             ##FILTERING
             PathTakenLen=len(PathTakenx)
-            FilterPathTakenLen=30 #approximately, configurable constant
+            FilterPathTakenLen=30 #approximate filtered length, configurable constant
             SamplePeriod=round(PathTakenLen/FilterPathTakenLen) #sample period
+
             FilterPathTakenx=[PathTakenx[0]]
             FilterPathTakeny=[PathTakeny[0]]
             FilterPathTakenz=[PathTakenz[0]]
-
-            if PathTakenLen>FilterPathTakenLen:
+            if PathTakenLen>FilterPathTakenLen: #if too many path points, reduce
                 for i in range(PathTakenLen):
                     if i%SamplePeriod == 0: #take a sample every SamplePeriod iterations
                         FilterPathTakenx.append(PathTakenx[i])
                         FilterPathTakeny.append(PathTakeny[i])
                         FilterPathTakenz.append(PathTakenz[i])
                 print("FILTERED PATH LENGTH=",len(FilterPathTakenx))
-            else:
+            else: #if fewer than 30 path points, just use produced path
                 FilterPathTakenx=PathTakenx
                 FilterPathTakeny=PathTakeny
                 FilterPathTakenz=PathTakenz
@@ -98,7 +98,7 @@ class Movement:
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
             d=self.serv_helper.EuclidianDistance(arm_pos.position.x,arm_pos.position.y,arm_pos.position.z,xgoal,ygoal,zgoal)
-            if d <= 5:
+            if d <= 3: #when close, use precise orientation
                 precise_angle_flag=1 #orientation does matter - small tolerance
             else:
                 precise_angle_flag=0 #orientation does not matter - wide tolerance
@@ -117,6 +117,4 @@ class Movement:
                     starty = arm_pos.position.y*SF
                     startz = arm_pos.position.z*SF
 
-
-        
         return status #TODO: Implement zone checks
