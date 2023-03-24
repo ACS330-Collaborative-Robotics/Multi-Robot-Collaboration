@@ -289,7 +289,7 @@ class ServiceHelper:
                 repulsionvect = 0,0
                 zrep = 0
             else:
-                print("zinfo:",zheight,zangle,zrepangle)
+                rospy.loginfo("zinfo: %.2f,%.2f,%.2f",zheight,zangle,zrepangle)
             #for x in range(len(repulsionvect)):
             #   if repulsionvect[x] > 3:
             #      repulsionvect[x]= 3
@@ -318,12 +318,12 @@ class ServiceHelper:
                 difx = diffrep[0] + 0.25*diffatt[0]
                 dify = diffrep[1] + 0.25*diffatt[1]
                 difz = diffrep[2] + 0.25*diffatt[2]
-                print("rep:",-difx,-dify,-difz)
+                rospy.loginfo("rep: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             else:
                 difx = diffatt[0]
                 dify = diffatt[1]
                 difz = diffatt[2]
-                print(-difx,-dify,-difz)
+                rospy.loginfo("rep: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
 
             if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:#
                 PathComplete = 1
@@ -345,8 +345,6 @@ class ServiceHelper:
             i += 1
             #print(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
-        print('Path Complete')
-        print(len(PathPointsx))
         return PathPointsx,PathPointsy,PathPointsz
 
  
