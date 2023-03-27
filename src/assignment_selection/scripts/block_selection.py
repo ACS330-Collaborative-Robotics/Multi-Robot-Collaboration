@@ -112,9 +112,9 @@ def choose_block():
         #generate coordinates
         for i in range(layers):
             w=0 #width of blocks
-            home_pos = [w,0,h,a,b,c]
+            home_pos = [w,3,h,a,b,c]
             for j in range(2):
-                home_pos = [w,0,h,a,b,c]
+                home_pos = [w,3,h,a,b,c]
                 tower_pos.append(home_pos)
                 w=w+8
             h=h+4
