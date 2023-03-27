@@ -33,9 +33,12 @@ for i in range(layers):
         rot=0
 
 
-    
+
     
 height=len(tower_pos)
-print(tower_pos)
+print(tower_pos[1])
+
+tower_pos.pop(1)
+print(tower_pos[1])
 
         

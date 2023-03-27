@@ -97,7 +97,7 @@ def choose_block():
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
         rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
-        print(goCollect)
+        
         ## ////////////////////////////////////////////
         
         n = len(blockNames) #num of blocks
@@ -116,18 +116,20 @@ def choose_block():
             for j in range(2):
                 home_pos = [w,0,h,a,b,c]
                 tower_pos.append(home_pos)
-                w=w+4
+                w=w+8
             h=h+4
 
             if c==0:
                 c=-90*(math.pi/180)
             elif c==-90*(math.pi/180):
                 c=0
-
+        print(tower_pos)
         # Publish assignments
         for i in range(len(tower_pos)):
-        
-                block_name = str(blockNames[i])
+            for j in range(len(robot_namespaces)):
+                block_name = str(goCollect[j][i])
+                robot_name = str(robot_namespaces[j])
+
                 end_pos = Pose()
                 end_pos.position.x = tower_pos[i][0]
                 end_pos.position.y = tower_pos[i][1]
@@ -139,8 +141,10 @@ def choose_block():
                 end_pos.orientation.y = quat[1]
                 end_pos.orientation.z = quat[2]
                 end_pos.orientation.w = quat[3]
+
+                tower_pos.pop(i)
                
-                robot_name = str(robot_namespaces[0])
+                
                 ## ////////////////////////////////////////////
                     
                 try:
