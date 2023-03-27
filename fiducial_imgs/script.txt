@@ -1,0 +1,1 @@
+python3 script.py tag25h9/tag25_09_00001.png SVG25h9/tag25_09_00001.svg
