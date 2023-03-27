@@ -13,12 +13,12 @@ def callback(scan):
             break
     if human_detected:
         rospy.loginfo("Human detected within 30cm!")
-        pub.publish(True)
+        lidar_pub.publish(True)
     else:
-        pub.publish(False)
+        lidar_pub.publish(False)
 
 if __name__ == '__main__':
     rospy.init_node('human_zone')
-    pub = rospy.Publisher('human_detection', Bool, queue_size=10)
+    lidar_pub = rospy.Publisher('human_detection', Bool, queue_size=10)
     sub = rospy.Subscriber('/scan', LaserScan, callback)
     rospy.spin()
