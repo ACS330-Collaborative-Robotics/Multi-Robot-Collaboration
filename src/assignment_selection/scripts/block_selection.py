@@ -91,9 +91,9 @@ def choose_block():
         ## ////////////////////////////////////////////
         
         n = len(blockNames) #num of blocks
-        layers = math.ceil(n/3) #num of layers
+        layers = math.ceil(n/2) #num of layers
         tower_pos = [] #this has to be a 3 column * layers(value) matrix
-        h=0.1 #height of blocks
+        h=0 #height of blocks
         #euler rotation comp
         a=0
         b=0
@@ -101,13 +101,13 @@ def choose_block():
 
         #generate coordinates
         for i in range(layers):
-            w=0.25 #width of blocks
-            home_pos = [w,0.25,h,a,b,c]
-            for j in range(3):
-                home_pos = [w,0.25,h,a,b,c]
+            w=0 #width of blocks
+            home_pos = [w,0,h,a,b,c]
+            for j in range(2):
+                home_pos = [w,0,h,a,b,c]
                 tower_pos.append(home_pos)
-                w=w+0.2
-            h=h+0.1
+                w=w+4
+            h=h+4
 
             if c==0:
                 c=-90*(math.pi/180)
@@ -116,31 +116,31 @@ def choose_block():
 
         # Publish assignments
         for i in range(len(tower_pos)):
-            block_name = str(blockNames[i])
+        
+                block_name = str(blockNames[i])
+                end_pos = Pose()
+                end_pos.position.x = tower_pos[i][0]
+                end_pos.position.y = tower_pos[i][1]
+                end_pos.position.z = tower_pos[i][2]
 
-            end_pos = Pose()
-            end_pos.position.x = tower_pos[i][0]
-            end_pos.position.y = tower_pos[i][1]
-            end_pos.position.z = tower_pos[i][2]
-
-            quat = tf.transformations.quaternion_from_euler(
-                tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
-            end_pos.orientation.x = quat[0]
-            end_pos.orientation.y = quat[1]
-            end_pos.orientation.z = quat[2]
-            end_pos.orientation.w = quat[3]
-
-            robot_name = str(robot_namespaces[0])
-            ## ////////////////////////////////////////////
+                quat = tf.transformations.quaternion_from_euler(
+                        tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
+                end_pos.orientation.x = quat[0]
+                end_pos.orientation.y = quat[1]
+                end_pos.orientation.z = quat[2]
+                end_pos.orientation.w = quat[3]
+               
+                robot_name = str(robot_namespaces[0])
+                ## ////////////////////////////////////////////
                     
-            try:
-                success = path_service(block_name, end_pos, robot_name)
+                try:
+                    success = path_service(block_name, end_pos, robot_name)
 
-                if not(success):
-                    rospy.loginfo("Block Selection - Service call returned False.")
+                    if not(success):
+                        rospy.loginfo("Block Selection - Service call returned False.")
                             
-            except rospy.ServiceException as e:
-                rospy.loginfo("Block Selection - Service call failed: %s"%e)
+                except rospy.ServiceException as e:
+                    rospy.loginfo("Block Selection - Service call failed: %s"%e)
 
                     
 

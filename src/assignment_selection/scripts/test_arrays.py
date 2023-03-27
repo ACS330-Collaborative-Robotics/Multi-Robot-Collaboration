@@ -11,21 +11,21 @@ import math
 from operator import itemgetter
 
 n = 20
-layers = math.ceil(n/3)
+layers = math.ceil(n/2)
 print(layers)
-tower_pos = [] #this has to be a 3 column * layers(value) matrix
+tower_pos = [] #this has to be a 2 column * layers(value) matrix
 h=0
 rot=0
 
 
 for i in range(layers):
-    w=0.25
+    w=0
     home_pos = [w,0,h,0,0,rot]
-    for j in range(3):
+    for j in range(2):
         home_pos = [w,0,h,0,0,rot]
         tower_pos.append(home_pos)
-        w=w+1
-    h=h+1
+        w=w+8
+    h=h+4
 
     if rot==0:
         rot=90*(math.pi/180)
