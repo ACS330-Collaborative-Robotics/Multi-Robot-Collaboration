@@ -5,6 +5,7 @@
 
 import rospy
 from std_msgs.msg import Float64
+from std_msgs.msg import Bool
 from custom_msgs.msg import Joints
 from sys import argv
 
@@ -30,9 +31,12 @@ def main():
     # Setup subscriber for Joint Angle demand
     # Telling Physical to move
     if enablePhysical:
-        rospy.Subscriber(robot_name + "/e_stop", Joints, callback_spec_robo_stop)
-        if not e_stop:
+        rospy.Subscriber(robot_name + "/e_stop", Bool, callback_spec_robo_stop)
+        if e_stop == False:
+            #print("The estop is  "+e_stop)
             rospy.Subscriber(robot_name + "/joint_angles", Joints, callback_physical)
+        else:
+            print("E_stop TRue")
         
             
     # Telling Simulation to move
