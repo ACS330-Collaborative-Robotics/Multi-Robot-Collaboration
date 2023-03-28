@@ -31,4 +31,4 @@ class PlaceDown(PickUp.PickUp):
         end_pose.orientation.w = orientation[3]
         rospy.loginfo("Path Planner - Place down - Moving to %.2f\t%.2f\t%.2f", end_pose.position.x, end_pose.position.y, end_pose.position.z)
         
-        self.move(end_pose)
+        return self.move(end_pose)
