@@ -8,6 +8,9 @@ from std_msgs.msg import Float64
 from custom_msgs.msg import Joints
 from sys import argv
 
+global e_stop
+e_stop = False
+
 ## TODO:
 # Add details to readMe
 
@@ -27,7 +30,10 @@ def main():
     # Setup subscriber for Joint Angle demand
     # Telling Physical to move
     if enablePhysical:
-        rospy.Subscriber(robot_name + "/joint_angles", Joints, callback_physical)
+        rospy.Subscriber(robot_name + "/e_stop", Joints, callback_spec_robo_stop)
+        if not e_stop:
+            rospy.Subscriber(robot_name + "/joint_angles", Joints, callback_physical)
+        
             
     # Telling Simulation to move
     if enableSimulation:
@@ -51,6 +57,11 @@ def callback_sim(data):
         
 
     # Joint lims in radians [[-2.269,2.269],[-0.873,1.047],[-1.920,1.309],[-2.443,2.443],[-1.221,1.047],[-2.094,2.094]]
+
+def callback_spec_robo_stop(data):
+    global e_stop
+    e_stop = data.data
+
 
 def callback_physical(data):
     global joint_angles
