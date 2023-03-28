@@ -20,9 +20,8 @@ def main():
     #Getting robot name pryamiter
     global robot_name
     robot_name =  "/" + argv[1]
-    print("----------------------------------")
-    print(robot_name + " Joints Initialised.")
-    print("----------------------------------")
+    
+    rospy.loginfo("%s Joint Controller Initialised.\n", robot_name)
 
     # Setup subscriber for Joint Angle demand
     # Telling Physical to move

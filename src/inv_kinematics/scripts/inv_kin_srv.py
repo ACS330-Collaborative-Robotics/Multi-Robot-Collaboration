@@ -14,7 +14,7 @@ disable_fk = False
 try:
     import kinpy as kp
 except ModuleNotFoundError:
-    print("Inverse Kinematics - kinpy not found, forward kinematics diagnostics disabled.")
+    rospy.logwarn("Inverse Kinematics - kinpy not found, forward kinematics diagnostics disabled.")
     disable_fk = True
 
 from time import time
@@ -32,7 +32,7 @@ def forward_kinematics(joint_values):
     link_names = chain.get_joint_parameter_names()
     
     joints = {}
-    for joint_num in range(6):
+    for joint_num in range(len(joint_values)):
         joints[link_names[joint_num]] = joint_values[joint_num]
 
     cartesian_coords = chain.forward_kinematics(joints)
@@ -59,14 +59,14 @@ def ikpy_inverse_kinematics(pose: Pose):
 
     return joints
 
-def trac_ik_inverse_kinematics(pose: Pose):
+def trac_ik_inverse_kinematics(pose: Pose, final_link_name="link6"):
     try:
         urdf_str = rospy.get_param('/robot_description')
     except KeyError:
         file = open(Path.home().as_posix() + "/catkin_ws/src/inv_kinematics/urdf/CPRMover6.urdf.xacro")
         urdf_str = file.read()
 
-    ik_solver = IK("base_link", "link6", urdf_string=urdf_str)
+    ik_solver = IK("base_link", final_link_name, urdf_string=urdf_str)
 
     seed_state = [0.0]*ik_solver.number_of_joints #TODO: Update seed state to use current joint positions
 
@@ -74,14 +74,6 @@ def trac_ik_inverse_kinematics(pose: Pose):
     angle_tolerance = pi/180 # Start with 1 degree tolerance
 
     joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
-
-    #multiplier = 10
-    #while joints is None:
-    #    coordinate_tolerance = coordinate_tolerance * multiplier
-    #
-    #    print("Inverse Kinematics - Trac Ik: Failed to find solution, increasing tolerance by 10 times to", coordinate_tolerance, angle_tolerance)
-    #
-    #    joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
         
     if joints is None:
         return None
@@ -89,18 +81,23 @@ def trac_ik_inverse_kinematics(pose: Pose):
         return list(joints)
 
 def inverse_kinematics_service(req):
-    print("Inverse Kinematics - Service call recieved.")
+    rospy.loginfo("Inverse Kinematics - Service call recieved.")
+
     pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
 
     start_time = time()
-    joints = trac_ik_inverse_kinematics(req.state.pose)
+    if req.state.reference_frame == "":
+        joints = trac_ik_inverse_kinematics(req.state.pose)
+    else:
+        rospy.loginfo("Inverse Kinematics - Moving %s instead of end-effector.", req.state.reference_frame)
+        joints = trac_ik_inverse_kinematics(req.state.pose, req.state.reference_frame)
 
     if joints is None:
-        print("Inverse Kinematics - Failed to find a solution in ", round(time()-start_time, 4))
-        print("")
+        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f\n", time()-start_time)
         return False
     else:
-        print("Inverse Kinematics - Trac IK: ", joints, " Computed in: ", round(time()-start_time, 4))
+        joints_display = " ".join([str(round(joint, 2)) for joint in joints])
+        rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.4f", joints_display, time()-start_time)
 
         if disable_fk != True:
             # Understanding IK accuracy 
@@ -113,27 +110,21 @@ def inverse_kinematics_service(req):
             final_orientation = list(end_effector_position.rot)
             final = final_position + final_orientation
 
-            print("")
+            rospy.logdebug("Type\tx\ty\tz\trx\try\trz\trw")
 
-            print("Type\tx\ty\tz\trx\try\trz\trw")
+            target_values_display = "\t".join([str(round(value, 3)) for value in target])
+            rospy.logdebug("Goal\t%s", target_values_display)
 
-            print("Target\t", end="")
-            for value in target: {print(round(value,3), "\t", end="")}
-            print("")
+            final_values_display = "\t".join([str(round(value, 3)) for value in final])
+            rospy.logdebug("Final\t%s", final_values_display)
 
-            print("Final\t", end="")
-            for value in final: {print(round(value,3), "\t", end="")}
-            print("")
+            diff_values_display = "\t".join([str(round(target[value_pos] - final[value_pos] ,3)) for value_pos in range(len(final))])
+            rospy.logdebug("Diff\t%s", diff_values_display)
 
-            print("Diff\t", end="")
-            for value_pos in range(len(final)):
-                print(round(target[value_pos] - final[value_pos] ,3), "\t", end="")
-            print("")        
-        
         # Publish joint positions
         pub.publish(joints)
 
-        print("Inverse Kinematics - Joint positions published.\n")
+        rospy.loginfo("Inverse Kinematics - Joint positions published.\n")
 
         return True
     
@@ -179,7 +170,7 @@ def analyse_robot_workspace():
                 if status:
                     ax.scatter(x, y, z, c='k')
 
-        print((x_multiplier+1)/(number_of_points+1)*100, "% Done")
+        rospy.logdebug("%.0f%% Done", (x_multiplier+1)/(number_of_points+1)*100)
 
         if rospy.is_shutdown():
             break
@@ -205,9 +196,12 @@ def inverse_kinematics_reachability_service(req):
         return True
 
 def main():
-    rospy.init_node('inverse_kinematics_server')
+    if not disable_fk:
+        rospy.init_node('inverse_kinematics_server', log_level=rospy.DEBUG)
+    else:
+        rospy.init_node('inverse_kinematics_server')
 
-    analyse_robot_workspace()
+    #analyse_robot_workspace()
 
     s1 = rospy.Service('inverse_kinematics', InvKin, inverse_kinematics_service)
     s2 = rospy.Service('inverse_kinematics_reachability', InvKin, inverse_kinematics_reachability_service)
