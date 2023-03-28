@@ -23,7 +23,12 @@ class GUI:
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
 
-        
+        # physical camera feed
+        self.label1 = tk.Label(master, text="Physical camera feed: ")
+        self.label1.grid(row=0, column=2, sticky="w")
+        self.canvas2 = tk.Canvas(master, width=540, height=380)
+        self.canvas2.grid(row=1, column=2, sticky="nsew")
+
         # buttons
         self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
         self.emergency_stop_button.grid(row=3, column=0, )
@@ -33,21 +38,24 @@ class GUI:
         self.sim_preview_button.grid(row=5, column=0, )
     
         # status indicator lights
-        self.label1 = tk.Label(master,bg="white", width=2, height=1)
+        # hardware connected light
+        self.label1 = tk.Label(master,bg="red", width=2, height=1)
         self.label1.grid(row=3, column=1, sticky="w")
         self.label1 = tk.Label(master, text="Hardware connected")
-        self.label1.grid(row=3, column=2)
-        
+        self.label1.grid(row=3, column=2, sticky="w")
 
-
-        self.label1 = tk.Label(master, text="Nodes configured")
+        # nodes configured light
+        self.label1 = tk.Label(master,bg="red", width=2, height=1)
         self.label1.grid(row=4, column=1, sticky="w")
+        self.label1 = tk.Label(master, text="Nodes configured")
+        self.label1.grid(row=4, column=2, sticky="w")
         
-        self.label1 = tk.Label(master, text="Error status")
+        # error status light
+        self.label1 = tk.Label(master,bg="red", width=2, height=1)
         self.label1.grid(row=5, column=1, sticky="w")
-        self.label1 = tk.Label(master, text="Error log")
-        self.label1.grid(row=7, column=1, sticky="w")
-        
+        self.label1 = tk.Label(master, text="Error status")
+        self.label1.grid(row=5, column=2, sticky="w")
+
         # blank space
         self.label1 = tk.Label(master, text="")
         self.label1.grid(row=6, column=0, sticky="w")
