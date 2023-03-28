@@ -8,7 +8,7 @@ import rospy
 from path_planner import PathPlanner
 
 import actionlib
-from path_planning.msg import PathPlanAction
+from path_planning.msg import PathPlanAction, PathPlanResult
 
 
 class PathPlannerServer:
@@ -25,15 +25,14 @@ class PathPlannerServer:
 
         pathPlanner = PathPlanner.PathPlanner(goal.robot_name, goal.block_name, goal.end_pos)
 
+        temp = PathPlanResult()
         path_planner_status = pathPlanner.pathPlan()
+        temp.success = path_planner_status
 
         if path_planner_status:
-            self.server.set_succeeded()
+            self.server.set_succeeded(temp)
         else:
-            self.server.set_aborted()
-
-        # Run Path planner and return state
-        return 
+            self.server.set_aborted(temp)
 
 if __name__ == "__main__":
     rospy.init_node('path_planner_server')
