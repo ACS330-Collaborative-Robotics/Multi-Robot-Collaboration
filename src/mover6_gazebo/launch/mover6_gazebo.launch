@@ -7,11 +7,8 @@
 
     <!-- Convert an xacro and put on parameter server -->
     <param name="robot_description" command="$(find xacro)/xacro $(find mover6_description)/urdf/CPRMover6.urdf.xacro" />
-    <!-- Launch Camera recognition -->
-    <include file="$(find fiducial_recognition)/launch/fiducial_recognition.launch"/>
     <!-- Spawn a robot into Gazebo -->
     <node name="spawn_urdf_a" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -z 0.02 -Y 1.5708 -urdf -model mover6_a -robot_namespace mover6_a" />
-
     <!-- Spawn a robot into Gazebo -->
     <node name="spawn_urdf_b" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -y 0.6 -z 0.02 -Y -1.5708 -urdf -model mover6_b -robot_namespace mover6_b"/>
 
