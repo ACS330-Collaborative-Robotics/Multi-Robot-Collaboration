@@ -29,15 +29,15 @@ def callback(data):
     blockData = data
 
 def choose_block():
+    # Declare ROS Node name
+    rospy.init_node('block_selector')
+
     # Setup block_pos listener
     rospy.Subscriber('/blocks_pos', Blocks, callback)
 
-    # Setup path_planner service
-    rospy.wait_for_service('path_planner')
-    path_service = rospy.ServiceProxy('path_planner', PathPlan)
-
-    # Declare ROS Node name
-    rospy.init_node('block_selector')
+    # Setup path_planner action client
+    path_client = actionlib.SimpleActionClient('path_planner', PathPlanAction)
+    path_client.wait_for_server()
 
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
@@ -123,8 +123,10 @@ def choose_block():
         # Publish assignments
         for i in range(len(tower_pos)):
             for j in range(len(robot_namespaces)):
-                block_name = str(goCollect[j][i])
-                robot_name = str(robot_namespaces[j])
+                goal = PathPlanGoal()
+
+                goal.block_name = str(goCollect[j][i])
+                goal.robot_name = str(robot_namespaces[j])
 
                 end_pos = Pose()
                 end_pos.position.x = tower_pos[i][0] + tower_origin_coordinates[0]
@@ -138,10 +140,13 @@ def choose_block():
                 end_pos.orientation.z = quat[2]
                 end_pos.orientation.w = quat[3]
 
+                goal.end_pos = end_pos
+
                 tower_pos.pop(i)
                     
                 try:
-                    success = path_service(block_name, end_pos, robot_name)
+                    path_client.send_goal(goal)
+                    success = path_client.wait_for_result(rospy.Duration.from_sec(5.0))
 
                     if not(success):
                         rospy.logerr("Assignment Selection - Service call returned False.")

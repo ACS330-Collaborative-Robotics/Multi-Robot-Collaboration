@@ -5,25 +5,37 @@
 
 import rospy
 
-from geometry_msgs.msg import Pose
-from path_planning.srv import PathPlan
-
 from path_planner import PathPlanner
 
-def path_plan(req):
-    # Initialise PathPlanner object
-    rospy.loginfo("Path planner recieved instruction:\t%s\t%s\t\t%.2f\t%.2f\t%.2f", req.robot_name, req.block_name,  req.end_pos.position.x,  req.end_pos.position.y,  req.end_pos.position.z)
-    pathPlanner = PathPlanner.PathPlanner(req.robot_name, req.block_name, req.end_pos)
+import actionlib
+from path_planning.msg import PathPlanAction
 
-    # Run Path planner and return state
-    return pathPlanner.pathPlan()
 
-def main():
-    rospy.init_node('path_planner_server')
+class PathPlannerServer:
+    def __init__(self):
+        self.server = actionlib.SimpleActionServer('path_planner', PathPlanAction, self.path_plan, False)
 
-    s = rospy.Service('path_planner', PathPlan, path_plan)
+        self.server.start()
 
-    rospy.spin()
+        rospy.spin()
+
+    def path_plan(self, goal):
+        # Initialise PathPlanner object
+        rospy.loginfo("Path planner recieved instruction:\t%s\t%s\t\t%.2f\t%.2f\t%.2f", goal.robot_name, goal.block_name,  goal.end_pos.position.x,  goal.end_pos.position.y,  goal.end_pos.position.z)
+
+        pathPlanner = PathPlanner.PathPlanner(goal.robot_name, goal.block_name, goal.end_pos)
+
+        path_planner_status = pathPlanner.pathPlan()
+
+        if path_planner_status:
+            self.server.set_succeeded()
+        else:
+            self.server.set_aborted()
+
+        # Run Path planner and return state
+        return 
 
 if __name__ == "__main__":
-    main()
+    rospy.init_node('path_planner_server')
+    server = PathPlannerServer()
+    rospy.spin()
