@@ -59,7 +59,7 @@ void listenerJointAngles(const custom_msgs::Joints::ConstPtr& msg){
 }
 
 void e_stopCallback(const std_msgs::Bool::ConstPtr& msg){
-	bool emergancy_stop = msg->data;
+	emergancy_stop = msg->data;
 }
 
 
@@ -161,6 +161,7 @@ int main(int argc, char **argv) {
 			//ROS_INFO("%s", msg.data.c_str());
 			moving.publish(msg);
 			ros::spinOnce();
+			loop_rate.sleep();
 
 		}
 
