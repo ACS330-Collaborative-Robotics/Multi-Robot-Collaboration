@@ -11,7 +11,7 @@ from sys import argv
 global activateGripper
 activateGripper = None
 global e_stop
-estop = False
+e_stop = False
 
 def main():
     rospy.init_node('gripper_controller')
@@ -31,7 +31,7 @@ def main():
         pubGripper = rospy.Publisher(robot_name + '_p/OutputChannels', ChannelStates, queue_size=10)
 
         rospy.Subscriber(robot_name + "_p/gripper_state", Bool, callback_gripper)
-        rospy.Subscriber("/emergancy_stop", Bool, callback_emercency_stop)
+        #rospy.Subscriber("/emergancy_stop", Bool, callback_emercency_stop)
 
 
         gripperstate = ChannelStates()
