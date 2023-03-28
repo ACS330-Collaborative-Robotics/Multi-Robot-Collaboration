@@ -16,6 +16,7 @@ enableSimulation = False
 
 def main():
     rospy.init_node('joint_controller')
+
     # Toggles for Physical and Simulation robots
     # TODO: Setup topics and subscribers to control these variable
     #Getting robot name pryamiter

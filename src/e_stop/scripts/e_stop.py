@@ -10,50 +10,40 @@ from sys import argv
 def main():
     rospy.init_node('e_stop')
 
-    #Defineing the publishers
-    phicGripperEStoppub = rospy.Publisher("/emergancy_stop", Bool, queue_size=10)
-    simGrippub = rospy.Publisher("sim_gripper_stop", Bool, queue_size=10) # TODO: Needs Implometing
-    simRobopub = rospy.Publisher("sim_robot_stop", Bool, queue_size=10) # TODO: Needs Implometing
-    mover6apub = rospy.Publisher("mover6_a/e_stop", Bool, queue_size=10) # TODO: Needs Implometing
-    mover6bpub = rospy.Publisher("mover6_b/e_stop", Bool, queue_size=10) # TODO: Needs Implometing
+    #Define the publishers
+    E_stop_pub = rospy.Publisher("/emergency_stop", Bool, queue_size=10)
 
-    # allwoing all to start
-    phicGripperEStop = False #TODO
-    phicGripper = False #TODO
-    simGripper = False #TODO
-    simRobot = False #TODO
-    mover6a = False #TODO
-    mover6b = False #TODO
+    # TODO: Make this dynamic based on number of robots
+    mover6_a_pub = rospy.Publisher("mover6_a/pause_physical", Bool, queue_size=10)
+    mover6_b_pub = rospy.Publisher("mover6_b/pause_physical", Bool, queue_size=10)
 
+    # Allowing all to start
+    E_stop = False
+
+    mover6_a = False
+    mover6_b = False
 
     rate = rospy.Rate(10) # 10 Hz
 
     while not rospy.is_shutdown():
-        # input from terminoal
-        spegetti = input("1) E-Stop \n2) Gisical grippers \n3) Simulation Gripper \n4) Sumulation Gripper \n5) mover6a \n6) mover6b \n->")
-        #Publishing out
-        if spegetti == "1":
-            phicGripperEStop = not phicGripperEStop
-            phicGripperEStoppub.publish(phicGripperEStop)
-        elif spegetti == "2":
-            phicGripper = not phicGripper
-            PhiscGrippub.publish(phicGripper)
-        elif spegetti == "3":
-            simGripper = not simGripper
-            simGrippub.publish(simGripper)
-        elif spegetti == "4":
-            simRobot = not simRobot
-            simRobopub.publish(simRobot)
-        elif spegetti == "5":
-            mover6a = not mover6a
-            mover6apub.publish(mover6a)
-        elif spegetti == "6":
-            mover6b = not mover6b
-            mover6bpub.publish(mover6b)
+        # Input from terminal
+        input_value = input("1) E-Stop \n2) mover6a \n3) mover6b \n->")
+        # TODO: Add error handling for malicious inputs
+
+        #Publishing 
+        if input_value == "1":
+            E_stop = not E_stop
+            E_stop_pub.publish(E_stop)
+
+        elif input_value == "2":
+            mover6_a = not mover6_a
+            mover6_a_pub.publish(mover6_a)
+
+        elif input_value == "3":
+            mover6_b = not mover6_b
+            mover6_b_pub.publish(mover6_b)
 
         rate.sleep()
-
-
 
 if __name__ == '__main__':
     try:
