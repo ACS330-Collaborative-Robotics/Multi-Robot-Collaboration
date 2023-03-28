@@ -40,6 +40,8 @@ def choose_block():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
+    
+    tower_origin_coordinates = [0, 0.3, 0]
 
     # Set Loop rate
     T = 5
@@ -105,9 +107,9 @@ def choose_block():
         #generate coordinates
         for i in range(layers):
             w=0 #width of blocks
-            home_pos = [w,3,h,a,b,c]
+            home_pos = [w,0,h,a,b,c]
             for j in range(2):
-                home_pos = [w,3,h,a,b,c]
+                home_pos = [w,0,h,a,b,c]
                 tower_pos.append(home_pos)
                 w=w+8
             h=h+4
@@ -126,9 +128,9 @@ def choose_block():
                 robot_name = str(robot_namespaces[j])
 
                 end_pos = Pose()
-                end_pos.position.x = tower_pos[i][0]
-                end_pos.position.y = tower_pos[i][1]
-                end_pos.position.z = tower_pos[i][2]
+                end_pos.position.x = tower_pos[i][0] + tower_origin_coordinates[0]
+                end_pos.position.y = tower_pos[i][1] + tower_origin_coordinates[1]
+                end_pos.position.z = tower_pos[i][2] + tower_origin_coordinates[2]
 
                 quat = tf.transformations.quaternion_from_euler(
                         tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
