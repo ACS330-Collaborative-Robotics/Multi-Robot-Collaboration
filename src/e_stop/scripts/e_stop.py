@@ -14,8 +14,8 @@ def main():
     phicGripperEStoppub = rospy.Publisher("/emergancy_stop", Bool, queue_size=10)
     simGrippub = rospy.Publisher("sim_gripper_stop", Bool, queue_size=10) # TODO: Needs Implometing
     simRobopub = rospy.Publisher("sim_robot_stop", Bool, queue_size=10) # TODO: Needs Implometing
-    mover6apub = rospy.Publisher("mover6a/e_stop", Bool, queue_size=10) # TODO: Needs Testing
-    mover6bpub = rospy.Publisher("mover6b/e_stop", Bool, queue_size=10) # TODO: Needs Testing
+    mover6apub = rospy.Publisher("mover6a/e_stop", Bool, queue_size=10) # TODO: Needs Implometing
+    mover6bpub = rospy.Publisher("mover6b/e_stop", Bool, queue_size=10) # TODO: Needs Implometing
 
     # allwoing all to start
     phicGripperEStop = False #TODO
