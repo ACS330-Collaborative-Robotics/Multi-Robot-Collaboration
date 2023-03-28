@@ -34,10 +34,10 @@ class PathPlanner:
 
         # Move arm
         #self.movement.move(self.end_pos, "link5")
-        self.movement.move(self.end_pos)
+        #self.movement.move(self.end_pos)
 
         # Put down block
-        #self.placeDown.pick(self.target_block, self.end_pos)
+        self.placeDown.place(self.end_pos)
 
         return True
     

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Name: block_slection
-# Author: Tom Richards (tomtommrichards@gmail.com), Conor Nichols (cjnichols1@sheffield.ac.uk)
+# Author: Tom Richards (tomtommrichards@gmail.com), Conor Nichols (cjnichols1@sheffield.ac.uk), Annanthavel Santhanavel Ramesh(asanthanavelramesh1@sheffield.ac.uk)
 
 import rospy
 
@@ -9,6 +9,8 @@ from gazebo_msgs.srv import GetModelState
 from block_controller.msg import Blocks
 from path_planning.srv import PathPlan
 from geometry_msgs.msg import Pose
+import tf
+import tf2_ros
 from gazebo_msgs.msg import ModelState
 from inv_kinematics.srv import InvKin
 
@@ -27,15 +29,18 @@ def choose_block():
     # Setup block_pos listener
     rospy.Subscriber('/blocks_pos', Blocks, callback)
 
-    # Define robot namespaces being used - also defines number of robots
-    robot_namespaces = ["mover6_a", "mover6_b"]
-    
     # Setup path_planner service
     rospy.wait_for_service('path_planner')
     path_service = rospy.ServiceProxy('path_planner', PathPlan)
 
     # Declare ROS Node name
     rospy.init_node('block_selector')
+
+    # Define robot namespaces being used - also defines number of robots
+    robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
+    
+    tower_origin_coordinates = [0, 0.3, 0]
 
     # Set Loop rate
     T = 5
@@ -83,44 +88,63 @@ def choose_block():
             for nextBlock in roboColect:
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
+        
+        n = len(blockNames) #num of blocks
+        layers = math.ceil(n/2) #num of layers
+        tower_pos = [] #this has to be a 3 column * layers(value) matrix
+        h=0 #height of blocks
+        #euler rotation comp
+        a=0
+        b=0
+        c=0
+
+        # Generate coordinates
+        for i in range(layers):
+            w=0 #width of blocks
+            home_pos = [w,0,h,a,b,c]
+            for j in range(2):
+                home_pos = [w,0,h,a,b,c]
+                tower_pos.append(home_pos)
+                w=w+0.08
+            h=h+0.04
+
+            if c==0:
+                c=-90*(math.pi/180)
+            elif c==-90*(math.pi/180):
+                c=0
+
+        #print(tower_pos)
+
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
         # Publish assignments
-        for i in range(max(len(x) for x in goCollect)):
+        for i in range(len(tower_pos)):
             for j in range(len(robot_namespaces)):
-                if i < len(goCollect[j]):
-                    # Set End Position
-                    block_name = str(goCollect[j][i])
+                block_name = str(goCollect[j][i])
+                robot_name = str(robot_namespaces[j])
 
-                    end_pos = Pose()
+                end_pos = Pose()
+                end_pos.position.x = tower_pos[i][0] + tower_origin_coordinates[0]
+                end_pos.position.y = tower_pos[i][1] + tower_origin_coordinates[1]
+                end_pos.position.z = tower_pos[i][2] + tower_origin_coordinates[2]
 
-                    orientation_in_euler = [0,90*math.pi/180,0]
-                    orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+                quat = tf.transformations.quaternion_from_euler(
+                        tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
+                end_pos.orientation.x = quat[0]
+                end_pos.orientation.y = quat[1]
+                end_pos.orientation.z = quat[2]
+                end_pos.orientation.w = quat[3]
+
+                tower_pos.pop(i)
                     
-                    end_pos.orientation.x = orientation[0]
-                    end_pos.orientation.y = orientation[1]
-                    end_pos.orientation.z = orientation[2]
-                    end_pos.orientation.w = orientation[3]
-                    
-                    end_pos.position.z = 0.2
+                try:
+                    success = path_service(block_name, end_pos, robot_name)
 
-                    if j == 0:
-                        end_pos.position.x = 0.25
-                        end_pos.position.y = 0
-                    else:
-                        end_pos.position.x = 0.25
-                        end_pos.position.y = 0.5
-
-                    robot_name = str(robot_namespaces[j])
-                    
-                    try:
-                        success = path_service(block_name, end_pos, robot_name)
-
-                        if not(success):
-                            rospy.logerr("Assignment Selection - Service call returned False.")
-                            
-                    except rospy.ServiceException as e:
-                        rospy.logfatal("Assignment Selection - Service call failed: %s"%e)
+                    if not(success):
+                        rospy.logerr("Assignment Selection - Service call returned False.")
+                        
+                except rospy.ServiceException as e:
+                    rospy.logfatal("Assignment Selection - Service call failed: %s"%e)
 
                 rate.sleep()
 
@@ -157,6 +181,24 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
             return True
         
     return False
+
+def getRobotBaseCoordinates(robot_namespaces):
+    tfBuffer = tf2_ros.Buffer()
+    listener = tf2_ros.TransformListener(tfBuffer)
+
+    base_coordinates = []
+    for robot_name in robot_namespaces:
+        robot_base_coordinates = []
+        while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)) and not rospy.is_shutdown():
+            rospy.logerr("Cannot find robot base transform - spawn_blocks.py. Retrying now.")
+            rospy.sleep(0.1)
+        
+        transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
+
+        robot_base_coordinates.append(transform_response.transform.translation.x)
+        robot_base_coordinates.append(transform_response.transform.translation.y)
+
+        base_coordinates.append(robot_base_coordinates)
 
 if __name__ == '__main__':
     try:

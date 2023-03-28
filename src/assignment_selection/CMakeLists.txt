@@ -122,6 +122,7 @@ include_directories(
 
 catkin_install_python(PROGRAMS 
   scripts/block_selection.py
+  scripts/basic_block_selection.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
