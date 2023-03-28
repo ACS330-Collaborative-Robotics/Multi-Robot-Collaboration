@@ -16,7 +16,6 @@ from inv_kinematics.srv import InvKin
 
 import math
 from operator import itemgetter
-import tf2_ros
 import tf_conversions
 
 # Global variable to store blockData as it appears from subscriber
@@ -69,9 +68,6 @@ def choose_block():
 
         rospy.loginfo("Assignment Selection - Block list built.\n")
 
-        print(blockNames)
-
-        ## ////////////////////////////////////////////
         # Getting distance from each robot to blocks and sellecting the smallest
         roboColect = []
         for blockName in blockNames:
@@ -92,8 +88,6 @@ def choose_block():
             for nextBlock in roboColect:
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
-    
-        ## ////////////////////////////////////////////
         
         n = len(blockNames) #num of blocks
         layers = math.ceil(n/2) #num of layers
@@ -104,7 +98,7 @@ def choose_block():
         b=0
         c=0
 
-        #generate coordinates
+        # Generate coordinates
         for i in range(layers):
             w=0 #width of blocks
             home_pos = [w,0,h,a,b,c]
@@ -118,7 +112,9 @@ def choose_block():
                 c=-90*(math.pi/180)
             elif c==-90*(math.pi/180):
                 c=0
-        print(tower_pos)
+
+        #print(tower_pos)
+
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
         # Publish assignments
@@ -140,8 +136,6 @@ def choose_block():
                 end_pos.orientation.w = quat[3]
 
                 tower_pos.pop(i)
-               
-                ## ////////////////////////////////////////////
                     
                 try:
                     success = path_service(block_name, end_pos, robot_name)
@@ -196,7 +190,7 @@ def getRobotBaseCoordinates(robot_namespaces):
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
         while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)) and not rospy.is_shutdown():
-            print("Cannot find robot base transform - spawn_blocks.py. Retrying now.")
+            rospy.logerr("Cannot find robot base transform - spawn_blocks.py. Retrying now.")
             rospy.sleep(0.1)
         
         transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
