@@ -31,22 +31,21 @@ def main():
         pubGripper = rospy.Publisher(robot_name + '_p/OutputChannels', ChannelStates, queue_size=10)
 
         rospy.Subscriber(robot_name + "_p/gripper_state", Bool, callback_gripper)
-        #rospy.Subscriber("/emergancy_stop", Bool, callback_emercency_stop)
-
+        rospy.Subscriber("/emergancy_stop", Bool, callback_emercency_stop)
 
         gripperstate = ChannelStates()
         gripperstate.Header.stamp = rospy.get_rostime()
 
         if e_stop == True:
             gripperstate.state = [False, False, False, False, False, False]
-            rospy.loginfo(robot_name + "Gripper Stopped")
+            #rospy.loginfo(robot_name + "Gripper Stopped")
         elif activateGripper == True:
             gripperstate.state = [False, False, False, False, True, True]
-            rospy.loginfo(robot_name + "Gripper Open")
+            #rospy.loginfo(robot_name + "Gripper Open")
 
         elif activateGripper == False:
             gripperstate.state = [False, False, False, False, False, True]
-            rospy.loginfo(robot_name + "Gripper Closed")
+            #rospy.loginfo(robot_name + "Gripper Closed")
 
         pubGripper.publish(gripperstate)
         rate.sleep()
