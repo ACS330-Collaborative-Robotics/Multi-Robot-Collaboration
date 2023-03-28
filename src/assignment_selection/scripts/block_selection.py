@@ -111,8 +111,8 @@ def choose_block():
             for j in range(2):
                 home_pos = [w,0,h,a,b,c]
                 tower_pos.append(home_pos)
-                w=w+8
-            h=h+4
+                w=w+0.08
+            h=h+0.04
 
             if c==0:
                 c=-90*(math.pi/180)
