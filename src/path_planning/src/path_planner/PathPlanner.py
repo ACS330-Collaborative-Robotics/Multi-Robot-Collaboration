@@ -30,14 +30,12 @@ class PathPlanner:
         OUTPUT: bool Success
         """
         # Pick up block
-        self.pickUp.pick(self.target_block)
-
-        # Move arm
-        #self.movement.move(self.end_pos, "link5")
-        #self.movement.move(self.end_pos)
+        if not self.pickUp.pick(self.target_block):
+            return False
 
         # Put down block
-        self.placeDown.place(self.end_pos)
+        if not self.placeDown.place(self.end_pos):
+            return False
 
         return True
     

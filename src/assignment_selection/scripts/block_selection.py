@@ -18,6 +18,9 @@ import math
 from operator import itemgetter
 import tf_conversions
 
+import actionlib
+from path_planning.msg import PathPlanAction, PathPlanGoal
+
 # Global variable to store blockData as it appears from subscriber
 blockData = None
 
@@ -26,15 +29,15 @@ def callback(data):
     blockData = data
 
 def choose_block():
+    # Declare ROS Node name
+    rospy.init_node('block_selector')
+
     # Setup block_pos listener
     rospy.Subscriber('/blocks_pos', Blocks, callback)
 
-    # Setup path_planner service
-    rospy.wait_for_service('path_planner')
-    path_service = rospy.ServiceProxy('path_planner', PathPlan)
-
-    # Declare ROS Node name
-    rospy.init_node('block_selector')
+    # Setup path_planner action client
+    path_client = actionlib.SimpleActionClient('path_planner', PathPlanAction)
+    path_client.wait_for_server()
 
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
@@ -113,15 +116,15 @@ def choose_block():
             elif c==-90*(math.pi/180):
                 c=0
 
-        #print(tower_pos)
-
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
         # Publish assignments
         for i in range(len(tower_pos)):
             for j in range(len(robot_namespaces)):
-                block_name = str(goCollect[j][i])
-                robot_name = str(robot_namespaces[j])
+                goal = PathPlanGoal()
+
+                goal.block_name = str(goCollect[j][i])
+                goal.robot_name = str(robot_namespaces[j])
 
                 end_pos = Pose()
                 end_pos.position.x = tower_pos[i][0] + tower_origin_coordinates[0]
@@ -135,18 +138,24 @@ def choose_block():
                 end_pos.orientation.z = quat[2]
                 end_pos.orientation.w = quat[3]
 
+                goal.end_pos = end_pos
+
                 tower_pos.pop(i)
+
+                path_client.send_goal(goal)
+
+                rospy.sleep(0.01)
+
+                while (path_client.get_state() == 1) and not rospy.is_shutdown():
+                    rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
+                    rospy.sleep(0.01)
+
+                status = path_client.get_result().success
+                if status:
+                    rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
+                else:
+                    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status)
                     
-                try:
-                    success = path_service(block_name, end_pos, robot_name)
-
-                    if not(success):
-                        rospy.logerr("Assignment Selection - Service call returned False.")
-                        
-                except rospy.ServiceException as e:
-                    rospy.logfatal("Assignment Selection - Service call failed: %s"%e)
-
-                rate.sleep()
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Use service to get position of specific block named
@@ -190,7 +199,7 @@ def getRobotBaseCoordinates(robot_namespaces):
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
         while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)) and not rospy.is_shutdown():
-            rospy.logerr("Cannot find robot base transform - spawn_blocks.py. Retrying now.")
+            rospy.logerr("Cannot find robot base transform - block_selection.py. Retrying now.")
             rospy.sleep(0.1)
         
         transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
