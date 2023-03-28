@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdio.h>
 
-bool emergancy_stop = false;
+bool emergency_stop = false;
 
 
 /* Create node */
@@ -59,7 +59,7 @@ void listenerJointAngles(const custom_msgs::Joints::ConstPtr& msg){
 }
 
 void e_stopCallback(const std_msgs::Bool::ConstPtr& msg){
-	emergancy_stop = msg->data;
+	emergency_stop = msg->data;
 }
 
 
@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 	//Creating Subscribers
 	ros::Subscriber chatter_sub = n.subscribe("joint_states", 1000, jointsCallback);
 	ros::Subscriber joint_demands = n.subscribe("physical/joint_angles", 10000, listenerJointAngles);
-	ros::Subscriber e_stop = n.subscribe("/emergancy_stop",1000, e_stopCallback);
+	ros::Subscriber e_stop = n.subscribe("/emergency_stop",1000, e_stopCallback);
 	
 	ros::Rate loop_rate(10);
 
@@ -102,9 +102,9 @@ int main(int argc, char **argv) {
 			// Gains of robots (Speeds) joint 1-6, joint 5 and 6 cant go faster
 			float joint_gains[6] = {0.25, 0.25, 0.25, 0.25, 0.25, 0.1};
 			for (int i=0;i<6;i++){
-				//ROS_INFO("EStopState %s",emergancy_stop? "True":"False");
+				//ROS_INFO("EStopState %s",emergency_stop? "True":"False");
 				// Moving joints
-				if(emergancy_stop == true) {
+				if(emergency_stop == true) {
 					ROS_INFO("E_stop Pressed");
 					control_msgs::JointJog msg_start;
 					std::stringstream ss;
