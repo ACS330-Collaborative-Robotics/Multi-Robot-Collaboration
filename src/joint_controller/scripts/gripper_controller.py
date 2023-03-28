@@ -32,7 +32,6 @@ def main():
 
         rospy.Subscriber(robot_name + "_p/gripper_state", Bool, callback_gripper)
         rospy.Subscriber("/emergancy_stop", Bool, callback_emercency_stop)
-        rospy.Subscriber(robot_name + "/e_stop", Bool, callback_spec_gripper_e_stop)
 
 
         gripperstate = ChannelStates()
@@ -57,10 +56,6 @@ def callback_gripper(data):
     activateGripper = data.data
 
 def callback_emercency_stop(data):
-    global e_stop
-    e_stop = data.data
-
-def callback_spec_gripper_e_stop(data):
     global e_stop
     e_stop = data.data
         
