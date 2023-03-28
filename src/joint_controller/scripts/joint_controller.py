@@ -33,7 +33,7 @@ def main():
     if enablePhysical:
         rospy.Subscriber(robot_name + "/e_stop", Bool, callback_spec_robo_stop)
         if e_stop == False:
-            #print("The estop is  "+e_stop)
+            print(e_stop)
             rospy.Subscriber(robot_name + "/joint_angles", Joints, callback_physical)
         else:
             print("E_stop TRue")
@@ -64,7 +64,7 @@ def callback_sim(data):
 
 def callback_spec_robo_stop(data):
     global e_stop
-    e_stop = data.data
+    e_stop = bool(data.data)
 
 
 def callback_physical(data):
