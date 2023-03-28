@@ -116,8 +116,6 @@ def choose_block():
             elif c==-90*(math.pi/180):
                 c=0
 
-        #print(tower_pos)
-
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
         # Publish assignments
@@ -143,18 +141,21 @@ def choose_block():
                 goal.end_pos = end_pos
 
                 tower_pos.pop(i)
+
+                path_client.send_goal(goal)
+
+                rospy.sleep(0.01)
+
+                while (path_client.get_state() == 1) and not rospy.is_shutdown():
+                    rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
+                    rospy.sleep(0.01)
+
+                status = path_client.get_result().success
+                if status:
+                    rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
+                else:
+                    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status)
                     
-                try:
-                    path_client.send_goal(goal)
-                    success = path_client.wait_for_result(rospy.Duration.from_sec(5.0))
-
-                    if not(success):
-                        rospy.logerr("Assignment Selection - Service call returned False.")
-                        
-                except rospy.ServiceException as e:
-                    rospy.logfatal("Assignment Selection - Service call failed: %s"%e)
-
-                rate.sleep()
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Use service to get position of specific block named
@@ -198,7 +199,7 @@ def getRobotBaseCoordinates(robot_namespaces):
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
         while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)) and not rospy.is_shutdown():
-            rospy.logerr("Cannot find robot base transform - spawn_blocks.py. Retrying now.")
+            rospy.logerr("Cannot find robot base transform - block_selection.py. Retrying now.")
             rospy.sleep(0.1)
         
         transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
