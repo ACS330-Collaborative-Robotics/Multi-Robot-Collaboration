@@ -17,18 +17,17 @@ enableSimulation = False
 def main():
     rospy.init_node('joint_controller')
 
-    # Toggles for Physical and Simulation robots
-    # TODO: Setup topics and subscribers to control these variable
-    #Getting robot name pryamiter
+    # Get robot name parameter
     global robot_name
     robot_name =  "/" + argv[1]
     print("----------------------------------")
     print(robot_name + " Joints Initialised.")
     print("----------------------------------")
 
+    rospy.Subscriber(robot_name + "/pause_physical", Bool, callback_specific_robot_stop)
+
     # Setup subscriber for Joint Angle demand
     # Telling Physical to move
-    rospy.Subscriber(robot_name + "/e_stop", Bool, callback_spec_robo_stop)
     rospy.Subscriber(robot_name + "/joint_angles", Joints, callback_physical)
 
             
@@ -55,7 +54,7 @@ def callback_sim(data):
 
     # Joint lims in radians [[-2.269,2.269],[-0.873,1.047],[-1.920,1.309],[-2.443,2.443],[-1.221,1.047],[-2.094,2.094]]
 
-def callback_spec_robo_stop(data):
+def callback_specific_robot_stop(data):
     global enablePhysical
     enablePhysical = not bool(data.data)
 
