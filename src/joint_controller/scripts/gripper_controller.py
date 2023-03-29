@@ -18,10 +18,9 @@ def main():
 
     global robot_name
     robot_name =  "/" + argv[1]
-    print("----------------------------------")
-    print(robot_name + " Gripper Initialised.")
-    print("----------------------------------")
     
+    rospy.loginfo("%s Gripper Initialised.\n", robot_name)
+
     # Gripper must be published at 10 Hz constantly otherwise it will not move the gripper
     rate = rospy.Rate(10) # 10 Hz
 

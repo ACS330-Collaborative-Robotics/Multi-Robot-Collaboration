@@ -11,6 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   roscpp
   std_msgs
+  genmsg 
+  actionlib_msgs 
+  actionlib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -122,6 +125,7 @@ include_directories(
 
 catkin_install_python(PROGRAMS 
   scripts/block_selection.py
+  scripts/basic_block_selection.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
