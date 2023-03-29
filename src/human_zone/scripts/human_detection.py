@@ -1,15 +1,17 @@
-
 import rospy
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Bool
 
 def callback(scan):
     # Process the laser scan data to detect humans within 30cm
-    # If a human is detected, publish a message to the "human_detection" topic
+    # If a human is detected, publish a message to the "emergency_stop" topic
     human_detected = False
     for r in enumerate(scan.ranges):
         if r < 0.3:
             human_detected = True
+            break
+        
+        if rospy.is_shutdown():
             break
         
     if human_detected:
