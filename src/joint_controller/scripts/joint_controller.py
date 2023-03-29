@@ -20,9 +20,8 @@ def main():
     # Get robot name parameter
     global robot_name
     robot_name =  "/" + argv[1]
-    print("----------------------------------")
-    print(robot_name + " Joints Initialised.")
-    print("----------------------------------")
+    
+    rospy.loginfo("%s Joint Controller Initialised.\n", robot_name)
 
     rospy.Subscriber(robot_name + "/pause_physical", Bool, callback_specific_robot_stop)
 

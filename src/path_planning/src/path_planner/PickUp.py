@@ -1,10 +1,11 @@
 # Name: Pick Up Class Definition
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
+from path_planner import Movement
+
 import rospy
 import tf_conversions
 from math import pi
-from path_planner import Movement
 
 class PickUp(Movement.Movement):
     def __init__(self, serv_helper):
@@ -29,9 +30,9 @@ class PickUp(Movement.Movement):
         pose.orientation.y = orientation[1]
         pose.orientation.z = orientation[2]
         pose.orientation.w = orientation[3]
-        print("Path Planner - Pick Up - Moving to ", block_name)
+        rospy.loginfo("Path Planner - Pick Up - Moving to %s", block_name)
         
-        self.move(pose)
+        return self.move(pose)
 
     def moveGripper(self, state):
         pass
