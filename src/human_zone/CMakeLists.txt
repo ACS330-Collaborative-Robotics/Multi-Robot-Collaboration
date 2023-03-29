@@ -204,11 +204,3 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
-add_executable(rplidar_human_detection src/rplidar_human_detection.cpp)
-target_link_libraries(rplidar_human_detection ${catkin_LIBRARIES})
-add_dependencies(rplidar_human_detection ${catkin_EXPORTED_TARGETS})
-
-add_executable(sensor_range src/sensor_range.cpp)
-target_link_libraries(sensor_range ${catkin_LIBRARIES})
-add_dependencies(sensor_range ${catkin_EXPORTED_TARGETS})
