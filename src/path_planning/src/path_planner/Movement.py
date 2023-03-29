@@ -2,7 +2,6 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
-import tf_conversions
 
 from geometry_msgs.msg import Pose
 
@@ -10,7 +9,7 @@ class Movement:
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
     
-    def move(self, pos:Pose):
+    def move(self, pos:Pose, final_link_name=""):
         """ Safely move to desired position using IK, checking robot will stay within zone
 
         INPUT: Pose pos
@@ -20,18 +19,15 @@ class Movement:
         # Get coordinates relative to robot instead of world
         pos_robot_frame = self.serv_helper.frameConverter(self.serv_helper.robot_ns, "world", pos)
 
-        # Convert to Euler angles as IK service uses them
-        euler_angles = tf_conversions.transformations.euler_from_quaternion([pos_robot_frame.orientation.x, pos_robot_frame.orientation.y, pos_robot_frame.orientation.z, pos_robot_frame.orientation.w])
-
-        pos_robot_frame.orientation.x = euler_angles[0]
-        pos_robot_frame.orientation.y = euler_angles[1]
-        pos_robot_frame.orientation.z = euler_angles[2]
-        pos_robot_frame.orientation.w = 0
+        rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, pos_robot_frame.position.x, pos_robot_frame.position.y, pos_robot_frame.position.z, pos_robot_frame.orientation.x, pos_robot_frame.orientation.y, pos_robot_frame.orientation.z, pos_robot_frame.orientation.w)
 
         # Move robot to new position, in robot reference frame
-        self.serv_helper.move(pos_robot_frame)
-        
-        #TODO: Force wait until robot has reached desired position. Temp fix:
-        rospy.sleep(1)
+        status = self.serv_helper.move(pos_robot_frame, final_link_name)
 
-        return True #TODO: Implement zone checks
+        if not(status):
+            rospy.logerr("Path Planner - Error, Target position unreachable.")
+        else :
+            #TODO: Force wait until robot has reached desired position. Temp fix:
+            rospy.sleep(5)
+
+        return status #TODO: Implement zone checks

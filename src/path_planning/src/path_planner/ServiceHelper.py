@@ -28,25 +28,28 @@ class ServiceHelper:
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
-    def move(self, pos:Pose):
+    def move(self, pos:Pose, final_link_name):
         """ Move arm to specified position.
 
-        INPUT: geometry_msgs Pose() - Orientation in Euler angles not quaternions
+        INPUT: geometry_msgs Pose() - Orientation as quaternions
 
         Uses inverse_kinematics service.
         """
 
         rospy.wait_for_service('inverse_kinematics')
 
+        rospy.loginfo("Path Planner - Service Helper - Calling ik for %s", self.robot_ns)
+
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
         arm_pos.model_name = self.robot_ns
+        arm_pos.reference_frame = final_link_name
 
         arm_pos.pose = pos
 
         # Call inverse_kinematics service and log ArmPos
-        self.inv_kin(arm_pos)
-
+        return self.inv_kin(arm_pos).success
+    
     def getBlockPos(self, specific_model_name:str) -> Pose:
         """ Get block position relative to current robot arm
 
@@ -69,18 +72,22 @@ class ServiceHelper:
         start_pose = PoseStamped()
         start_pose.pose = goal_pose
 
+        rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z)
+
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
 
         # Convert from world frame to robot frame using tf2
-        rate = rospy.Rate(10.0)
+        rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             try:
                 new_pose = self.tfBuffer.transform(start_pose, target_frame+"_base")
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                rospy.logerr("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
-                print("Failed")
                 continue
+        
+        rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
 
         return new_pose.pose

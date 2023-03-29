@@ -101,6 +101,21 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        link7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        gripper_a:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        gripper_b:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
       Name: CPRMover6
       Robot Description: robot_description
       TF Prefix: ""

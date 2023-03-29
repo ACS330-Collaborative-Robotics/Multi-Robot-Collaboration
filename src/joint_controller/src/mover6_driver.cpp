@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
+#include "std_msgs/Bool.h"
 #include "control_msgs/JointJog.h"
 #include "sensor_msgs/JointState.h"
 #include "custom_msgs/Joints.h"
@@ -8,9 +9,7 @@
 #include <iostream>
 #include <stdio.h>
 
-// TODO:
-// Add Gripper Control - //#include "custom_msgs/Joints.h"
-// Add topics to readme
+bool emergency_stop = false;
 
 
 /* Create node */
@@ -49,14 +48,18 @@ void jointsCallback(const sensor_msgs::JointState::ConstPtr& msg) {
 
 // Reviving Joint Demands from topic - assinging to veriable - ROSINFO to terminal
 void listenerJointAngles(const custom_msgs::Joints::ConstPtr& msg){
-	jointdemand_1=msg->joints[0]*3.14/180;
-	jointdemand_2=msg->joints[1]*3.14/180;
-	jointdemand_3=msg->joints[2]*3.14/180;
-	jointdemand_4=msg->joints[3]*3.14/180;
-	jointdemand_5=msg->joints[4]*3.14/180;
-	jointdemand_6=msg->joints[5]*3.14/180;
-	//ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
+	jointdemand_1=msg->joints[0];
+	jointdemand_2=msg->joints[1];
+	jointdemand_3=msg->joints[2];
+	jointdemand_4=msg->joints[3];
+	jointdemand_5=msg->joints[4];
+	jointdemand_6=msg->joints[5];
+	ROS_INFO("Received Goals %f\t%f\t%f\t%f\t%f\t%f", jointdemand_1, jointdemand_2, jointdemand_3, jointdemand_4, jointdemand_5, jointdemand_6);
 	know_demands = true;
+}
+
+void e_stopCallback(const std_msgs::Bool::ConstPtr& msg){
+	emergency_stop = msg->data;
 }
 
 
@@ -65,16 +68,18 @@ int main(int argc, char **argv) {
 	know_states=false;
 	know_demands=false;
 	moving_state=false;
-	ros::init(argc, argv, "goal_movement_example");
+	ros::init(argc, argv, "Physical_Mover6_Driver");
 	ros::NodeHandle n;
+	
 
 	// Create publishers
-	ros::Publisher chatter_pub = n.advertise<control_msgs::JointJog>("/JointJog",1);
-	ros::Publisher moving = n.advertise<std_msgs::String>("/mover6_a/physical/moving_state",1);
+	ros::Publisher chatter_pub = n.advertise<control_msgs::JointJog>("JointJog",1);
+	ros::Publisher moving = n.advertise<std_msgs::String>("physical/moving_state",1);
 
 	//Creating Subscribers
-	ros::Subscriber chatter_sub = n.subscribe("/joint_states", 1000, jointsCallback);
-	ros::Subscriber joint_demands = n.subscribe("/mover6_a/physical/joint_angles", 10000, listenerJointAngles);
+	ros::Subscriber chatter_sub = n.subscribe("joint_states", 1000, jointsCallback);
+	ros::Subscriber joint_demands = n.subscribe("physical/joint_angles", 10000, listenerJointAngles);
+	ros::Subscriber e_stop = n.subscribe("/emergency_stop",1000, e_stopCallback);
 	
 	ros::Rate loop_rate(10);
 
@@ -97,9 +102,21 @@ int main(int argc, char **argv) {
 			// Gains of robots (Speeds) joint 1-6, joint 5 and 6 cant go faster
 			float joint_gains[6] = {0.25, 0.25, 0.25, 0.25, 0.25, 0.1};
 			for (int i=0;i<6;i++){
-
+				//ROS_INFO("EStopState %s",emergency_stop? "True":"False");
 				// Moving joints
-				if(abs(joint_demands[i]-jointpos[i])>accuracy) {
+				if(emergency_stop == true) {
+					ROS_INFO("E_stop Pressed");
+					control_msgs::JointJog msg_start;
+					std::stringstream ss;
+					ss << joints[i];
+
+					msg_start.joint_names.push_back(ss.str());
+					msg_start.velocities.push_back(0);
+					msg_start.duration=5; //Unfortunately duration isn't implemented...
+					chatter_pub.publish(msg_start);
+
+				}
+				else if(abs(joint_demands[i]-jointpos[i])>accuracy) {
 
 					//ROS_INFO("Setting message Go to set point point joint %d",i);
 					control_msgs::JointJog msg_start;
@@ -113,10 +130,8 @@ int main(int argc, char **argv) {
 					chatter_pub.publish(msg_start);
 					moving_state = true;
 				}
-
 				// Stopping joints
-				if(abs(joint_demands[i]-jointpos[i])<accuracy) {
-
+				else if(abs(joint_demands[i]-jointpos[i])<accuracy) {
 					//ROS_INFO("Setting message Stay Still point joint %d",i);
 					control_msgs::JointJog msg_start;
 					std::stringstream ss;
@@ -127,7 +142,9 @@ int main(int argc, char **argv) {
 					msg_start.duration=5; //Unfortunately duration isn't implemented...
 
 					chatter_pub.publish(msg_start);
+
 				}
+				ros::Duration(0.01).sleep();
 				
 			}
 
@@ -144,6 +161,7 @@ int main(int argc, char **argv) {
 			//ROS_INFO("%s", msg.data.c_str());
 			moving.publish(msg);
 			ros::spinOnce();
+			loop_rate.sleep();
 
 		}
 

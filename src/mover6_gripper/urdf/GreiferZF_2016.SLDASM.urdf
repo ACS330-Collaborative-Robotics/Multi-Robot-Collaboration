@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="mover6_gripper">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.000934588866072246 -0.0222630228529103 -0.00210550172623832"
+        rpy="0 0 0" />
+      <mass
+        value="0.0481254395674383" />
+      <inertia
+        ixx="9.54960961421725E-06"
+        ixy="4.49890326524257E-08"
+        ixz="-1.3609823183999E-08"
+        iyy="1.23652633439236E-05"
+        iyz="3.235934269188E-07"
+        izz="1.49441831698015E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mover6_gripper/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mover6_gripper/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="gripper_a">
+    <inertial>
+      <origin
+        xyz="0.015219 -0.0043699 0.0050001"
+        rpy="0 0 0" />
+      <mass
+        value="0.009672" />
+      <inertia
+        ixx="3.6658E-06"
+        ixy="1.9229E-07"
+        ixz="1.2945E-11"
+        iyy="5.2752E-07"
+        iyz="-2.2407E-11"
+        izz="3.9396E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mover6_gripper/meshes/gripper_a.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.10196 0.10196 0.10196 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mover6_gripper/meshes/gripper_a.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_a"
+    type="revolute">
+    <origin
+      xyz="-0.0055607 -0.0041434 -0.04688"
+      rpy="1.5708 -0.33752 3.1416" />
+    <parent
+      link="base_link" />
+    <child
+      link="gripper_a" />
+    <axis
+      xyz="0 0 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="gripper_b">
+    <inertial>
+      <origin
+        xyz="0.015219 -0.0043699 0.0050001"
+        rpy="0 0 0" />
+      <mass
+        value="0.009672" />
+      <inertia
+        ixx="3.6658E-06"
+        ixy="1.9229E-07"
+        ixz="1.2945E-11"
+        iyy="5.2752E-07"
+        iyz="-2.2407E-11"
+        izz="3.9396E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mover6_gripper/meshes/gripper_b.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.10196 0.10196 0.10196 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mover6_gripper/meshes/gripper_b.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_b"
+    type="revolute">
+    <origin
+      xyz="0.0055607 0.005 -0.04688"
+      rpy="1.5708 -0.33752 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="gripper_b" />
+    <axis
+      xyz="0 0 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>

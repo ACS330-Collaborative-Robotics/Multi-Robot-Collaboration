@@ -11,14 +11,14 @@ import tf2_ros
 import geometry_msgs.msg
 
 if __name__ == '__main__':
-    if len(sys.argv) < 8:
+    if len(sys.argv) < 9:
         rospy.logerr('Invalid number of parameters\nusage: '
                      './static_tf2_broadcaster.py '
-                     'child_frame_name x y z roll pitch yaw')
+                     'child_frame_name parent_frame_name x y z roll pitch yaw')
         sys.exit(0)
     else:
         if sys.argv[1] == 'world':
-            rospy.logerr('Your static frame name cannot be "world"')
+            rospy.logerr('Your child frame name cannot be "world"')
             sys.exit(0)
 
         rospy.init_node('static_tf2_broadcaster')
@@ -26,15 +26,15 @@ if __name__ == '__main__':
         static_transformStamped = geometry_msgs.msg.TransformStamped()
 
         static_transformStamped.header.stamp = rospy.Time.now()
-        static_transformStamped.header.frame_id = "world"
+        static_transformStamped.header.frame_id = sys.argv[2]
         static_transformStamped.child_frame_id = sys.argv[1]
 
-        static_transformStamped.transform.translation.x = float(sys.argv[2])
-        static_transformStamped.transform.translation.y = float(sys.argv[3])
-        static_transformStamped.transform.translation.z = float(sys.argv[4])
+        static_transformStamped.transform.translation.x = float(sys.argv[3])
+        static_transformStamped.transform.translation.y = float(sys.argv[4])
+        static_transformStamped.transform.translation.z = float(sys.argv[5])
 
         quat = tf.transformations.quaternion_from_euler(
-                   float(sys.argv[5]),float(sys.argv[6]),float(sys.argv[7]))
+                   float(sys.argv[6]),float(sys.argv[7]),float(sys.argv[8]))
         static_transformStamped.transform.rotation.x = quat[0]
         static_transformStamped.transform.rotation.y = quat[1]
         static_transformStamped.transform.rotation.z = quat[2]
