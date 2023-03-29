@@ -40,15 +40,15 @@ def main():
 
         if e_stop == True:
             gripperstate.state = [False, False, False, False, False, False]
-            #rospy.loginfo(robot_name + "Gripper Stopped")
+            rospy.logdebug(robot_name + " Gripper Emergency Stopped")
             
         elif activateGripper == True:
             gripperstate.state = [False, False, False, False, True, True]
-            #rospy.loginfo(robot_name + "Gripper Open")
+            rospy.loginfo(robot_name + "Gripper Open")
 
         elif activateGripper == False:
             gripperstate.state = [False, False, False, False, False, True]
-            #rospy.loginfo(robot_name + "Gripper Closed")
+            rospy.loginfo(robot_name + "Gripper Closed")
 
         pubGripper.publish(gripperstate)
         rate.sleep()
