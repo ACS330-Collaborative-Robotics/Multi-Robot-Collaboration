@@ -39,7 +39,7 @@ def main():
 
         rospy.Subscriber(robot_name + "_p/gripper_state", Bool, callback_gripper)
         rospy.Subscriber("/emergency_stop", Bool, callback_emergency_stop)
-        rospy.Subscriber(robot_name + "/e_stop", Bool, callback_gripper_robo_spec)
+        rospy.Subscriber(robot_name + "/pause_physical", Bool, callback_gripper_robo_spec)
 
         gripperstate = ChannelStates()
         gripperstate.Header.stamp = rospy.get_rostime()
