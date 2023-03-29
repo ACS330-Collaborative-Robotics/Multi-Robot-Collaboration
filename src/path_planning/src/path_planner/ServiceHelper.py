@@ -17,12 +17,12 @@ class ServiceHelper:
         self.robot_ns = robot_ns
 
         # Setup inverse_kinematics service
-        rospy.wait_for_service('inverse_kinematics')
-        self.inv_kin = rospy.ServiceProxy('inverse_kinematics', InvKin)
+        rospy.wait_for_service('/inverse_kinematics')
+        self.inv_kin = rospy.ServiceProxy('/inverse_kinematics', InvKin)
 
         # Setup get_model_state service
-        rospy.wait_for_service('gazebo/get_model_state')
-        self.model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
+        rospy.wait_for_service('/gazebo/get_model_state')
+        self.model_state_service = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
 
         # Setup tf2
         self.tfBuffer = tf2_ros.Buffer()
@@ -36,7 +36,7 @@ class ServiceHelper:
         Uses inverse_kinematics service.
         """
 
-        rospy.wait_for_service('inverse_kinematics')
+        rospy.wait_for_service('/inverse_kinematics')
 
         rospy.loginfo("Path Planner - Service Helper - Calling ik for %s", self.robot_ns)
 
@@ -60,7 +60,7 @@ class ServiceHelper:
         """
         # TODO: Replace with data from /blocks
 
-        rospy.wait_for_service('gazebo/get_model_state')
+        rospy.wait_for_service('/gazebo/get_model_state')
 
         # Extract Pose() object
         data = self.model_state_service(specific_model_name, "world").pose

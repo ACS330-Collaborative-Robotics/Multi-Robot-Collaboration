@@ -4,16 +4,17 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
+from sys import argv
 
 from path_planner import PathPlanner
 
 import actionlib
 from path_planning.msg import PathPlanAction, PathPlanResult
 
-
 class PathPlannerServer:
     def __init__(self):
-        self.server = actionlib.SimpleActionServer('path_planner', PathPlanAction, self.path_plan, False)
+        self.robot_name = argv[1]
+        self.server = actionlib.SimpleActionServer("path_planner", PathPlanAction, self.path_plan, False)
 
         self.server.start()
 
@@ -21,7 +22,7 @@ class PathPlannerServer:
 
     def path_plan(self, goal):
         # Initialise PathPlanner object
-        rospy.loginfo("Path planner recieved instruction:\t%s\t%s\t\t%.2f\t%.2f\t%.2f", goal.robot_name, goal.block_name,  goal.end_pos.position.x,  goal.end_pos.position.y,  goal.end_pos.position.z)
+        rospy.loginfo("Path planner recieved instruction:\t%s\t%s\t\t%.2f\t%.2f\t%.2f", self.robot_name, goal.block_name,  goal.end_pos.position.x,  goal.end_pos.position.y,  goal.end_pos.position.z)
 
         pathPlanner = PathPlanner.PathPlanner(goal.robot_name, goal.block_name, goal.end_pos)
 

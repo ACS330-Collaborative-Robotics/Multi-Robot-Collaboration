@@ -35,15 +35,21 @@ def choose_block():
     # Setup block_pos listener
     rospy.Subscriber('/blocks_pos', Blocks, callback)
 
-    # Setup path_planner action client
-    path_client = actionlib.SimpleActionClient('path_planner', PathPlanAction)
-    path_client.wait_for_server()
-
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
-    robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
-    
+    robot_base_coords = getRobotBaseCoordinates(robot_namespaces)    
     tower_origin_coordinates = [0, 0.3, 0]
+
+    # Setup path_planner action client - one per robot
+    path_clients = []
+    for robot_name in robot_namespaces:
+        path_clients.append(actionlib.SimpleActionClient(robot_name + "/path_planner", PathPlanAction))
+    
+    print("CHecking actions")
+
+    # Check each action is online
+    for path_client in path_clients:
+        path_client.wait_for_server()
 
     # Set Loop rate
     T = 5
@@ -119,20 +125,20 @@ def choose_block():
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
         # Publish assignments
-        for i in range(len(tower_pos)):
-            for j in range(len(robot_namespaces)):
+        for block_num in range(len(tower_pos)):
+            for robot_num in range(len(robot_namespaces)):
                 goal = PathPlanGoal()
 
-                goal.block_name = str(goCollect[j][i])
-                goal.robot_name = str(robot_namespaces[j])
+                goal.block_name = str(goCollect[robot_num][block_num])
+                goal.robot_name = str(robot_namespaces[robot_num])
 
                 end_pos = Pose()
-                end_pos.position.x = tower_pos[i][0] + tower_origin_coordinates[0]
-                end_pos.position.y = tower_pos[i][1] + tower_origin_coordinates[1]
-                end_pos.position.z = tower_pos[i][2] + tower_origin_coordinates[2]
+                end_pos.position.x = tower_pos[block_num][0] + tower_origin_coordinates[0]
+                end_pos.position.y = tower_pos[block_num][1] + tower_origin_coordinates[1]
+                end_pos.position.z = tower_pos[block_num][2] + tower_origin_coordinates[2]
 
                 quat = tf.transformations.quaternion_from_euler(
-                        tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
+                        tower_pos[block_num][3],tower_pos[block_num][4],tower_pos[block_num][5])
                 end_pos.orientation.x = quat[0]
                 end_pos.orientation.y = quat[1]
                 end_pos.orientation.z = quat[2]
@@ -140,17 +146,17 @@ def choose_block():
 
                 goal.end_pos = end_pos
 
-                tower_pos.pop(i)
+                tower_pos.pop(block_num)
 
-                path_client.send_goal(goal)
+                path_clients[robot_num].send_goal(goal)
 
                 rospy.sleep(0.01)
 
-                while (path_client.get_state() == 1) and not rospy.is_shutdown():
+                while (path_clients[robot_num].get_state() == 1) and not rospy.is_shutdown():
                     rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
                     rospy.sleep(0.01)
 
-                status = path_client.get_result().success
+                status = path_clients[robot_num].get_result().success
                 if status:
                     rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
                 else:
