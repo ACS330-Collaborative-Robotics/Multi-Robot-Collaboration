@@ -17,8 +17,6 @@ e_stop = False
 def main():
     rospy.init_node('gripper_controller')
 
-    enableGripper = True #TODO: Add enable/disable functionality
-
     global robot_name
     robot_name =  "/" + argv[1]
     
