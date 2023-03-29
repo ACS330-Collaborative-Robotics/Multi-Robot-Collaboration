@@ -10,8 +10,6 @@ from sys import argv
 
 global activateGripper
 activateGripper = None
-gripper_a = 0
-gripper_b = 0
 
 def main():
     rospy.init_node('gripper_controller')
@@ -28,10 +26,14 @@ def main():
     rate = rospy.Rate(10) # 10 Hz
 
     while not rospy.is_shutdown():
-        pubGripper = rospy.Publisher(robot_name + '_p/OutputChannels', ChannelStates, queue_size=10)
+        pubGripper_physical = rospy.Publisher(robot_name + '_p/OutputChannels', ChannelStates, queue_size=10)
 
-        grip_letter = ['a', 'b']
-        global gripper_a, gripper_b
+        gripper_arm_letters = ['a', 'b']
+        physical_gripper_angles = [0, 0]
+
+        pubGripper_simulation = []
+        for grip_num in range(len(physical_gripper_angles)):
+            pubGripper_simulation.append(rospy.Publisher(robot_name + "/jointgripper_" + gripper_arm_letters[grip_num] + "_position_controller/command", Float64, queue_size=10))
 
         rospy.Subscriber(robot_name + "/gripper_state", Bool, callback_gripper)
 
@@ -40,23 +42,20 @@ def main():
 
         if activateGripper == True:
             gripperstate.state = [False, False, False, False, True, True]
-            gripper_a = 1
-            gripper_b = 1
-            rospy.loginfo(robot_name + "Gripper Open")
+            physical_gripper_angles = [1, 1]
+            rospy.logdebug(robot_name + " Gripper Open")
 
         if activateGripper == False:
             gripperstate.state = [False, False, False, False, False, True]
-            gripper_a = -0.5
-            gripper_b = -0.5
-            rospy.loginfo(robot_name + "Gripper Closed")
-        
-        grip_angles = [gripper_a, gripper_b]
+            physical_gripper_angles = [-0.5, -0.5]
+            rospy.logdebug(robot_name + " Gripper Closed")
 
-        for grip_num in range(len(grip_angles)):
-            pubGripper_s = rospy.Publisher(robot_name + "/jointgripper_" + grip_letter[grip_num] + "_position_controller/command", Float64, queue_size=10)
-            pubGripper_s.publish(grip_angles[grip_num])
+        for grip_num in range(len(physical_gripper_angles)):
+            pubGripper_simulation = rospy.Publisher(robot_name + "/jointgripper_" + gripper_arm_letters[grip_num] + "_position_controller/command", Float64, queue_size=10)
+            pubGripper_simulation.publish(physical_gripper_angles[grip_num])
 
-        pubGripper.publish(gripperstate)
+        pubGripper_physical.publish(gripperstate)
+
         rate.sleep()
 
 def callback_gripper(data):
