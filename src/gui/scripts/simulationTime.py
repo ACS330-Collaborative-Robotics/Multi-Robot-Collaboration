@@ -1,17 +1,19 @@
 #!/usr/bin/env python
-
 import rospy
-import tkinter as tk
-import customtkinter as ctk
-from tkinter import ttk
-from PIL import Image, ImageTk
-from custom_msgs.msg import Joints
+import threading
 
-from std_msgs.msg import String, Float64, Float64MultiArray
+import tkinter as tk
+from tkinter import ttk
+import customtkinter as ctk
+
+from PIL import Image, ImageTk
 from sensor_msgs.msg import Image as ImageMsg
 from cv_bridge import CvBridge
-import threading
 import cv2
+
+from custom_msgs.msg import Joints
+from std_msgs.msg import String, Float64, Float64MultiArray
+
 
 class GUI:
     def __init__(self, master):
@@ -49,7 +51,9 @@ class GUI:
         self.nodes_light.grid(row=4, column=1, sticky="w")
         self.nodes_label = tk.Label(master, text="Nodes configured")
         self.nodes_label.grid(row=4, column=2, sticky="w")
-        
+
+        self.required_services = ['/inverse_kinematics', '/inverse_kinematics_reachability', '/inverse_kinematics_server/get_loggers', '/inverse_kinematics_server/set_logger_level']
+
         # error status light
         self.error_light = tk.Label(master,bg="red", width=2, height=1)
         self.error_light.grid(row=5, column=1, sticky="w")
@@ -58,7 +62,7 @@ class GUI:
 
         # blank space
         self.blank_label = tk.Label(master, text="")
-        self.black_label.grid(row=6, column=0, sticky="w")
+        self.blank_label.grid(row=6, column=0, sticky="w")
 
         # joint angles
         self.angles= tk.Label(master, text="Joint angles from base to end-effector: ")
@@ -99,9 +103,9 @@ class GUI:
         # Convert the PIL image to a Tkinter-compatible image
         tk_image = ImageTk.PhotoImage(image=pil_image)
         # Display the image on the canvas
-        self.canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
+        self.sim_canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
         # Keep a reference to the image to prevent it from being garbage collected
-        self.canvas.image = tk_image
+        self.sim_canvas.image = tk_image
     
     # update simulation time 
     def callback_time(self, data):
@@ -123,7 +127,7 @@ class GUI:
         joint_angles = data.joints
         joint_angles_str = ["{:.1f}".format(joint_angle) for joint_angle in joint_angles]
         self.angles_B.configure(text="Robot B joint angles (rad): " + ", ".join(joint_angles_str))
-
+   
     def emergency_stop_clicked(self):
         self.emergency_stop_button.config(text="START", bg="green", fg="black")
     
@@ -132,9 +136,19 @@ class GUI:
    
     def sim_preview_clicked(self):
         self.sim_preview_button.config(text="STOP PREVIEW", bg="red", fg="black")
+
+
+    def update__light(self):
+        # Updates the color of the services_light based on whether the necessary ROS services are running or not."""
+        if all(service in rosservice.get_service_list() for service in self.required_services):
+            self.services_light.config(bg="green")
+        else:
+            self.services_light.config(bg="red")
+    
+        # Check again after 1 second
+        self.services_light.after(1000, self.update_services_light)
    
 
-        
 if __name__ == '__main__':
     root = tk.Tk()
     root.geometry("1120x715")
