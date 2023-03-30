@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+import subprocess
 import threading
 
 import tkinter as tk
@@ -52,7 +53,18 @@ class GUI:
         self.nodes_label = tk.Label(master, text="Nodes configured")
         self.nodes_label.grid(row=4, column=2, sticky="w")
 
-        self.required_services = ['/inverse_kinematics', '/inverse_kinematics_reachability', '/inverse_kinematics_server/get_loggers', '/inverse_kinematics_server/set_logger_level']
+        # self.required_services = ['/inverse_kinematics', '/inverse_kinematics_reachability', '/inverse_kinematics_server/get_loggers', '/inverse_kinematics_server/set_logger_level']
+        # Wait for the service to become available
+        rospy.wait_for_service('/inverse_kinematics')
+        # Check if the service is available
+        service_name = '/inverse_kinematics'
+        try:
+            subprocess.check_output(['rosservice', 'find', service_name])
+            self.nodes_light.config(bg="green")
+        except subprocess.CalledProcessError:
+            self.nodes_light.config(bg="red")
+
+   
 
         # error status light
         self.error_light = tk.Label(master,bg="red", width=2, height=1)
@@ -137,16 +149,6 @@ class GUI:
     def sim_preview_clicked(self):
         self.sim_preview_button.config(text="STOP PREVIEW", bg="red", fg="black")
 
-
-    def update__light(self):
-        # Updates the color of the services_light based on whether the necessary ROS services are running or not."""
-        if all(service in rosservice.get_service_list() for service in self.required_services):
-            self.services_light.config(bg="green")
-        else:
-            self.services_light.config(bg="red")
-    
-        # Check again after 1 second
-        self.services_light.after(1000, self.update_services_light)
    
 
 if __name__ == '__main__':
