@@ -16,18 +16,18 @@ import cv2
 class GUI:
     def __init__(self, master):
         # simulation
-        self.label1 = tk.Label(master, text="Simulation: ")
-        self.label1.grid(row=0, column=0, sticky="w")
-        self.canvas = tk.Canvas(master, width=540, height=380)
-        self.canvas.grid(row=1, column=0, sticky="nsew")
+        self.sim_label = tk.Label(master, text="Simulation: ")
+        self.sim_label.grid(row=0, column=0, sticky="w")
+        self.sim_canvas = tk.Canvas(master, width=540, height=380)
+        self.sim_canvas.grid(row=1, column=0, sticky="nsew")
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
 
         # physical camera feed
-        self.label1 = tk.Label(master, text="Physical camera feed: ")
-        self.label1.grid(row=0, column=2, sticky="w")
-        self.canvas2 = tk.Canvas(master, width=540, height=380)
-        self.canvas2.grid(row=1, column=2, sticky="nsew")
+        self.cam_label = tk.Label(master, text="Physical camera feed: ")
+        self.cam_label.grid(row=0, column=2, sticky="w")
+        self.cam_canvas = tk.Canvas(master, width=540, height=380)
+        self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # buttons
         self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
@@ -39,26 +39,26 @@ class GUI:
     
         # status indicator lights
         # hardware connected light
-        self.label1 = tk.Label(master,bg="red", width=2, height=1)
-        self.label1.grid(row=3, column=1, sticky="w")
-        self.label1 = tk.Label(master, text="Hardware connected")
-        self.label1.grid(row=3, column=2, sticky="w")
+        self.hardware_light = tk.Label(master,bg="red", width=2, height=1)
+        self.hardware_light.grid(row=3, column=1, sticky="w")
+        self.hardware_label = tk.Label(master, text="Hardware connected")
+        self.hardware_label.grid(row=3, column=2, sticky="w")
 
         # nodes configured light
-        self.label1 = tk.Label(master,bg="red", width=2, height=1)
-        self.label1.grid(row=4, column=1, sticky="w")
-        self.label1 = tk.Label(master, text="Nodes configured")
-        self.label1.grid(row=4, column=2, sticky="w")
+        self.nodes_light = tk.Label(master,bg="red", width=2, height=1)
+        self.nodes_light.grid(row=4, column=1, sticky="w")
+        self.nodes_label = tk.Label(master, text="Nodes configured")
+        self.nodes_label.grid(row=4, column=2, sticky="w")
         
         # error status light
-        self.label1 = tk.Label(master,bg="red", width=2, height=1)
-        self.label1.grid(row=5, column=1, sticky="w")
-        self.label1 = tk.Label(master, text="Error status")
-        self.label1.grid(row=5, column=2, sticky="w")
+        self.error_light = tk.Label(master,bg="red", width=2, height=1)
+        self.error_light.grid(row=5, column=1, sticky="w")
+        self.error_label = tk.Label(master, text="Error status")
+        self.error_label.grid(row=5, column=2, sticky="w")
 
         # blank space
-        self.label1 = tk.Label(master, text="")
-        self.label1.grid(row=6, column=0, sticky="w")
+        self.blank_label = tk.Label(master, text="")
+        self.black_label.grid(row=6, column=0, sticky="w")
 
         # joint angles
         self.angles= tk.Label(master, text="Joint angles from base to end-effector: ")
