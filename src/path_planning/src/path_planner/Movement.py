@@ -7,9 +7,14 @@ from geometry_msgs.msg import Pose
 from time import time
 #import matplotlib.pyplot as plt
 
+import yaml
+from yaml.loader import SafeLoader
 class Movement:
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
+        with open('Userdetails.yaml') as APFyamlData:
+            self.APFyamldata = yaml.load(APFyamlData, Loader=SafeLoader)
+        print(APFyamlData)
     
     def move(self, pos:Pose, final_link_name=""):
         """ Safely move to desired position using IK, checking robot will stay within zone
@@ -18,7 +23,7 @@ class Movement:
         """
         
         SF = 100 #distance scale factor
-        Q = [12,12,10,8,6,4,2] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+        Q = [12,12,10,8,6,4,4] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = 10
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
