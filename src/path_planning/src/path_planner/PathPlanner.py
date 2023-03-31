@@ -13,7 +13,7 @@ class PathPlanner:
         self.end_pos = end_pos
 
         # Setup Service Helper Object
-        self.serv_helper = ServiceHelper.ServiceHelper(self.robot_ns)
+        self.serv_helper = ServiceHelper.ServiceHelper(self.robot_ns,self.target_block)
 
         # Setup Movement Object
         self.movement = Movement.Movement(self.serv_helper)
@@ -29,14 +29,12 @@ class PathPlanner:
         OUTPUT: bool Success
         """
         # Pick up block
-        self.pickUp.pick(self.target_block)
-
-        # Move arm
-        #self.movement.move(self.end_pos, "link5")
-        self.movement.move(self.end_pos)
+        if not self.pickUp.pick(self.target_block):
+            return False
 
         # Put down block
-        #self.placeDown.pick(self.target_block, self.end_pos)
+        if not self.placeDown.place(self.end_pos):
+            return False
 
         return True
     

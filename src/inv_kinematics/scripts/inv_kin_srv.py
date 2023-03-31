@@ -59,7 +59,7 @@ def ikpy_inverse_kinematics(pose: Pose):
 
     return joints
 
-def trac_ik_inverse_kinematics(pose: Pose, final_link_name="link6"):
+def trac_ik_inverse_kinematics(pose: Pose, precise_orientation, final_link_name="link6"):
     try:
         urdf_str = rospy.get_param('/robot_description')
     except KeyError:
@@ -72,6 +72,10 @@ def trac_ik_inverse_kinematics(pose: Pose, final_link_name="link6"):
 
     coordinate_tolerance = 1e-3 # Start with 1mm tolerance
     angle_tolerance = pi/180 # Start with 1 degree tolerance
+
+    multiplier = 10
+    if not precise_orientation:
+        angle_tolerance = angle_tolerance*multiplier
 
     joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
         
@@ -87,10 +91,10 @@ def inverse_kinematics_service(req):
 
     start_time = time()
     if req.state.reference_frame == "":
-        joints = trac_ik_inverse_kinematics(req.state.pose)
+        joints = trac_ik_inverse_kinematics(req.state.pose, req.precise_orientation)
     else:
         rospy.loginfo("Inverse Kinematics - Moving %s instead of end-effector.", req.state.reference_frame)
-        joints = trac_ik_inverse_kinematics(req.state.pose, req.state.reference_frame)
+        joints = trac_ik_inverse_kinematics(req.state.pose, req.precise_orientation, req.state.reference_frame)
 
     if joints is None:
         rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f\n", time()-start_time)
@@ -188,7 +192,7 @@ def analyse_robot_workspace():
     plt.show()
 
 def inverse_kinematics_reachability_service(req):
-    joints = trac_ik_inverse_kinematics(req.state.pose)
+    joints = trac_ik_inverse_kinematics(req.state.pose, True)
 
     if joints is None:
         return False

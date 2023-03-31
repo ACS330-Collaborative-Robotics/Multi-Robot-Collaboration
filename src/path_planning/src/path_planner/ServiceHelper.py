@@ -12,6 +12,7 @@ from gazebo_msgs.srv import GetLinkState
 from geometry_msgs.msg import Pose
 from tf2_geometry_msgs import PoseStamped
 from inv_kinematics.srv import InvKin
+from inv_kinematics.srv import InvKinRequest
 from std_msgs.msg import Header
 
 #from APF dependancies
@@ -23,8 +24,9 @@ import math
 from math import *
 
 class ServiceHelper:
-    def __init__(self, robot_ns):
+    def __init__(self, robot_ns,target_block):
         self.robot_ns = robot_ns
+        self.target_block=target_block
 
         # Setup inverse_kinematics service
         rospy.wait_for_service('inverse_kinematics')
@@ -41,7 +43,7 @@ class ServiceHelper:
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
-    def move(self, pos:Pose, final_link_name):
+    def move(self, pos:Pose, final_link_name:str, precise_orientation:bool):
         """ Move arm to specified position.
 
         INPUT: geometry_msgs Pose() - Orientation as quaternions
@@ -50,7 +52,9 @@ class ServiceHelper:
         """
         rospy.wait_for_service('inverse_kinematics')
 
-        rospy.loginfo("Path Planner - Service Helper - Calling ik for %s", self.robot_ns)
+        rospy.loginfo("Path Planner - Service Helper - Calling ik for %s for %s", self.robot_ns,self.target_block)
+
+        inv_kin_request = InvKinRequest()
 
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
@@ -58,9 +62,13 @@ class ServiceHelper:
         arm_pos.reference_frame = final_link_name
 
         arm_pos.pose = pos
-        # Call inverse_kinematics service and log ArmPos
-        return self.inv_kin(arm_pos)
 
+        inv_kin_request.state = arm_pos
+        inv_kin_request.precise_orientation = precise_orientation
+
+        # Call inverse_kinematics service and log ArmPos
+        return self.inv_kin(arm_pos).success
+    
     def getBlockPos(self, specific_model_name:str) -> Pose:
         """ Get block position relative to current robot arm
         INPUT: string specific_model_name
@@ -79,7 +87,7 @@ class ServiceHelper:
         start_pose = PoseStamped()
         start_pose.pose = goal_pose
 
-        rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z)
+        #rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z)
 
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
@@ -89,14 +97,14 @@ class ServiceHelper:
         while not rospy.is_shutdown():
             try:
                 new_pose = self.tfBuffer.transform(start_pose, target_frame)
-                print("Frame Converter - New pose:", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
+                #rospy.loginfo("Frame Converter - New pose:%.2f,%.2f,%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 rospy.logerr("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
                 continue
         
-        rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
+        #rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
 
         return new_pose.pose
     
@@ -110,7 +118,7 @@ class ServiceHelper:
 
         BaseID=ref_arm_name+'/base_link'
         linkID=target_arm_name+link
-        #print(BaseID,linkID)
+        #rospy.loginfo(BaseID,linkID)
         try:
             trans = self.tfBuffer.lookup_transform(linkID, BaseID, rospy.Time(0)) # get transform between base and link 
             joint_pos.position.x=trans.transform.translation.x #unit: meters
@@ -154,16 +162,20 @@ class ServiceHelper:
         newyobj = []
         newzobj = []
         newQ = []
-        for i in range(no_links):
-            vector = [xobj[i + 1] - xobj[i], yobj[i + 1] - yobj[i], zobj[i + 1] - zobj[i]]
-            deltaQ = Q[i+1]-Q[i]
-            for j in range(10):
-                newxobj.append(xobj[i] + vector[0]*j/10)
-                newyobj.append(yobj[i] + vector[1] * j / 10)
-                newzobj.append(zobj[i] + vector[2] * j / 10)
-                newQ.append(Q[i] + deltaQ*j/10)
-
-        print('Midpoints Complete')
+        if no_links ==0:
+            newxobj = xobj
+            newyobj = yobj
+            newzobj = zobj
+            newQ = Q
+        else:
+            for i in range(no_links):
+                vector = [xobj[i + 1] - xobj[i], yobj[i + 1] - yobj[i], zobj[i + 1] - zobj[i]]
+                deltaQ = Q[i+1]-Q[i]
+                for j in range(20):
+                    newxobj.append(xobj[i] + vector[0]*j/20)
+                    newyobj.append(yobj[i] + vector[1] * j / 20)
+                    newzobj.append(zobj[i] + vector[2] * j / 20)
+                    newQ.append(Q[i] + deltaQ*j/10)
         return newxobj,newyobj,newzobj,newQ
 
 
@@ -172,13 +184,13 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.9 #scaling factor
+        SF = 0.5 #scaling factor
         d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialChange = [SF*x-SF*xgoal,SF*y-SF*ygoal,SF*z-SF*zgoal]
         if d > D:
             PotentialChange = [(SF*x-SF*xgoal)/d,(SF*y-SF*ygoal)/d,(SF*z-SF*zgoal)/d]
-        #print('attraction change:',PotentialChange)
+        #rospy.loginfo('attraction change:',PotentialChange)
         return PotentialChange
 
     def PotentialAttraction(self,x,y,z,xgoal,ygoal,zgoal,D): #the attractive field as a whole (used to display)
@@ -196,7 +208,7 @@ class ServiceHelper:
 
     def PotentialAttraction2d(self,x,y,xgoal,ygoal,D):
         SF = 0.2 #scaling factor
-        d = EuclidianDistance2d(self,x,y,xgoal,ygoal)
+        d = self.EuclidianDistance2d(self,x,y,xgoal,ygoal)
         if d <= D:
             PotentialAtt = 0.5*SF*(d**2)
         else:
@@ -225,7 +237,7 @@ class ServiceHelper:
         SF = 100
         PotentialRep = 0
         for objNum in range(len(xobj)):
-            d = EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
+            d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             if d <= Q[objNum]:
                 PotentialRepcurrent = SF*((1/d)-(1/Q[objNum]))
             else:
@@ -255,7 +267,7 @@ class ServiceHelper:
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
             zangle = math.atan2(zheight,d)
-            SF = 2
+            SF = 3
             # deciding the direction of the tangent
             if angle > 0 or angle == 0:
                 repulsionangle = anglegoal + 100
@@ -267,9 +279,10 @@ class ServiceHelper:
             if zheight < 0:
                 zrepangle = zangle + 100
 
+
             #deciding whether the obstacle is in range
             #if D<Q[objNum]:
-                #print("in influence")
+                #rospy.loginfo("in influence")
             repulsionvect = SF*math.cos(math.radians(angle))*math.cos(math.radians(repulsionangle)),SF*math.cos(math.radians(angle))*math.sin(math.radians(repulsionangle))
             repulsionvect = list(repulsionvect)
             zrep = SF*math.cos(math.radians(zangle))*math.sin(math.radians(zrepangle))
@@ -277,7 +290,8 @@ class ServiceHelper:
                 repulsionvect = 0,0
                 zrep = 0
             else:
-                print("zinfo:",zheight,zangle,zrepangle)
+                pass
+                #rospy.loginfo("zinfo: %.2f,%.2f,%.2f",zheight,zangle,zrepangle)
             #for x in range(len(repulsionvect)):
             #   if repulsionvect[x] > 3:
             #      repulsionvect[x]= 3
@@ -286,7 +300,7 @@ class ServiceHelper:
             allvectorsz += zrep
         return allvectorsx,allvectorsy,allvectorsz
 
-    
+        
     def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
         """
         returned as an array of points
@@ -306,21 +320,17 @@ class ServiceHelper:
                 difx = diffrep[0] + 0.25*diffatt[0]
                 dify = diffrep[1] + 0.25*diffatt[1]
                 difz = diffrep[2] + 0.25*diffatt[2]
-                print("rep:",-difx,-dify,-difz)
+                rospy.loginfo("rep: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             else:
                 difx = diffatt[0]
                 dify = diffatt[1]
                 difz = diffatt[2]
-                print(-difx,-dify,-difz)
+                rospy.loginfo("rep: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
 
-            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:#
+            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 1:#
                 PathComplete = 1
-            #if abs(difx) < 0.1 and abs(dify) < 0.1:
-            #   pass
-            #  print("LOCAL MINIMA")
-                #add get out of minima here
             else:
-                #print('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
+                #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
                 nextx = PathPointsx[i] - 2.5*difx
                 nexty = PathPointsy[i] - 2.5*dify
                 nextz = PathPointsz[i] - 2.5*difz
@@ -331,10 +341,8 @@ class ServiceHelper:
                 PathPointsy.append(y)
                 PathPointsz.append(z)
             i += 1
-            #print(PathPointsx[i],PathPointsy[i])
+            #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
-        print('Path Complete')
-        print(len(PathPointsx))
         return PathPointsx,PathPointsy,PathPointsz
 
     def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy
@@ -344,18 +352,17 @@ class ServiceHelper:
         PotentialEnergy = np.ndarray(shape=(len(x), len(y)))  # this acts as the z axis on graphs. Works better for visualisation
         for i in range(len(X)):  # gets Z values for the X Y positions
             for j in range(len(Y)):
-                PotentialEnergy[i, j] = PotentialAttraction2d(X[i,j],Y[i,j],xgoal,ygoal,D)+ PotentialRepulsion2d(X[i,j],Y[i,j],xobj,yobj,Q)
+                PotentialEnergy[i, j] = self.PotentialAttraction2d(X[i,j],Y[i,j],xgoal,ygoal,D)+ self.PotentialRepulsion2d(X[i,j],Y[i,j],xobj,yobj,Q)
                          # PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
-        PathTaken = PathPlanner(startx, starty,startz, xgoal, ygoal,zgoal, xobj, yobj,zobj,Q, D)  ## you are here ^^^
+        PathTaken = self.PathPlanner(startx, starty,startz, xgoal, ygoal,zgoal, xobj, yobj,zobj,Q, D)  ## you are here ^^^
         EnergyPathTaken = []
         xline = PathTaken[0]
         yline = PathTaken[1]
         for i in range(len(PathTaken[0])):
 
-            TotalPotential = PotentialAttraction2d(xline[i], yline[i], xgoal, ygoal, D) + PotentialRepulsion2d(xline[i], yline[i], xobj, yobj, Q)
+            TotalPotential = self.PotentialAttraction2d(xline[i], yline[i], xgoal, ygoal, D) + self.PotentialRepulsion2d(xline[i], yline[i], xobj, yobj, Q)
             EnergyPathTaken.append(TotalPotential)
-        print(EnergyPathTaken)
-        print('Space Generation Complete')
+        rospy.loginfo('Space Generation Complete')
         return X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
 
     def plotAPF(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
@@ -367,7 +374,6 @@ class ServiceHelper:
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
         plt.show()
-        print("Successfuly run")
 
     def plotPath(self,PathTaken):
         fig = plt.figure()
@@ -381,4 +387,4 @@ class ServiceHelper:
             zpoints.append(point[2])
         ax.plot(xpoints,ypoints,zpoints)
         plt.show()
-        print('PlotPath Complete')
+        rospy.loginfo('PlotPath Complete')
