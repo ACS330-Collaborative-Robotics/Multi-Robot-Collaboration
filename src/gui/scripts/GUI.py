@@ -5,7 +5,6 @@ import threading
 
 import tkinter as tk
 from tkinter import ttk
-import customtkinter as ctk
 
 from PIL import Image, ImageTk
 from sensor_msgs.msg import Image as ImageMsg
@@ -153,6 +152,6 @@ class GUI:
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.geometry("1120x715")
+    root.geometry("{}x{}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
     gui = GUI(root)
     root.mainloop()
