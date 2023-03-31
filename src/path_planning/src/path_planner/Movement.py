@@ -12,9 +12,9 @@ from yaml.loader import SafeLoader
 class Movement:
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
-        with open('Userdetails.yaml') as APFyamlData:
-            self.APFyamldata = yaml.load(APFyamlData, Loader=SafeLoader)
-        print(APFyamlData)
+        with open('Userdetails.yaml') as yamlfile:
+            self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
+        print(self.APFyamlData)
     
     def move(self, pos:Pose, final_link_name=""):
         """ Safely move to desired position using IK, checking robot will stay within zone

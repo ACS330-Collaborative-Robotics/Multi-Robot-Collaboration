@@ -30,7 +30,6 @@ class ServiceHelper:
     def __init__(self, robot_ns,target_block):
         self.robot_ns = robot_ns
         self.target_block=target_block
-        print(APFyamlData)
         # Setup inverse_kinematics service
         rospy.wait_for_service('inverse_kinematics')
         self.inv_kin = rospy.ServiceProxy('inverse_kinematics', InvKin)
@@ -46,9 +45,9 @@ class ServiceHelper:
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
-        with open('Userdetails.yaml') as APFyamlData:
-            self.APFyamldata = yaml.load(APFyamlData, Loader=SafeLoader)
-        print(APFyamlData)
+        with open('Userdetails.yaml') as yamlfile:
+            self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
+        print(self.APFyamlData)
 
     def move(self, pos:Pose, final_link_name:str, precise_orientation:bool):
         """ Move arm to specified position.
