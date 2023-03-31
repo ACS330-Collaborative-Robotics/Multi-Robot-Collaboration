@@ -37,7 +37,7 @@ class Movement:
         startz = start_pose.position.z*SF
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         
-        while PathComplete==0:
+        while PathComplete==0 and not rospy.is_shutdown():
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -112,7 +112,7 @@ class Movement:
             else:
                 precise_angle_flag=0 #orientation does not matter - wide tolerance
 
-            rospy.loginfo("STEP CALCULATION TIME: %.4f",time()-start_time)
+            rospy.loginfo("Potential Fields - Step Calculation Time: %.4f",time()-start_time)
             # Move robot to new position, in robot reference frame
             status = self.serv_helper.move(arm_pos, final_link_name,precise_angle_flag)
             #TODO: Force wait until robot has reached desired position. Temp fix:
