@@ -9,7 +9,7 @@ import tf
 from path_planning.msg import PathPlanAction, PathPlanGoal
 from geometry_msgs.msg import Pose
 from gazebo_msgs.msg import ModelState
-from gazebo_msgs.srv import SpawnModel
+from gazebo_msgs.srv import SpawnModel, DeleteModel
 from inv_kinematics.srv import InvKin
 
 from math import pi
@@ -157,7 +157,15 @@ def path_plan_test():
     else:
         rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status)
 
-    #TODO Cleanup Block
+    rospy.sleep(2)
+
+    ## Cleanup Block ##
+
+    # Setup model removal service
+    rospy.wait_for_service('gazebo/delete_model')
+    model_remover = rospy.ServiceProxy('gazebo/delete_model', DeleteModel)
+
+    rospy.logwarn(model_remover(block_name).status_message)
 
 
 if __name__ == '__main__':
