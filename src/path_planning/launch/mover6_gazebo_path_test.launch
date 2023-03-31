@@ -1,0 +1,22 @@
+<launch>
+    <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find mover6_gazebo)/worlds/mover6.world"/>
+        <!-- more default parameters can be changed here -->
+    </include>
+
+    <!-- Convert an xacro and put on parameter server -->
+    <param name="robot_description" command="$(find xacro)/xacro $(find mover6_description)/urdf/CPRMover6.urdf.xacro" />
+    <param name="camera_description" command="$(find xacro)/xacro $(find mover6_description)/urdf/Camera.urdf.xacro" />
+    <!-- Spawn a robot into Gazebo -->
+    <node name="spawn_urdf_a" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model mover6_a -robot_namespace mover6_a" />
+    
+    <!-- Launch Robot Joint Controller -->
+    <include file="$(find mover6_control)/launch/mover6_control.launch"/>
+
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_a" type="static_tf2_broadcaster.py" args="mover6_a_base world 0 0 0 0 0 0" output="screen"/>
+
+    <!-- Connect transforms in tree -->
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_a" type="static_tf2_broadcaster.py" args="mover6_a/world world 0 0 0 0 0 0" output="screen"/>
+
+</launch>

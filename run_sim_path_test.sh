@@ -1,0 +1,1 @@
+roslaunch path_planning mover6_gazebo_path_test.launch
