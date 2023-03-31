@@ -57,7 +57,14 @@ def path_plan_test():
     path_client = actionlib.SimpleActionClient('path_planner', PathPlanAction)
     path_client.wait_for_server()
 
+    #TODO Spawn Block
 
+    #TODO Set Initial Pose via IK
+
+    #TODO Call Path Planner
+
+    #TODO Cleanup Block
+    
 
 if __name__ == '__main__':
     try:
