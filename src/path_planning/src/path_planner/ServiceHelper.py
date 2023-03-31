@@ -203,7 +203,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
         """
-        Att_SF = 0.2 #scaling factor
+        Att_SF = self.APFyamlData["Att_SF"] #scaling factor
         d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialAtt = 0.5*Att_SF*(d**2)
@@ -212,7 +212,7 @@ class ServiceHelper:
         return PotentialAtt
 
     def PotentialAttraction2d(self,x,y,xgoal,ygoal,D):
-        Att_SF = 0.2 #scaling factor
+        Att_SF = self.APFyamlData["Att_SF"] #scaling factor
         d = self.EuclidianDistance2d(self,x,y,xgoal,ygoal)
         if d <= D:
             PotentialAtt = 0.5*Att_SF*(d**2)
@@ -225,7 +225,7 @@ class ServiceHelper:
         INPUT: current position and obstacle postition XYs. 
         OUTPUT: PotentialRep (a single value for Potential at those coordinates)
         """
-        Rep_SF = 100
+        Rep_SF = self.APFyamlData["Rep_SF"]
         PotentialRep = 0
         for objNum in range(len(xobj)):
             d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
@@ -239,7 +239,7 @@ class ServiceHelper:
         return PotentialRep
 
     def PotentialRepulsion2d(self,x,y,xobj,yobj,Q):
-        Rep_SF = 100
+        Rep_SF = self.APFyamlData["Rep_SF"]
         PotentialRep = 0
         for objNum in range(len(xobj)):
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
@@ -257,7 +257,7 @@ class ServiceHelper:
         INPUT: current position and obstacle position XYs. 
         OUTPUT: is repulsion at a specific point
         """
-        Rep_Change_SF = 3
+        Rep_Change_SF = self.APFyamlData["Rep_Change_SF"]
         allvectorsx = 0
         allvectorsy = 0
         allvectorsz = 0
@@ -311,9 +311,9 @@ class ServiceHelper:
         INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)   
         OUTPUT: PathPoints (an array of the via points ((x1,y1),(x2,y2),(x3,y3)....))
         """
-        Step_Size=2.5
-        Final_Att=0.2
-        Final_Distance=1
+        Step_Size= self.APFyamlData["Step_Size"]
+        Final_Att= self.APFyamlData["Final_Att"]
+        Final_Distance= self.APFyamlData["Final_Distance"]
         PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
         PathPointsx = [x] #First X and Y points
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
