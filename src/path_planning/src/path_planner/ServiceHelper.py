@@ -166,16 +166,6 @@ class ServiceHelper:
         print('Midpoints Complete')
         return newxobj,newyobj,newzobj,newQ
 
-    def NoiseAddition(self,PathPointsx,PathPointsy,xgoal,ygoal,xobj,yobj): #what does this do?
-        ObjAngle = math.atan2(ygoal-PathPointsy,xobj-xgoal)
-        ObjAngle = math.degrees(ObjAngle)
-        fig = plt.figure()
-        ax = plt.axes()
-        ax.plot([xgoal,PathPointsx,xobj],[ygoal,PathPointsy,yobj])
-        ax.set_xlabel(ObjAngle)
-        plt.show()
-        return ObjAngle
-
 
     def PotentialAttractionChange(self,x,y,z,xgoal,ygoal,zgoal,D): #attraction at a specific point (used to calculate)
         """ Calculates potential change from point to goal
@@ -255,24 +245,42 @@ class ServiceHelper:
         allvectorsz = 0
         repulsionangle = 0
         for objNum in range(len(xobj)):
+            #generate the vectors and angles
             homevect = [xgoal-x,ygoal-y,zgoal-z]
             objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z)
             anglegoal = math.atan2(homevect[1],homevect[0])
             angleobj = math.atan2(objvect[1],objvect[0])
             angle = angleobj-anglegoal
-            zheight = objvect[2]-homevect[2]
+            zheight = z-zobj[objNum]
+            d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
+            D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
+            zangle = math.atan2(zheight,d)
+            SF = 2
+            # deciding the direction of the tangent
             if angle > 0 or angle == 0:
-                repulsionangle = anglegoal - 90
+                repulsionangle = anglegoal + 100
             if angle < 0:
-                repulsionangle = anglegoal + 90
-            d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
-            SF = 5*(d-Q[objNum])
-            repulsionvect = SF*math.cos(angle)*math.cos(repulsionangle),SF*math.cos(angle)*math.sin(repulsionangle)
-            if d > Q[objNum]:
+                repulsionangle = anglegoal - 100
+
+            if zheight >= 0:
+                zrepangle = zangle - 100
+            if zheight < 0:
+                zrepangle = zangle + 100
+
+            #deciding whether the obstacle is in range
+            #if D<Q[objNum]:
+                #print("in influence")
+            repulsionvect = SF*math.cos(math.radians(angle))*math.cos(math.radians(repulsionangle)),SF*math.cos(math.radians(angle))*math.sin(math.radians(repulsionangle))
+            repulsionvect = list(repulsionvect)
+            zrep = SF*math.cos(math.radians(zangle))*math.sin(math.radians(zrepangle))
+            if D > Q[objNum]:
                 repulsionvect = 0,0
                 zrep = 0
             else:
-                zrep = zheight*1/(d-Q[objNum])
+                print("zinfo:",zheight,zangle,zrepangle)
+            #for x in range(len(repulsionvect)):
+            #   if repulsionvect[x] > 3:
+            #      repulsionvect[x]= 3
             allvectorsx += repulsionvect[0]
             allvectorsy += repulsionvect[1]
             allvectorsz += zrep
@@ -287,29 +295,35 @@ class ServiceHelper:
         """
         PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
         PathPointsx = [x] #First X and Y points
-        PathPointsy = [y] 
+        PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
         PathPointsz = [z]
-        #print("INITIAL PATH POINT: ",PathPointsx,PathPointsy)
         i = 0
         while PathComplete == 0:
-            
-            diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
-            diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
-            difx = diffatt[0] + diffrep[0]
-            dify = diffatt[1] + diffrep[1]
-            difz = diffatt[2] + diffrep[2]
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
-            if abs(difx) <0.1 and abs(dify) <0.1 and abs(difz) <0.1 and d < 0.5:
+            diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
+            diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
+            if any(diffrep) != 0:
+                difx = diffrep[0] + 0.25*diffatt[0]
+                dify = diffrep[1] + 0.25*diffatt[1]
+                difz = diffrep[2] + 0.25*diffatt[2]
+                print("rep:",-difx,-dify,-difz)
+            else:
+                difx = diffatt[0]
+                dify = diffatt[1]
+                difz = diffatt[2]
+                print(-difx,-dify,-difz)
+
+            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:#
                 PathComplete = 1
-            if abs(difx) < 0.05 and abs(dify) < 0.05 and d > 0.5:
-                rospy.loginfo("LOCAL MINIMA")
-                pass
+            #if abs(difx) < 0.1 and abs(dify) < 0.1:
+            #   pass
+            #  print("LOCAL MINIMA")
                 #add get out of minima here
             else:
-                print('Iteration: ',i,'x,y,z: ',PathPointsx[i],PathPointsy[i],PathPointsz[i],' Dist:' ,d)
-                nextx = PathPointsx[i] - 1.5*difx
-                nexty = PathPointsy[i] - 1.5*dify
-                nextz = PathPointsz[i] - 1.5*difz
+                #print('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
+                nextx = PathPointsx[i] - 2.5*difx
+                nexty = PathPointsy[i] - 2.5*dify
+                nextz = PathPointsz[i] - 2.5*difz
                 x = nextx
                 y = nexty
                 z = nextz
@@ -317,11 +331,12 @@ class ServiceHelper:
                 PathPointsy.append(y)
                 PathPointsz.append(z)
             i += 1
+            #print(PathPointsx[i],PathPointsy[i])
+        #PathPoints = list(zip(PathPointsx,PathPointsy))
         print('Path Complete')
         print(len(PathPointsx))
         return PathPointsx,PathPointsy,PathPointsz
 
- 
     def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy
         x = np.linspace(-50, 50, 100)  # Creating X and Y axis
         y = np.linspace(-50, 50, 100)
