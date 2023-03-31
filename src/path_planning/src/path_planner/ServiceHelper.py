@@ -15,6 +15,7 @@ from inv_kinematics.srv import InvKin
 from inv_kinematics.srv import InvKinRequest
 from std_msgs.msg import Header
 
+
 #from APF dependancies
 import numpy as np
 from mpl_toolkits import mplot3d
@@ -311,6 +312,10 @@ class ServiceHelper:
         INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)   
         OUTPUT: PathPoints (an array of the via points ((x1,y1),(x2,y2),(x3,y3)....))
         """
+        tempxobj = []
+        tempyobj = []
+        tempzobj = []
+        tempQ = []
         Step_Size= self.APFyamlData["Step_Size"]
         Final_Att= self.APFyamlData["Final_Att"]
         Final_Distance= self.APFyamlData["Final_Distance"]
@@ -322,6 +327,7 @@ class ServiceHelper:
         while PathComplete == 0 and not rospy.is_shutdown():
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
             diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
+            diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
             diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
             if any(diffrep) != 0:
                 difx = diffrep[0] + 0.25*diffatt[0]
@@ -336,6 +342,7 @@ class ServiceHelper:
 
             if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
                 PathComplete = 1
+                
             else:
                 #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
                 nextx = PathPointsx[i] - Step_Size*difx
@@ -344,9 +351,18 @@ class ServiceHelper:
                 x = nextx
                 y = nexty
                 z = nextz
-                PathPointsx.append(x)
-                PathPointsy.append(y)
-                PathPointsz.append(z)
+                if z < 0.05:
+                    z = 0.05
+                if is_block_reachable_APF(x,y,z,'mover6_a') == False:
+                    tempxobj.append(x)
+                    tempyobj.append(y)
+                    tempzobj.append(z)
+                    objdistance = self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z)
+                    tempQ.append(objdistance)
+                else:
+                    PathPointsx.append(x)
+                    PathPointsy.append(y)
+                    PathPointsz.append(z)
             i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
@@ -395,3 +411,42 @@ class ServiceHelper:
         ax.plot(xpoints,ypoints,zpoints)
         plt.show()
         rospy.loginfo('PlotPath Complete')
+
+    def is_block_reachable_APF(self,X,Y,Z, robot_namespaces) -> bool:
+        rospy.wait_for_service('inverse_kinematics_reachability')
+        inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
+    
+         # Create Initial Pose object
+        initial_pose = Pose()
+        initial_pose.position.x = X
+        initial_pose.position.y = Y
+        initial_pose.position.z = Z
+        quat = tf.transformations.quaternion_from_euler(initial_robot_orientation_x, initial_robot_orientation_y, initial_robot_orientation_z)
+        initial_pose.orientation.x = quat[0]
+        initial_pose.orientation.y = quat[1]
+        initial_pose.orientation.z = quat[2]
+        initial_pose.orientation.w = quat[3]
+
+        inv_kin_request = InvKinRequest()
+        #model_state = ModelState()
+
+        # for robot_name in robot_namespaces:
+        #    model_state.pose = specific_block_pose(block_name, robot_name)
+
+        orientation_in_euler = [0,90*math.pi/180,0]
+        orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+        
+        initial_pose.orientation.x = orientation[0]
+        initial_pose.orientation.y = orientation[1]
+        initial_pose.orientation.z = orientation[2]
+        initial_pose.orientation.w = orientation[3]
+        initial_pose.position.z += 0.15
+
+        inv_kin_request.state = initial_pose
+        inv_kin_request.precise_orientation = True
+
+        if inv_kin_is_reachable(inv_kin_request).success:
+            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
+            return True
+        
+        return False
