@@ -25,7 +25,6 @@ from yaml.loader import SafeLoader
 import math
 from math import *
 
-
 class ServiceHelper:
     def __init__(self, robot_ns,target_block):
         self.robot_ns = robot_ns
@@ -45,7 +44,7 @@ class ServiceHelper:
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
-        with open('Userdetails.yaml') as yamlfile:
+        with open('/home/uos/catkin_ws/src/path_planning/config/settings.yaml') as yamlfile:
             self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.APFyamlData)
 

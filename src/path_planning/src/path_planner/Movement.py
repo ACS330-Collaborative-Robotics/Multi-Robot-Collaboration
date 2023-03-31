@@ -12,7 +12,7 @@ from yaml.loader import SafeLoader
 class Movement:
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
-        with open('Userdetails.yaml') as yamlfile:
+        with open('/home/uos/catkin_ws/src/path_planning/config/settings.yaml') as yamlfile:
             self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.APFyamlData)
     
