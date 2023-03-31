@@ -19,9 +19,12 @@ from std_msgs.msg import Header
 import numpy as np
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
+import yaml
+from yaml.loader import SafeLoader
 
 import math
 from math import *
+
 
 class ServiceHelper:
     def __init__(self, robot_ns,target_block):
@@ -42,6 +45,10 @@ class ServiceHelper:
         # Setup tf2
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
+
+        with open('Userdetails.yaml') as APFyamlData:
+            self.APFyamldata = yaml.load(APFyamlData, Loader=SafeLoader)
+        print(APFyamlData)
 
     def move(self, pos:Pose, final_link_name:str, precise_orientation:bool):
         """ Move arm to specified position.
@@ -157,6 +164,7 @@ class ServiceHelper:
         return d
 
     def Link_Midpoints(self,xobj,yobj,zobj,Q): #interpolate points to reat
+        Link_Granularity=20
         no_links = len(xobj) -1
         newxobj = []
         newyobj = []
@@ -171,25 +179,24 @@ class ServiceHelper:
             for i in range(no_links):
                 vector = [xobj[i + 1] - xobj[i], yobj[i + 1] - yobj[i], zobj[i + 1] - zobj[i]]
                 deltaQ = Q[i+1]-Q[i]
-                for j in range(20):
-                    newxobj.append(xobj[i] + vector[0]*j/20)
-                    newyobj.append(yobj[i] + vector[1] * j / 20)
-                    newzobj.append(zobj[i] + vector[2] * j / 20)
-                    newQ.append(Q[i] + deltaQ*j/10)
+                for j in range(Link_Granularity):
+                    newxobj.append(xobj[i] + vector[0]*j/Link_Granularity)
+                    newyobj.append(yobj[i] + vector[1] * j / Link_Granularity)
+                    newzobj.append(zobj[i] + vector[2] * j / Link_Granularity)
+                    newQ.append(Q[i] + deltaQ*j/Link_Granularity)
         return newxobj,newyobj,newzobj,newQ
-
 
     def PotentialAttractionChange(self,x,y,z,xgoal,ygoal,zgoal,D): #attraction at a specific point (used to calculate)
         """ Calculates potential change from point to goal
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        SF = 0.5 #scaling factor
+        Att_Change_SF = 0.5 #scaling factor
         d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
-            PotentialChange = [SF*x-SF*xgoal,SF*y-SF*ygoal,SF*z-SF*zgoal]
+            PotentialChange = [Att_Change_SF*x-Att_Change_SF*xgoal,Att_Change_SF*y-Att_Change_SF*ygoal,Att_Change_SF*z-Att_Change_SF*zgoal]
         if d > D:
-            PotentialChange = [(SF*x-SF*xgoal)/d,(SF*y-SF*ygoal)/d,(SF*z-SF*zgoal)/d]
+            PotentialChange = [(Att_Change_SF*x-Att_Change_SF*xgoal)/d,(Att_Change_SF*y-Att_Change_SF*ygoal)/d,(Att_Change_SF*z-Att_Change_SF*zgoal)/d]
         #rospy.loginfo('attraction change:',PotentialChange)
         return PotentialChange
 
@@ -198,21 +205,21 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT PotentialAtt (a single value for the Potential at those coordinates)
         """
-        SF = 0.2 #scaling factor
+        Att_SF = 0.2 #scaling factor
         d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
-            PotentialAtt = 0.5*SF*(d**2)
+            PotentialAtt = 0.5*Att_SF*(d**2)
         else:
-            PotentialAtt = D*SF*d - 0.5*SF*D
+            PotentialAtt = D*Att_SF*d - 0.5*Att_SF*D
         return PotentialAtt
 
     def PotentialAttraction2d(self,x,y,xgoal,ygoal,D):
-        SF = 0.2 #scaling factor
+        Att_SF = 0.2 #scaling factor
         d = self.EuclidianDistance2d(self,x,y,xgoal,ygoal)
         if d <= D:
-            PotentialAtt = 0.5*SF*(d**2)
+            PotentialAtt = 0.5*Att_SF*(d**2)
         else:
-            PotentialAtt = D*SF*d - 0.5*SF*D
+            PotentialAtt = D*Att_SF*d - 0.5*Att_SF*D
         return PotentialAtt
     
     def PotentialRepulsion(self,x,y,z,xobj,yobj,zobj,Q): #Repulsive field as a whole (used to display)
@@ -220,12 +227,12 @@ class ServiceHelper:
         INPUT: current position and obstacle postition XYs. 
         OUTPUT: PotentialRep (a single value for Potential at those coordinates)
         """
-        SF = 100
+        Rep_SF = 100
         PotentialRep = 0
         for objNum in range(len(xobj)):
             d = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
             if d <= Q[objNum]:
-                PotentialRepcurrent = SF*((1/d)-(1/Q[objNum]))
+                PotentialRepcurrent = Rep_SF*((1/d)-(1/Q[objNum]))
             else:
                 PotentialRepcurrent = 0
             if PotentialRepcurrent > 100:
@@ -234,12 +241,12 @@ class ServiceHelper:
         return PotentialRep
 
     def PotentialRepulsion2d(self,x,y,xobj,yobj,Q):
-        SF = 100
+        Rep_SF = 100
         PotentialRep = 0
         for objNum in range(len(xobj)):
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             if d <= Q[objNum]:
-                PotentialRepcurrent = SF*((1/d)-(1/Q[objNum]))
+                PotentialRepcurrent = Rep_SF*((1/d)-(1/Q[objNum]))
             else:
                 PotentialRepcurrent = 0
             if PotentialRepcurrent > 100:
@@ -252,6 +259,7 @@ class ServiceHelper:
         INPUT: current position and obstacle position XYs. 
         OUTPUT: is repulsion at a specific point
         """
+        Rep_Change_SF = 3
         allvectorsx = 0
         allvectorsy = 0
         allvectorsz = 0
@@ -267,7 +275,6 @@ class ServiceHelper:
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
             zangle = math.atan2(zheight,d)
-            SF = 3
             # deciding the direction of the tangent
             if angle > 0 or angle == 0:
                 repulsionangle = anglegoal + 100
@@ -279,13 +286,12 @@ class ServiceHelper:
             if zheight < 0:
                 zrepangle = zangle + 100
 
-
             #deciding whether the obstacle is in range
             #if D<Q[objNum]:
                 #rospy.loginfo("in influence")
-            repulsionvect = SF*math.cos(math.radians(angle))*math.cos(math.radians(repulsionangle)),SF*math.cos(math.radians(angle))*math.sin(math.radians(repulsionangle))
+            repulsionvect = Rep_Change_SF*math.cos(math.radians(angle))*math.cos(math.radians(repulsionangle)),Rep_Change_SF*math.cos(math.radians(angle))*math.sin(math.radians(repulsionangle))
             repulsionvect = list(repulsionvect)
-            zrep = SF*math.cos(math.radians(zangle))*math.sin(math.radians(zrepangle))
+            zrep = Rep_Change_SF*math.cos(math.radians(zangle))*math.sin(math.radians(zrepangle))
             if D > Q[objNum]:
                 repulsionvect = 0,0
                 zrep = 0
@@ -307,6 +313,9 @@ class ServiceHelper:
         INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)   
         OUTPUT: PathPoints (an array of the via points ((x1,y1),(x2,y2),(x3,y3)....))
         """
+        Step_Size=2.5
+        Final_Att=0.2
+        Final_Distance=1
         PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
         PathPointsx = [x] #First X and Y points
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
@@ -327,13 +336,13 @@ class ServiceHelper:
                 difz = diffatt[2]
                 rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
 
-            if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 1:#
+            if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
                 PathComplete = 1
             else:
                 #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
-                nextx = PathPointsx[i] - 2.5*difx
-                nexty = PathPointsy[i] - 2.5*dify
-                nextz = PathPointsz[i] - 2.5*difz
+                nextx = PathPointsx[i] - Step_Size*difx
+                nexty = PathPointsy[i] - Step_Size*dify
+                nextz = PathPointsz[i] - Step_Size*difz
                 x = nextx
                 y = nexty
                 z = nextz
