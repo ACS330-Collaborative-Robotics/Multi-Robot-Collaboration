@@ -134,6 +134,54 @@
 		<xacro:default_inertial z_value="0" mass="0.1"/>
 	</link>
 
+	<link name="link7">
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://mover6_description/meshes/joint7.STL"  scale="1 1 1"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://mover6_description/meshes/joint7.STL" scale="1 1 1"/>
+			</geometry>
+		</collision>
+		<xacro:default_inertial z_value="0" mass="0.1"/>
+	</link>
+
+	<link name="gripper_a">
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://mover6_description/meshes/gripper_a.STL"  scale="1 1 1"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://mover6_description/meshes/gripper_a.STL" scale="1 1 1"/>
+			</geometry>
+		</collision>
+		<xacro:default_inertial z_value="0" mass="0.1"/>
+	</link>
+
+	<link name="gripper_b">
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://mover6_description/meshes/gripper_b.STL"  scale="1 1 1"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://mover6_description/meshes/gripper_b.STL" scale="1 1 1"/>
+			</geometry>
+		</collision>
+		<xacro:default_inertial z_value="0" mass="0.1"/>
+	</link>
+
 
 	<joint name="joint1" type="revolute">
 		<axis xyz="0 0 -1"/>
@@ -186,6 +234,33 @@
 		<child link="link6"/>
 		<origin rpy="0 0 0" xyz="0 0 0.055"/>
 		<limit lower="-2.09" upper="2.09" effort="100" velocity="100"/>
+		<joint_properties damping="1.0" friction="1.0"/>
+	</joint>
+
+	<joint name="joint7" type="fixed">
+		<axis xyz="0 0 1"/>
+		<parent link="link6"/>
+		<child link="link7"/>
+		<origin rpy="3.14159 0 1.5708" xyz="0 0 0"/>
+		<limit lower="-2.09" upper="2.09" effort="100" velocity="100"/>
+		<joint_properties damping="1.0" friction="1.0"/>
+	</joint>
+
+	<joint name="joint_gripper_a" type="revolute">
+		<axis xyz="0 0 1"/>
+		<parent link="link7"/>
+		<child link="gripper_a"/>
+		<origin rpy="1.5708 -0.33752 3.1416" xyz="-0.0055607 -0.0041434 -0.04688"/>
+		<limit lower="-1" upper="1" effort="100" velocity="100"/>
+		<joint_properties damping="1.0" friction="1.0"/>
+	</joint>
+
+	<joint name="joint_gripper_b" type="revolute">
+		<axis xyz="0 0 1"/>
+		<parent link="link7"/>
+		<child link="gripper_b"/>
+		<origin rpy="1.5708 -0.33752 0" xyz="0.0055607 0.005 -0.04688"/>
+		<limit lower="-1" upper="1" effort="100" velocity="100"/>
 		<joint_properties damping="1.0" friction="1.0"/>
 	</joint>
 
@@ -251,6 +326,28 @@
 			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor6">
+		    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran7">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint_gripper_a">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor7">
+		    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran8">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint_gripper_b">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="gripper_b">
 		    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
