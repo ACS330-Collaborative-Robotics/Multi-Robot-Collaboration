@@ -189,7 +189,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        Att_Change_SF = self.APFyamldata["Att_Change_SF"] #scaling factor
+        Att_Change_SF = self.APFyamlData["Att_Change_SF"] #scaling factor
         d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialChange = [Att_Change_SF*x-Att_Change_SF*xgoal,Att_Change_SF*y-Att_Change_SF*ygoal,Att_Change_SF*z-Att_Change_SF*zgoal]
