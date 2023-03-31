@@ -24,7 +24,7 @@ class Movement:
         
         SF = 100 #distance scale factor
         Q = [12,12,10,8,6,4,4] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
-        D = 10
+        D = self.APFyamlData["D"]
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
         # Get block coordinates relative to robot instead of world
