@@ -133,7 +133,7 @@ def analyse_robot_workspace():
     y_range = [-0.5, 0.5]
     z_range = [-0.1, 0.3]
 
-    number_of_points = 5
+    number_of_points = 10
     number_of_points -= 1
 
     x_step = (max(x_range) - min(x_range))/number_of_points
