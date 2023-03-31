@@ -162,7 +162,7 @@ class ServiceHelper:
         return d
 
     def Link_Midpoints(self,xobj,yobj,zobj,Q): #interpolate points to reat
-        Link_Granularity=self.APFyamldata["Link_Granularity"]
+        Link_Granularity=self.APFyamlData["Link_Granularity"]
         no_links = len(xobj) -1
         newxobj = []
         newyobj = []
