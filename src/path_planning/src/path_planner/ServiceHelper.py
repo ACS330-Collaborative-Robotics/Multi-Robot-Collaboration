@@ -30,7 +30,7 @@ class ServiceHelper:
     def __init__(self, robot_ns,target_block):
         self.robot_ns = robot_ns
         self.target_block=target_block
-
+        print(APFyamlData)
         # Setup inverse_kinematics service
         rospy.wait_for_service('inverse_kinematics')
         self.inv_kin = rospy.ServiceProxy('inverse_kinematics', InvKin)
@@ -164,7 +164,7 @@ class ServiceHelper:
         return d
 
     def Link_Midpoints(self,xobj,yobj,zobj,Q): #interpolate points to reat
-        Link_Granularity=20
+        Link_Granularity=self.APFyamldata["Link_Granularity"]
         no_links = len(xobj) -1
         newxobj = []
         newyobj = []
@@ -191,7 +191,7 @@ class ServiceHelper:
         INPUT: current position and goal position XYs and distance where laws change. 
         OUTPUT: PotentialChange (a tuple of the change in potential along x and y axis (deltaX,deltaY))
         """
-        Att_Change_SF = 0.5 #scaling factor
+        Att_Change_SF = self.APFyamldata["Att_Change_SF"] #scaling factor
         d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
             PotentialChange = [Att_Change_SF*x-Att_Change_SF*xgoal,Att_Change_SF*y-Att_Change_SF*ygoal,Att_Change_SF*z-Att_Change_SF*zgoal]
