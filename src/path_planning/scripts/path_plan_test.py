@@ -30,8 +30,8 @@ def path_plan_test():
     initial_robot_orientation_z = 0*pi/180
 
     # Final Robot Cartesian Position
-    final_robot_position_x = 0.1
-    final_robot_position_y = 0.3
+    final_robot_position_x = 0
+    final_robot_position_y = 0.2
     final_robot_position_z = 0.2
 
     # Final Robot Euler Angle Orientation
@@ -40,8 +40,8 @@ def path_plan_test():
     final_robot_orientation_z = 0*pi/180
 
     # Block Cartesian Position
-    block_robot_position_x = 0.1
-    block_robot_position_y = 0.1
+    block_robot_position_x = 0.15
+    block_robot_position_y = 0.15
     block_robot_position_z = 0.05
 
     # Block Euler Angle Orientation
@@ -89,7 +89,9 @@ def path_plan_test():
     rospy.wait_for_service('gazebo/spawn_urdf_model')
     urdf_spawner = rospy.ServiceProxy('gazebo/spawn_urdf_model', SpawnModel)
 
-    rospy.loginfo(urdf_spawner(block_name, urdf, "blocks", block_pose, "world").status_message)
+    rospy.logwarn(urdf_spawner(block_name, urdf, "blocks", block_pose, "world").status_message)
+
+    rospy.sleep(2)
 
     ## Set Initial Pose via IK ##
 
@@ -108,14 +110,52 @@ def path_plan_test():
     # Initialise and fill ModelState object for ik
     initial_arm_state = ModelState()
     initial_arm_state.model_name = robot_name
-    initial_arm_state.reference_frame = "link6"
 
     initial_arm_state.pose = initial_pose
 
-    # Call inverse_kinematics service and log ArmPos
-    rospy.loginfo("Robot Initial Pose set with status: %d", inv_kin_srv(initial_arm_state).success)
+    # Call inverse_kinematics service
+    status = inv_kin_srv(initial_arm_state).success
 
-    #TODO Call Path Planner
+    if status:
+        rospy.logwarn("Robot Initial Pose set succesfully.")
+    else:
+        rospy.logfatal("Robot Initial Pose failed to set.")
+
+    rospy.sleep(2)
+
+    ## Call Path Planner ##
+
+    goal = PathPlanGoal()
+
+    goal.block_name = block_name
+    goal.robot_name = robot_name
+
+    final_pose = Pose()
+    final_pose.position.x = final_robot_position_x
+    final_pose.position.y = final_robot_position_y
+    final_pose.position.z = final_robot_position_z
+
+    quat = tf.transformations.quaternion_from_euler(final_robot_orientation_x, final_robot_orientation_y, final_robot_orientation_z)
+    final_pose.orientation.x = quat[0]
+    final_pose.orientation.y = quat[1]
+    final_pose.orientation.z = quat[2]
+    final_pose.orientation.w = quat[3]
+
+    goal.end_pos = final_pose
+
+    path_client.send_goal(goal)
+
+    rospy.sleep(0.01)
+
+    while (path_client.get_state() == 1) and not rospy.is_shutdown():
+        rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
+        rospy.sleep(0.01)
+
+    status = path_client.get_result().success
+    if status:
+        rospy.logwarn("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
+    else:
+        rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status)
 
     #TODO Cleanup Block
 
