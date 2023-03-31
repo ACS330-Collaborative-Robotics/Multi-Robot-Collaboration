@@ -7,8 +7,10 @@ from pathlib import Path
 import tf
 
 from path_planning.msg import PathPlanAction, PathPlanGoal
-from gazebo_msgs.srv import SpawnModel
 from geometry_msgs.msg import Pose
+from gazebo_msgs.msg import ModelState
+from gazebo_msgs.srv import SpawnModel
+from inv_kinematics.srv import InvKin
 
 from math import pi
 
@@ -61,6 +63,9 @@ def path_plan_test():
     path_client = actionlib.SimpleActionClient('path_planner', PathPlanAction)
     path_client.wait_for_server()
 
+    rospy.wait_for_service('inverse_kinematics')
+    inv_kin_srv = rospy.ServiceProxy('inverse_kinematics', InvKin)
+
     ## Spawn Block ##
     block_name = "block0"
 
@@ -86,7 +91,29 @@ def path_plan_test():
 
     rospy.loginfo(urdf_spawner(block_name, urdf, "blocks", block_pose, "world").status_message)
 
-    #TODO Set Initial Pose via IK
+    ## Set Initial Pose via IK ##
+
+    # Create Initial Pose object
+    initial_pose = Pose()
+    initial_pose.position.x = initial_robot_position_x
+    initial_pose.position.y = initial_robot_position_y
+    initial_pose.position.z = initial_robot_position_z
+
+    quat = tf.transformations.quaternion_from_euler(initial_robot_orientation_x, initial_robot_orientation_y, initial_robot_orientation_z)
+    initial_pose.orientation.x = quat[0]
+    initial_pose.orientation.y = quat[1]
+    initial_pose.orientation.z = quat[2]
+    initial_pose.orientation.w = quat[3]
+
+    # Initialise and fill ModelState object for ik
+    initial_arm_state = ModelState()
+    initial_arm_state.model_name = robot_name
+    initial_arm_state.reference_frame = "link6"
+
+    initial_arm_state.pose = initial_pose
+
+    # Call inverse_kinematics service and log ArmPos
+    rospy.loginfo("Robot Initial Pose set with status: %d", inv_kin_srv(initial_arm_state).success)
 
     #TODO Call Path Planner
 
