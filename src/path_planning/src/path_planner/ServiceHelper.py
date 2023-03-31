@@ -67,7 +67,7 @@ class ServiceHelper:
         inv_kin_request.precise_orientation = precise_orientation
 
         # Call inverse_kinematics service and log ArmPos
-        return self.inv_kin(arm_pos).success
+        return self.inv_kin(inv_kin_request).success
     
     def getBlockPos(self, specific_model_name:str) -> Pose:
         """ Get block position relative to current robot arm
@@ -312,7 +312,7 @@ class ServiceHelper:
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
         PathPointsz = [z]
         i = 0
-        while PathComplete == 0:
+        while PathComplete == 0 and not rospy.is_shutdown():
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
             diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
             diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
@@ -320,12 +320,12 @@ class ServiceHelper:
                 difx = diffrep[0] + 0.25*diffatt[0]
                 dify = diffrep[1] + 0.25*diffatt[1]
                 difz = diffrep[2] + 0.25*diffatt[2]
-                rospy.loginfo("rep: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+                rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             else:
                 difx = diffatt[0]
                 dify = diffatt[1]
                 difz = diffatt[2]
-                rospy.loginfo("rep: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+                rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
 
             if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 1:#
                 PathComplete = 1
