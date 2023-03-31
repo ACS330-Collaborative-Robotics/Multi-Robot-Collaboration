@@ -34,6 +34,8 @@ def spawner():
         rospy.sleep(0.1)
     rospy.loginfo("Block Spawner - Got camera data.")
 
+    print("\n\n\n\n", blockData, "\n\n\n\n")
+
     # Spawn blocks in radius around each robot base with a minimum and maximum distance
     
     pos = Pose() # Pose object to be filled randomly
