@@ -7,12 +7,16 @@ from sensor_msgs.msg import JointState
 
 from math import pi
 import matplotlib.pyplot as plt
+import numpy as np
 
-simulation_state = []
+simulation_state = [[],[]]
 
 def simulation_state_callback(data):
     joint_positions = list(data.position)
-    simulation_state.append(joint_positions[joint_number-1])
+    time = data.header.stamp.to_sec()
+
+    simulation_state[0].append(time)
+    simulation_state[1].append(joint_positions[joint_number-1])
     
 def talker():
     rospy.init_node('joint_behaviour_test')
@@ -30,7 +34,7 @@ def talker():
     initial_angle_degrees = 0
     final_angle_degrees = 90
     
-    time_delay_seconds = 5
+    time_delay_seconds = 2
 
     #############################
 
@@ -65,8 +69,14 @@ def talker():
     rospy.sleep(0.1) # Small delay for subscriber to unregister
 
     ## Plot response
-    sample_number = range(0, len(simulation_state))
-    plt.plot(sample_number, simulation_state)
+    simulation_zero_time = simulation_state[0][0]
+    simulation_time_array = np.array(simulation_state[0]) - simulation_zero_time
+
+    plt.plot(simulation_time_array, simulation_state[1])
+
+    plt.xlabel("Time (s)")
+    plt.ylabel("Joint Angle (radians)")
+    plt.title("Joint " + str(joint_number))
     plt.show()
 
     rospy.logwarn("Plot displayed. Close plot to terminate script.")
