@@ -49,7 +49,7 @@ class GUI:
             self.emergency_stop_info.grid_remove()  # hide the label when the mouse leaves the button
         self.emergency_stop_button.bind("<Enter>", show_tooltip)
         self.emergency_stop_button.bind("<Leave>", hide_tooltip)
-
+        
         # pause 
         self.pause_button = tk.Button(master, text="PAUSE", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
         self.pause_button.grid(row=5, column=0, sticky="w")
@@ -85,12 +85,11 @@ class GUI:
         self.hardware_label = tk.Label(master, text="Hardware connected")
         self.hardware_label.grid(row=4, column=2, sticky="w")
 
-        # april tags scanned light 
+        # april tags succcessfully scanned light 
 
         # nodes configured light
-        # the aim of these lights is to firstly check that the inverse_kinematics service is running
+        # the aim of these lights is to firstly check that the inverse_kinematics service is running (includes controllers)
         # to check that roscore is running and that the gui can communicate with it
-        # to check that the joint_controller node is running
         self.nodes_light = tk.Label(master,bg="red", width=2, height=1)
         self.nodes_light.grid(row=5, column=1, sticky="w")
         self.nodes_label = tk.Label(master, text="Nodes configured")
@@ -109,6 +108,11 @@ class GUI:
         print(f"Output: {output}, return code: {return_code}")
 
         # error status light
+        # checks the status of the most recent error
+        # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
+        # yellow if it is 1, 2 or 3
+        # orange if it is 4
+        # red if it is 5
         self.error_light = tk.Label(master,bg="red", width=2, height=1)
         self.error_light.grid(row=6, column=1, sticky="w")
         self.error_label = tk.Label(master, text="Error status")
@@ -125,7 +129,7 @@ class GUI:
         self.angles_A.grid(row=9, column=0, sticky="w")
         self.angles_B = tk.Label(master, text="Robot B joint angles (rad): ")
         self.angles_B.grid(row=10, column=0, sticky="w")
-
+        
 
         # Create a listener for the clock topic
         rospy.init_node('listener', anonymous=True)
@@ -135,18 +139,11 @@ class GUI:
         self.bridge = CvBridge()
         rospy.Subscriber('/camera1/image_raw', ImageMsg, self.callback_video)
 
-        # Create a listener for the joints
-        rospy.init_node('listener', anonymous=True)
-        rospy.Subscriber('/mover6_a/joint_angles', Joints, self.callback_joint_a)
-        rospy.init_node('listener', anonymous=True)
-        rospy.Subscriber('/mover6_b/joint_angles', Joints, self.callback_joint_b)
-
         # Start a separate thread for the ROS spin loop
         self.thread = threading.Thread(target=rospy.spin)
         self.thread.start()
 
-   
-     # update video frame
+    # update video frame
     def callback_video(self, data):
         # Convert the ROS image message to a cv2 image
         cv_image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8')
@@ -197,7 +194,6 @@ class GUI:
         self.sim_preview_button.config(text="STOP PREVIEW", bg="red", fg="black")
 
    
-
 if __name__ == '__main__':
     root = tk.Tk()
     root.geometry("{}x{}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
