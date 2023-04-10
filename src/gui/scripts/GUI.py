@@ -32,27 +32,69 @@ class GUI:
         self.cam_canvas = tk.Canvas(master, width=540, height=380)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
+        # blank space
+        self.blank_label = tk.Label(master, text="")
+        self.blank_label.grid(row=3, column=0, sticky="w")
+
         # buttons
+        # emergency stop
         self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
-        self.emergency_stop_button.grid(row=3, column=0, )
-        self.pause_button = tk.Button(master, text="PAUSE", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.pause_physical_clicked)
-        self.pause_button.grid(row=4, column=0, )
+        self.emergency_stop_button.grid(row=4, column=0, sticky="w")
+        self.emergency_stop_info = tk.Label(master, text="Emergency stop physical and simulated robots.")
+        self.emergency_stop_info.grid(row=4, column=0, sticky="e")
+        self.emergency_stop_info.grid_remove()  # hide the label initially
+        def show_tooltip(event):
+            self.emergency_stop_info.grid()  # show the label when the mouse enters the button
+        def hide_tooltip(event):
+            self.emergency_stop_info.grid_remove()  # hide the label when the mouse leaves the button
+        self.emergency_stop_button.bind("<Enter>", show_tooltip)
+        self.emergency_stop_button.bind("<Leave>", hide_tooltip)
+
+        # pause 
+        self.pause_button = tk.Button(master, text="PAUSE", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
+        self.pause_button.grid(row=5, column=0, sticky="w")
+        self.pause_info = tk.Label(master, text="Pause physical and simulated robots.")
+        self.pause_info.grid(row=5, column=0, sticky="e")
+        self.pause_info.grid_remove()  # hide the label initially
+        def show_tooltip(event):
+            self.pause_info.grid()  # show the label when the mouse enters the button
+        def hide_tooltip(event):
+            self.pause_info.grid_remove()  # hide the label when the mouse leaves the button
+        self.pause_button.bind("<Enter>", show_tooltip)
+        self.pause_button.bind("<Leave>", hide_tooltip)
+        
+        # sim preview
         self.sim_preview_button = tk.Button(master, text="SIM PREVIEW", bg="yellow", fg="black", font=("Calibri", 10, "bold"), command=self.sim_preview_clicked)
-        self.sim_preview_button.grid(row=5, column=0, )
+        self.sim_preview_button.grid(row=6, column=0, sticky="w")
+        self.sim_preview_info = tk.Label(master, text="Pause physical robot and continue simulation.")
+        self.sim_preview_info.grid(row=6, column=0, sticky="e")
+        self.sim_preview_info.grid_remove()  # hide the label initially
+        def show_tooltip(event):
+            self.sim_preview_info.grid()  # show the label when the mouse enters the button
+        def hide_tooltip(event):
+            self.sim_preview_info.grid_remove()  # hide the label when the mouse leaves the button
+        self.sim_preview_button.bind("<Enter>", show_tooltip)
+        self.sim_preview_button.bind("<Leave>", hide_tooltip)
     
         # status indicator lights
         # hardware connected light
+        # to check that the mover6s are connected to the system
+        # to check that the raspberry pis are connected by checking the relevant topics are running
         self.hardware_light = tk.Label(master,bg="red", width=2, height=1)
-        self.hardware_light.grid(row=3, column=1, sticky="w")
+        self.hardware_light.grid(row=4, column=1, sticky="w")
         self.hardware_label = tk.Label(master, text="Hardware connected")
-        self.hardware_label.grid(row=3, column=2, sticky="w")
+        self.hardware_label.grid(row=4, column=2, sticky="w")
+
+        # april tags scanned light 
 
         # nodes configured light
+        # the aim of these lights is to firstly check that the inverse_kinematics service is running
+        # to check that roscore is running and that the gui can communicate with it
+        # to check that the joint_controller node is running
         self.nodes_light = tk.Label(master,bg="red", width=2, height=1)
-        self.nodes_light.grid(row=4, column=1, sticky="w")
+        self.nodes_light.grid(row=5, column=1, sticky="w")
         self.nodes_label = tk.Label(master, text="Nodes configured")
-        self.nodes_label.grid(row=4, column=2, sticky="w")
-
+        self.nodes_label.grid(row=5, column=2, sticky="w")
         # self.required_services = ['/inverse_kinematics', '/inverse_kinematics_reachability', '/inverse_kinematics_server/get_loggers', '/inverse_kinematics_server/set_logger_level']
         # Wait for the service to become available
         service_name = '/inverse_kinematics'
@@ -68,21 +110,21 @@ class GUI:
 
         # error status light
         self.error_light = tk.Label(master,bg="red", width=2, height=1)
-        self.error_light.grid(row=5, column=1, sticky="w")
+        self.error_light.grid(row=6, column=1, sticky="w")
         self.error_label = tk.Label(master, text="Error status")
-        self.error_label.grid(row=5, column=2, sticky="w")
+        self.error_label.grid(row=6, column=2, sticky="w")
 
         # blank space
         self.blank_label = tk.Label(master, text="")
-        self.blank_label.grid(row=6, column=0, sticky="w")
+        self.blank_label.grid(row=7, column=0, sticky="w")
 
         # joint angles
         self.angles= tk.Label(master, text="Joint angles from base to end-effector: ")
-        self.angles.grid(row=7, column=0, sticky="w")
+        self.angles.grid(row=8, column=0, sticky="w")
         self.angles_A = tk.Label(master, text="Robot A joint angles (rad): ")
-        self.angles_A.grid(row=8, column=0, sticky="w")
+        self.angles_A.grid(row=9, column=0, sticky="w")
         self.angles_B = tk.Label(master, text="Robot B joint angles (rad): ")
-        self.angles_B.grid(row=9, column=0, sticky="w")
+        self.angles_B.grid(row=10, column=0, sticky="w")
 
 
         # Create a listener for the clock topic
@@ -147,10 +189,10 @@ class GUI:
 
     def change_button_state(self):
         self.emergency_stop_button.config(text="START", bg="green", fg="black")
-    
-    def pause_physical_clicked(self):
+
+    def pause_button_state(self):
         self.pause_button.config(text="START", bg="green", fg="black")
-   
+    
     def sim_preview_clicked(self):
         self.sim_preview_button.config(text="STOP PREVIEW", bg="red", fg="black")
 
