@@ -9,7 +9,15 @@ from math import pi
 import matplotlib.pyplot as plt
 import numpy as np
 
+command_state = [[],[]]
 simulation_state = [[],[]]
+
+def command_state_callback(data):
+    joint_positions = list(data.joints)
+    time = rospy.get_time()
+
+    command_state[0].append(time)
+    command_state[1].append(joint_positions[joint_number-1])
 
 def simulation_state_callback(data):
     joint_positions = list(data.position)
@@ -45,6 +53,7 @@ def talker():
     joint_positions = [0 for i in range(6)]
 
     ## Initialise listeners
+    command_positions_subscriber = rospy.Subscriber(robot_name + "/joint_angles", Joints, command_state_callback)
     simulation_positions_subscriber = rospy.Subscriber(robot_name + "/joint_states", JointState, simulation_state_callback)
 
     rospy.sleep(0.1) # Small delay for publishers & subscribers to register
@@ -64,22 +73,34 @@ def talker():
     rospy.sleep(time_delay_seconds)
 
     ## Disable subscribers
+    command_positions_subscriber.unregister()
     simulation_positions_subscriber.unregister()
 
     rospy.sleep(0.1) # Small delay for subscriber to unregister
 
     ## Plot response
-    simulation_zero_time = simulation_state[0][0]
-    simulation_time_array = np.array(simulation_state[0]) - simulation_zero_time
+    zero_time = command_state[0][0]
+    command_time_array = np.array(command_state[0]) - zero_time
 
-    plt.plot(simulation_time_array, simulation_state[1])
+    plt.scatter(command_time_array, command_state[1], color="red")
+
+    command_line_time = np.linspace(0, time_delay_seconds*2, 20)
+    command_line_initial = np.full(command_line_time.shape, initial_angle)
+    command_line_final = np.full(command_line_time.shape, final_angle)
+
+    plt.plot(command_line_time, command_line_initial, "r:")
+    plt.plot(command_line_time, command_line_final, "r:")
+
+    simulation_time_array = np.array(simulation_state[0]) - zero_time
+
+    plt.plot(simulation_time_array, simulation_state[1], color="black")
 
     plt.xlabel("Time (s)")
     plt.ylabel("Joint Angle (radians)")
     plt.title("Joint " + str(joint_number))
-    plt.show()
 
-    rospy.logwarn("Plot displayed. Close plot to terminate script.")
+    rospy.logwarn("Plot displaying. Close plot to terminate script.")
+    plt.show()
 
 if __name__ == '__main__':
     try:
