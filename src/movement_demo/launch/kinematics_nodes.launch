@@ -1,0 +1,10 @@
+<launch>
+  <node name="block_pos_talker" pkg="block_controller" type="block_pos_talker.py" output="screen"/>
+  <!--include file="$(find fiducial_recognition)/launch/fiducial_recognition.launch"/!-->
+  <node name="inverse_kinematics_server" pkg="inv_kinematics" type="inv_kin_srv.py" output="screen"/>
+  <node name="path_planner_server" pkg="path_planning" type="path_plan.py" output="screen"/>
+  <node name="joint_controller" pkg="joint_controller" type="joint_controller.py" ns="/mover6_a" args="mover6_a" output="screen"/>
+  <node name="gripper_controller" pkg="joint_controller" type="gripper_controller.py" ns="/mover6_a" args="mover6_a" output="screen"/>
+  <node name="joint_controller" pkg="joint_controller" type="joint_controller.py" ns="/mover6_b" args="mover6_b" output="screen"/>
+  <node name="gripper_controller" pkg="joint_controller" type="gripper_controller.py" ns="/mover6_b" args="mover6_b" output="screen"/>
+</launch>
