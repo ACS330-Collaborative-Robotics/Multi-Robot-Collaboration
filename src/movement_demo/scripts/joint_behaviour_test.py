@@ -11,6 +11,7 @@ import numpy as np
 
 command_state = [[],[]]
 simulation_state = [[],[]]
+physical_state = [[],[]]
 
 def command_state_callback(data):
     joint_positions = list(data.joints)
@@ -25,6 +26,13 @@ def simulation_state_callback(data):
 
     simulation_state[0].append(time)
     simulation_state[1].append(joint_positions[joint_number-1])
+
+def physical_state_callback(data):
+    joint_positions = list(data.joints)
+    time = rospy.get_time()
+
+    physical_state[0].append(time)
+    physical_state[1].append(joint_positions[joint_number-1])
     
 def talker():
     rospy.init_node('joint_behaviour_test')
@@ -55,6 +63,7 @@ def talker():
     ## Initialise listeners
     command_positions_subscriber = rospy.Subscriber(robot_name + "/joint_angles", Joints, command_state_callback)
     simulation_positions_subscriber = rospy.Subscriber(robot_name + "/joint_states", JointState, simulation_state_callback)
+    physical_positions_subscriber = rospy.Subscriber(robot_name + "_p/physical/joint_angles", Joints, physical_state_callback)
 
     rospy.sleep(0.1) # Small delay for publishers & subscribers to register
 
@@ -75,6 +84,7 @@ def talker():
     ## Disable subscribers
     command_positions_subscriber.unregister()
     simulation_positions_subscriber.unregister()
+    physical_positions_subscriber.unregister()
 
     rospy.sleep(0.1) # Small delay for subscriber to unregister
 
@@ -88,16 +98,21 @@ def talker():
     command_line_initial = np.full(command_line_time.shape, initial_angle)
     command_line_final = np.full(command_line_time.shape, final_angle)
 
-    plt.plot(command_line_time, command_line_initial, "r:")
+    plt.plot(command_line_time, command_line_initial, "r:", label="Command")
     plt.plot(command_line_time, command_line_final, "r:")
 
     simulation_time_array = np.array(simulation_state[0]) - zero_time
 
-    plt.plot(simulation_time_array, simulation_state[1], color="black")
+    plt.plot(simulation_time_array, simulation_state[1], color="black", label="Simulation")
+
+    physical_time_array = np.array(physical_state[0]) - zero_time
+
+    plt.plot(physical_time_array, physical_state[1], color="blue", label="Physical")
 
     plt.xlabel("Time (s)")
     plt.ylabel("Joint Angle (radians)")
     plt.title("Joint " + str(joint_number))
+    plt.legend(loc=7)
 
     rospy.logwarn("Plot displaying. Close plot to terminate script.")
     plt.show()
