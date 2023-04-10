@@ -2,6 +2,7 @@
 import rospy
 import subprocess
 import threading
+import subprocess
 
 import tkinter as tk
 from tkinter import ttk
@@ -139,7 +140,12 @@ class GUI:
         joint_angles_str = ["{:.1f}".format(joint_angle) for joint_angle in joint_angles]
         self.angles_B.configure(text="Robot B joint angles (rad): " + ", ".join(joint_angles_str))
    
+    
     def emergency_stop_clicked(self):
+            subprocess.call(['/usr/bin/python3', '/home/wiks2/catkin_ws/src/e_stop/scripts/e_stop.py'])
+            self.change_button_state()
+
+    def change_button_state(self):
         self.emergency_stop_button.config(text="START", bg="green", fg="black")
     
     def pause_physical_clicked(self):
