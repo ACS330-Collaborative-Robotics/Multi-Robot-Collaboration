@@ -46,6 +46,7 @@ Robot Joints - `1 -> 6`
 | - | - | - | - |
 | Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun mover6_joint_movement_demo joint_movement_demo.py`|
 | Kinematics Movement Demo | movement_demo | Moves both mover6 robots to 5cm above randomly selected block, alternating robots on 2 second cadence. | `rosrun mover6_joint_movement_demo kinematics_movement_demo.py` |
+| Joint Behaviour Test | movement_demo | Moves the a mover6 joint to a specific position and plots the simulation and physical response. | `rosrun mover6_joint_movement_demo joint_behaviour_test.py`|
 | Test Kinematic Chain | movement_demo | Executes Path Plan service call once | `rosrun mover6_joint_movement_demo test_kinematic_chain.py` |
 | Mover6 Driver | joint_controller | Relays data from physical robot demand position to physical robot including change of units. |`export ROS_NAMESPACE=/mover6_a_p` `rosrun joint_controller mover6_driver` |
 | Fixed Zone Controller | zone_controller | Publishes a pair of fixed zones for testing purposes. | `rosrun zone_controller fixed_zone.py` |
@@ -96,6 +97,15 @@ Run each of the following in its own terminal tab, after running `cd ~/catkin_ws
  - `roscore` - ROS Core
  - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
  - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
+
+### Alternative Startup Instructions
+
+Test joint behaviour using `movement_demo/joint_behaviour_test.py`.
+
+ - `roscore` - ROS Core
+ - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
+ - `roslaunch movement_demo kinematics_nodes.launch` - Block Position Publisher, Inverse Kinematics, Joint Controller, Gripper Controller, Path Planner
+ - `rosrun movement_demo joint_behaviour_test.py`
 
 ### Mover6 Dashboard with RViz
 
