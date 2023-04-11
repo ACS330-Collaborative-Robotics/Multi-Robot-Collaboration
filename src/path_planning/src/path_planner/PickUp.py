@@ -20,11 +20,13 @@ class PickUp(Movement.Movement):
         pose = self.serv_helper.getBlockPos(block_name)
         
         # Move 5cm above block
-        pose.position.z += 0.15
+        pose.position.z += 0.25
 
         # Set End Effector orientation to point downwards using quaternions
-        orientation_in_euler = [0,180*pi/180,0]
+        orientation_in_euler = [0,pi,0]
         orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+
+        rospy.logerr("%.2f\t%.2f\t%.2f\t%.2f", orientation[0], orientation[1], orientation[2], orientation[3])
         
         pose.orientation.x = orientation[0]
         pose.orientation.y = orientation[1]

@@ -110,7 +110,7 @@ def inverse_kinematics_service(req):
             final_orientation = list(end_effector_position.rot)
             final = final_position + final_orientation
 
-            rospy.logdebug("Type\tx\ty\tz\trx\try\trz\trw")
+            rospy.logdebug("Type\tx\ty\tz\trx\try\trz\t\trw")
 
             target_values_display = "\t".join([str(round(value, 3)) for value in target])
             rospy.logdebug("Goal\t%s", target_values_display)
