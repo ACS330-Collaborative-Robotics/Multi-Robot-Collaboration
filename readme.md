@@ -44,7 +44,7 @@ Robot Joints - `1 -> 6`
 
 | Nickname | Package | Description | Startup Script |
 | - | - | - | - |
-| Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun movement_demo joint_movement_demo.py`|
+| Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun movement_demo joint_sweep_test.py`|
 | Inverse Kinematics Test | movement_demo | Completes one inverse kinematics service call. | `rosrun movement_demo inverse_kinematics_test.py` |
 | Joint Behaviour Test | movement_demo | Moves the a mover6 joint to a specific position and plots the simulation and physical response. | `rosrun movement_demo joint_behaviour_test.py`|
 | Path Planner Test | movement_demo | Executes Path Plan action once | `rosrun movement_demo path_planner_test.py` |
@@ -59,7 +59,7 @@ Robot Joints - `1 -> 6`
 | Roscore | `/rosout` `/rosout_agg` | Roscore setup nodes |  |  |  |
 | Block Positions | `/blocks_pos` | `block_controller Blocks OR tf2_listener` | `from block_controller.msg import Block, Blocks` | `block_controller block_pos_talker.py OR tf2_listener.py` | `assignment_selection block_selection.py` |
 | Gazebo Model States (All Models) | `/gazebo/model_states` | `gazebo_msgs ModelStates` | `from gazebo_msgs.msg import ModelStates` | Gazebo | `block_controller block_pos_talker.py` | 
-| Gazebo Joint Position Controller | `robot_ns/jointX_position_controller/command` | `from std_msgs.msg import Float64` | `inv_kinematics inv_kin_srv.py`, `movement_demo joint_movement_demo.py`, `inv_kin_ros.m` | Gazebo |
+| Gazebo Joint Position Controller | `robot_ns/jointX_position_controller/command` | `from std_msgs.msg import Float64` | `inv_kinematics inv_kin_srv.py` | Gazebo |
 | Setup/RVis | `/clicked_point`, `/initialpose`, `/move_base_simple/goal` | Setup and run by rvis/CPR_Robot driver | We do not use however are needed for setup |  |  |
 | Mover6 Input Channel | `/robot_ns_p/InputChannels` | cpr_robot/ChannelStates |  | /mover6_a_p/CPRMover6 | /mover6_a_p/rviz |
 | Mover6 Output Channel | `/robot_ns_p/OutputChannels` | cpr_robot/ChannelStates |  | /mover6_a_p/CPRMover6 | /mover6_a_p/rviz |
