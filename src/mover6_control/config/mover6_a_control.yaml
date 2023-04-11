@@ -12,7 +12,7 @@ mover6_a:
   joint2_position_controller:
     type: effort_controllers/JointPositionController
     joint: joint2
-    pid: {p: 5.0, i: 0.01, d: 1.0}
+    pid: {p: 50.0, i: 0.01, d: 10.0}
   joint3_position_controller:
     type: effort_controllers/JointPositionController
     joint: joint3
