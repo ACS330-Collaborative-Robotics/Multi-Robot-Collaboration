@@ -1,6 +1,6 @@
 import rospy
 import actionlib
-import tf
+import tf_conversions
 
 from path_planning.msg import PathPlanAction, PathPlanGoal
 from geometry_msgs.msg import Pose
@@ -18,7 +18,7 @@ def choose_block():
     goal.block_name = "block6"
 
     cartesian_coordinates = [0.25, 0, 0]
-    orientation_in_euler = [0, pi, 0]
+    orientation_in_euler = [0, 0, 0]
 
     #############################
 
@@ -35,7 +35,7 @@ def choose_block():
     end_pos.position.y = cartesian_coordinates[1]
     end_pos.position.z = cartesian_coordinates[2]
 
-    quat = tf.transformations.quaternion_from_euler(orientation_in_euler[0],orientation_in_euler[1],orientation_in_euler[2])
+    quat = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0],orientation_in_euler[1],orientation_in_euler[2])
 
     end_pos.orientation.x = quat[0]
     end_pos.orientation.y = quat[1]
