@@ -5,6 +5,8 @@ import tf
 from path_planning.msg import PathPlanAction, PathPlanGoal
 from geometry_msgs.msg import Pose
 
+from math import pi
+
 def choose_block():
     goal = PathPlanGoal()
 
@@ -13,10 +15,10 @@ def choose_block():
     #############################
 
     goal.robot_name = "mover6_a"
-    goal.block_name = "block18"
+    goal.block_name = "block6"
 
-    cartesian_coordinates = [0.2, 0, 0.2]
-    orientation_in_euler = [0, 0, 0]
+    cartesian_coordinates = [0.25, 0, 0]
+    orientation_in_euler = [0, pi, 0]
 
     #############################
 
@@ -45,6 +47,8 @@ def choose_block():
     rospy.loginfo("Test Kinematic Chain - Calling path planner")
     
     path_client.send_goal(goal)
+
+    rospy.sleep(0.01)
 
     while (path_client.get_state() == 1) and not rospy.is_shutdown():
         rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
