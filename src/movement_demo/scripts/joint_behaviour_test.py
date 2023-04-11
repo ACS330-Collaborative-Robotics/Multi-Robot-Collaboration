@@ -11,7 +11,8 @@ import numpy as np
 
 command_state = [[],[]]
 simulation_state = [[],[]]
-physical_state = [[],[]]
+physical_state_time = []
+physical_state_state = []
 
 def command_state_callback(data):
     joint_positions = list(data.joints)
@@ -29,11 +30,12 @@ def simulation_state_callback(data):
 
 def physical_state_callback(data):
     joint_positions = list(data.position)
-    print(physical_state)
     time = rospy.get_time()
+    print(joint_positions)
+    print(joint_positions[joint_number-1])
 
-    physical_state[0].append(time)
-    physical_state[1].append(joint_positions[joint_number-1])
+    physical_state_time.append(time)
+    physical_state_state.append(joint_positions[joint_number-1])
     
 def talker():
     rospy.init_node('joint_behaviour_test')
@@ -106,9 +108,9 @@ def talker():
 
     plt.plot(simulation_time_array, simulation_state[1], color="black", label="Simulation")
 
-    physical_time_array = np.array(physical_state[0]) - zero_time
+    physical_time_array = np.array(physical_state_time) - zero_time
 
-    plt.plot(physical_time_array, physical_state[1], color="blue", label="Physical")
+    plt.plot(physical_time_array, physical_state_state, color="blue", label="Physical")
 
     plt.xlabel("Time (s)")
     plt.ylabel("Joint Angle (radians)")
