@@ -31,11 +31,10 @@ def simulation_state_callback(data):
 def physical_state_callback(data):
     joint_positions = list(data.position)
     time = rospy.get_time()
-    print(joint_positions)
-    print(joint_positions[joint_number-1])
+    if len(joint_positions) == 6:
 
-    physical_state_time.append(time)
-    physical_state_state.append(joint_positions[joint_number-1])
+        physical_state_time.append(time)
+        physical_state_state.append(joint_positions[joint_number-1])
     
 def talker():
     rospy.init_node('joint_behaviour_test')
@@ -53,7 +52,7 @@ def talker():
     initial_angle_degrees = 0
     final_angle_degrees = -90
     
-    time_delay_seconds = 10
+    time_delay_seconds = 15
 
     #############################
 
