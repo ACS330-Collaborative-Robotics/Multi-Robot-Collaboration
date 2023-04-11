@@ -45,7 +45,7 @@ Robot Joints - `1 -> 6`
 | Nickname | Package | Description | Startup Script |
 | - | - | - | - |
 | Joint Position Movement Demo | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun movement_demo joint_sweep_test.py`|
-| Inverse Kinematics Test | movement_demo | Completes one inverse kinematics service call. | `rosrun movement_demo inverse_kinematics_test.py` |
+| Inverse Kinematics Test | movement_demo | Completes one inverse kinematics service call. | `rosrun movement_demo inverse_kinematic_test.py` |
 | Joint Behaviour Test | movement_demo | Moves the a mover6 joint to a specific position and plots the simulation and physical response. | `rosrun movement_demo joint_behaviour_test.py`|
 | Path Planner Test | movement_demo | Executes Path Plan action once | `rosrun movement_demo path_planner_test.py` |
 | Mover6 Driver | joint_controller | Relays data from physical robot demand position to physical robot including change of units. |`export ROS_NAMESPACE=/mover6_a_p` `rosrun joint_controller mover6_driver` |
