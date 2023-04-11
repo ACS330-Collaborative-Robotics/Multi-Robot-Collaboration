@@ -7,8 +7,7 @@ import rospy
 import tf_conversions
 from math import pi
 
-from gazebo_msgs.msg import ModelState
-from inv_kinematics.srv import InvKin
+from inv_kinematics.srv import InvKin, InvKinRequest 
 from geometry_msgs.msg import Pose
 
 def main():
@@ -21,7 +20,7 @@ def main():
 
     robot_name = "mover6_a"
 
-    cartesian_coordinates = [0.25, 0, 0]
+    cartesian_coordinates = [0.25, 0, 0.2]
     orientation_in_euler = [pi, 0, pi]
 
     #############################
@@ -33,9 +32,9 @@ def main():
     rospy.loginfo("Calling Inverse Kinematics Service.")
 
     # Initialise and fill ArmPos object
-    inverse_kinematics_object = ModelState()
-    inverse_kinematics_object.model_name = robot_name
-    inverse_kinematics_object.reference_frame = ""
+    inverse_kinematics_object = InvKinRequest()
+    inverse_kinematics_object.state.model_name = robot_name
+    inverse_kinematics_object.state.reference_frame = ""
 
     end_pos = Pose()
     
@@ -50,9 +49,9 @@ def main():
     end_pos.orientation.z = quat[2]
     end_pos.orientation.w = quat[3]
 
-    inverse_kinematics_object.pose = end_pos
+    inverse_kinematics_object.state.pose = end_pos
 
-    status = inverse_kinematics_service(inverse_kinematics_service).success
+    status = inverse_kinematics_service(inverse_kinematics_object).success
 
     if status:
         rospy.loginfo("Inverse Kinematics Success.")
