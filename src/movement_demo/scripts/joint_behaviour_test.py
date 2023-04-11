@@ -52,7 +52,7 @@ def talker():
     initial_angle_degrees = -50
     final_angle_degrees = 10
     
-    time_delay_seconds = 7
+    time_delay_seconds = 5
 
     #############################
 

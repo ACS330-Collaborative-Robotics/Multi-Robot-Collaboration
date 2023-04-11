@@ -197,8 +197,8 @@
 		<parent link="link1"/>
 		<child link="link2"/>
 		<origin rpy="0 0 0" xyz="0 0 0.0625"/>
-		<limit lower="-0.87" upper="1.05" effort="1000000" velocity="0.0015"/>
-		<joint_properties damping="10.0" friction="10000.0"/>
+		<limit lower="-0.87" upper="1.05" effort="100" velocity="0.0015"/>
+		<joint_properties damping="10000.0" friction="10000000.0"/>
 	</joint>
 
 	<joint name="joint3" type="revolute">
