@@ -62,7 +62,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint1Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:j2_inertial z_value="0" mass="0.0"/>
+		<xacro:j2_inertial z_value="0" mass="0.0001"/>
 	</link>
 
 	<link name="link2">
@@ -78,7 +78,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint2Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.0"/>
+		<xacro:default_inertial z_value="0" mass="0.0001"/>
 	</link>
 
 	<link name="link3">
@@ -94,7 +94,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint3Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.0"/>
+		<xacro:default_inertial z_value="0" mass="0.0001"/>
 	</link>
 
 	<link name="link4">
@@ -110,7 +110,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint4Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.0"/>
+		<xacro:default_inertial z_value="0" mass="0.0001"/>
 	</link>
 
 	<link name="link5">
@@ -126,7 +126,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint5Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.0"/>
+		<xacro:default_inertial z_value="0" mass="0.0001"/>
 	</link>
 
 	<link name="link6">
@@ -142,7 +142,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint6Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.1"/>
+		<xacro:default_inertial z_value="0" mass="0.0001"/>
 	</link>
 
 	<link name="link7">
@@ -158,7 +158,7 @@
 				<mesh filename="package://mover6_description/meshes/joint7.STL" scale="1 1 1"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.0"/>
+		<xacro:default_inertial z_value="0" mass="0.0001"/>
 	</link>
 
 	<link name="gripper_a">
@@ -174,7 +174,7 @@
 				<mesh filename="package://mover6_description/meshes/gripper_a.STL" scale="1 1 1"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.0"/>
+		<xacro:default_inertial z_value="0" mass="0.0001"/>
 	</link>
 
 	<link name="gripper_b">
@@ -190,7 +190,7 @@
 				<mesh filename="package://mover6_description/meshes/gripper_b.STL" scale="1 1 1"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.0"/>
+		<xacro:default_inertial z_value="0" mass="0.0001"/>
 	</link>
 
 
