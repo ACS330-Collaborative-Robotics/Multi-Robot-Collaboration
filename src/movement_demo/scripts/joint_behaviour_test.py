@@ -28,7 +28,8 @@ def simulation_state_callback(data):
     simulation_state[1].append(joint_positions[joint_number-1])
 
 def physical_state_callback(data):
-    joint_positions = list(data.joints)
+    joint_positions = list(data.position)
+    print(physical_state)
     time = rospy.get_time()
 
     physical_state[0].append(time)
@@ -44,13 +45,13 @@ def talker():
     #############################
 
     robot_name = "mover6_a"
-    joint_number = 5 # Range: 1-6
+    joint_number = 1 # Range: 1-6
 
     # Initial Angle -> Time Delay -> Final Angle -> Time Delay
     initial_angle_degrees = 0
-    final_angle_degrees = 90
+    final_angle_degrees = -90
     
-    time_delay_seconds = 5
+    time_delay_seconds = 10
 
     #############################
 
@@ -63,7 +64,7 @@ def talker():
     ## Initialise listeners
     command_positions_subscriber = rospy.Subscriber(robot_name + "/joint_angles", Joints, command_state_callback)
     simulation_positions_subscriber = rospy.Subscriber(robot_name + "/joint_states", JointState, simulation_state_callback)
-    physical_positions_subscriber = rospy.Subscriber(robot_name + "_p/physical/joint_states", Joints, physical_state_callback)
+    physical_positions_subscriber = rospy.Subscriber(robot_name + "_p/joint_states", JointState, physical_state_callback)
 
     rospy.sleep(0.1) # Small delay for publishers & subscribers to register
 
