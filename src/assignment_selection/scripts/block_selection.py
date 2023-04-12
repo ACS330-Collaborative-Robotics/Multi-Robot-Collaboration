@@ -82,6 +82,7 @@ def choose_block():
         rospy.loginfo("Block Selection - Block selection complete. Beginnning publishing.")
 
         # Publish assignments
+        #trying to make it intelligent heheheh
         for i in range(max(len(x) for x in goCollect)):
             for j in range(len(robot_namespaces)):
                 if i < len(goCollect[j]):
