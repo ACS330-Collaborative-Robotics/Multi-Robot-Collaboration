@@ -89,31 +89,30 @@ def choose_block():
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
         
-        n = len(blockNames) #num of blocks
-        layers = math.ceil(n/2) #num of layers
+        total_blocks = len(blockNames) #num of blocks
+        num_layers = math.ceil(total_blocks/2) #num of layers
         tower_pos = [] #this has to be a 3 column * layers(value) matrix
-        h=0 #height of blocks
+        block_height = 0 #height of blocks
+
         #euler rotation comp
-        a=0
-        b=0
-        c=0
+        eulrot_a = 0
+        eulrot_b = 0
+        eulrot_c = 0
 
         # Generate coordinates
-        for i in range(layers):
-            w=0 #width of blocks
-            home_pos = [w,0,h,a,b,c]
+        for i in range(num_layers):
+            block_width = 0 #width of blocks
+            home_pos = [block_width,0,block_height,eulrot_a,eulrot_b,eulrot_c]
             for j in range(2):
-                home_pos = [w,0,h,a,b,c]
+                home_pos = [block_width,0,block_height,eulrot_a,eulrot_b,eulrot_c]
                 tower_pos.append(home_pos)
-                w=w+0.08
-            h=h+0.04
+                block_width = block_width + 0.08
+            block_height = block_height + 0.04
 
-            if c==0:
-                c=-90*(math.pi/180)
-            elif c==-90*(math.pi/180):
-                c=0
-
-        #print(tower_pos)
+            if eulrot_c ==0 :
+                eulrot_c = -90*(math.pi/180)
+            elif eulrot_c == -90*(math.pi/180):
+                eulrot_c = 0
 
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
