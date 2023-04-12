@@ -119,6 +119,7 @@ def choose_block():
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
         # Publish assignments
+        #testing pull
         for i in range(len(tower_pos)):
             for j in range(len(robot_namespaces)):
                 goal = PathPlanGoal()
