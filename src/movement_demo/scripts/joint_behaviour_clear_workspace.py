@@ -91,7 +91,7 @@ def talker(robot_name, angle, joint):
 if __name__ == '__main__':
     try:
         talker("mover6_b",-90,1)
-        talker("mover6_a",90,1)
+        #talker("mover6_a",90,1)
         talker("mover6_a",0,1)
         talker("mover6_a",0,2)
     except rospy.ROSInterruptException:
