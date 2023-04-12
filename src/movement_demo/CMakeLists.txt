@@ -167,7 +167,6 @@ include_directories(
 catkin_install_python(PROGRAMS 
   scripts/joint_behaviour_test.py
   scripts/joint_behaviour_clear_workspace.py
-  scripts/joint_movement_demo.py
   scripts/joint_sweep_test.py
   scripts/inverse_kinematic_test.py
   scripts/path_planner_test.py
