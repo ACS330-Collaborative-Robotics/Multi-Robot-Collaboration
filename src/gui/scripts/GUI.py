@@ -77,12 +77,32 @@ class GUI:
         self.sim_preview_button.bind("<Leave>", hide_tooltip)
     
         # status indicator lights
-        # hardware connected light
-        # to check that the mover6s are connected to the system
-        # to check that the raspberry pis are connected by checking the relevant topics are running
+
+        # raspberry Pis connected light
+        # 1 pi connected: 
+        # mover6_a_p/InputChannels, 
+        # /mover6_a_p/JointJog, 
+        # /mover6_a_p/OutputChannels, 
+        # /mover6_a_p/OutputChannels
+        # /mover6_a_p/joint_states
+        # /mover6_a_p/physical/joint_angles
+        # /mover6_a_p/physical/moving_state
+        # /mover6_a/robot_state
+        
+        # 2 pis connected;
+        # the above topics plus:
+        # /mover6_b_p_InputChannels
+        # /mover6_b_p/JointJog, 
+        # /mover6_b_p/OutputChannels, 
+        # /mover6_b_p/OutputChannels
+        # /mover6_b_p/joint_states
+        # /mover6_b_p/physical/joint_angles
+        # /mover6_b_p/physical/moving_state
+        # /mover6_b/robot_state
+        
         self.hardware_light = tk.Label(master,bg="red", width=2, height=1)
         self.hardware_light.grid(row=4, column=1, sticky="w")
-        self.hardware_label = tk.Label(master, text="Hardware connected")
+        self.hardware_label = tk.Label(master, text="Both Raspberry Pis connected")
         self.hardware_label.grid(row=4, column=2, sticky="w")
 
 
