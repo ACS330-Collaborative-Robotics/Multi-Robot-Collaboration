@@ -14,10 +14,14 @@ import cv2
 
 from custom_msgs.msg import Joints
 from std_msgs.msg import String, Float64, Float64MultiArray
-
+from rosgraph_msgs.msg import Log
+        
 
 class GUI:
     def __init__(self, master):
+        self.master = master
+        self.master.title("My GUI")
+
         # simulation
         self.sim_label = tk.Label(master, text="Simulation: ")
         self.sim_label.grid(row=0, column=0, sticky="w")
@@ -99,6 +103,7 @@ class GUI:
         # /mover6_b_p/physical/joint_angles
         # /mover6_b_p/physical/moving_state
         # /mover6_b/robot_state
+
         self.Pi_light = tk.Label(master,bg="red", width=2, height=1)
         self.Pi_light.grid(row=4, column=1, sticky="w")
         self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected")
@@ -135,7 +140,6 @@ class GUI:
       
 
 
-
        # nodes configured light
         # the aim of these lights is to firstly check that the inverse_kinematics service is running (includes controllers)
         # to check that roscore is running and that the gui can communicate with it
@@ -143,6 +147,7 @@ class GUI:
         self.nodes_light.grid(row=5, column=1, sticky="w")
         self.nodes_label = tk.Label(master, text="Core nodes configured")
         self.nodes_label.grid(row=5, column=2, sticky="w")
+        
         # self.required_services = ['/inverse_kinematics', '/inverse_kinematics_reachability', '/inverse_kinematics_server/get_loggers', '/inverse_kinematics_server/set_logger_level']
         # Wait for the service to become available
         ik_service = '/inverse_kinematics'
@@ -160,58 +165,16 @@ class GUI:
             self.nodes_light.config(bg="red")
         print(f"Output: {output}, return code: {return_code}")
 
-        # error status light
-        # checks the status of the most recent error
-        # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
-        # yellow if it is 1, 2 or 3
-        # orange if it is 4
-        # red if it is 5
-        class ErrorDisplay:
-            def __init__(self, master):
-                self.master = master
-                self.master.title("Error Display")
-                
-                # error status light
-                # checks the status of the most recent error
-                # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
-                # yellow if it is 1, 2 or 3
-                # orange if it is 4
-                # red if it is 5
-                self.error_light = tk.Label(master, bg="red", width=2, height=1)
-                self.error_light.grid(row=0, column=0, sticky="w")
-                self.error_label = tk.Label(master, text="Error status")
-                self.error_label.grid(row=0, column=1, sticky="w")
-
-                # error message box
-                self.error_msg = tk.Text(master, height=5, width=50)
-                self.error_msg.grid(row=1, column=0, columnspan=2)
-
-                # subscribe to the rosout topic
-                self.sub = rospy.Subscriber("/rosout", String, self.callback)
-
-            def callback(self, data):
-                # update the error status light
-                level = int(data.split(":")[0][-1])
-                if level in [1, 2, 3]:
-                    self.error_light.config(bg="yellow")
-                elif level == 4:
-                    self.error_light.config(bg="orange")
-                elif level == 5:
-                    self.error_light.config(bg="red")
-                
-                # update the error message box
-                self.error_msg.insert("1.0", data.data + "\n")
-            
-       
+        
         # blank space
         self.blank_label = tk.Label(master, text="")
         self.blank_label.grid(row=7, column=0, sticky="w")
         frame = ttk.Frame(master, relief="sunken", padding=10)
         frame.grid(row=8, column=0, columnspan=2, rowspan=3, sticky="nesw")
 
-
+        
         # Create a listener for the clock topic
-        rospy.init_node('listener','error_display', anonymous=True)
+        rospy.init_node('listener', anonymous=True)
         rospy.Subscriber('/clock', Float64, self.callback_time)
 
         # Create a listener for the video topic
@@ -222,19 +185,54 @@ class GUI:
         self.thread = threading.Thread(target=rospy.spin)
         self.thread.start()
 
+ 
+    # error status light
+    # checks the status of the most recent error
+    # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
+    # yellow if it is 1, 2 or 3
+    # orange if it is 4
+    # red if it is 5
+    def callback(data, error_msg, error_light):
+        # get the most recent error message and severity level
+        error_msgs = data.msg.split("\n")
+        most_recent_error = error_msgs[-2]
+        most_recent_severity = int(data.level)
+
+        # update the error message box
+        error_msg.delete(1.0, tk.END)
+        error_msg.insert(tk.END, most_recent_error)
+
+        # update the error status light
+        if most_recent_severity <= 3:
+            error_light.config(bg="yellow")
+        elif most_recent_severity == 4:
+            error_light.config(bg="orange")
+        else:
+            error_light.config(bg="red")
+
+    def error_display(master):
+        master.title("Error Display")
+
+        error_light = tk.Label(master, bg="yellow", width=2, height=1)
+        error_light.grid(row=0, column=0, sticky="w")
+        error_label = tk.Label(master, text="Error status")
+        error_label.grid(row=0, column=1, sticky="w")
+
+        # error message box
+        error_msg = tk.Text(master, height=5, width=50)
+        error_msg.grid(row=1, column=0, columnspan=2)
+
+        # subscribe to the rosout topic
+        sub = rospy.Subscriber("/rosout", Log, lambda data: callback(data, error_msg, error_light))
+
+
     # update video frame
     def callback_video(self, data):
-        # Convert the ROS image message to a cv2 image
-        cv_image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8')
-        # Resize the image to fit in the canvas
-        cv_image = cv2.resize(cv_image, (640, 480))
-        # Convert the cv2 image to a PIL image
-        pil_image = Image.fromarray(cv_image)
-        # Convert the PIL image to a Tkinter-compatible image
-        tk_image = ImageTk.PhotoImage(image=pil_image)
-        # Display the image on the canvas
+        cv_image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # ROS to cv2
+        cv_image = cv2.resize(cv_image, (640, 480)) 
+        pil_image = Image.fromarray(cv_image) # cv2 to PIL
+        tk_image = ImageTk.PhotoImage(image=pil_image) # PIL to Tkinter-compatible
         self.sim_canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
-        # Keep a reference to the image to prevent it from being garbage collected
         self.sim_canvas.image = tk_image
     
     # update simulation time 
@@ -248,8 +246,8 @@ class GUI:
 
     
     def emergency_stop_clicked(self):
-            subprocess.call(['/usr/bin/python3', '/home/wiks2/catkin_ws/src/e_stop/scripts/e_stop.py'])
-            self.change_button_state()
+        subprocess.call(['/usr/bin/python3', '/home/wiks2/catkin_ws/src/e_stop/scripts/e_stop.py'])
+        self.change_button_state()
 
     def change_button_state(self):
         self.emergency_stop_button.config(text="START", bg="green", fg="black")
