@@ -43,25 +43,25 @@ class GUI:
         self.emergency_stop_info = tk.Label(master, text="Emergency stop physical and simulated robots.")
         self.emergency_stop_info.grid(row=4, column=0, sticky="e")
         self.emergency_stop_info.grid_remove()  # hide the label initially
-        def show_tooltip(event):
+        def show_emergencyinfo(event):
             self.emergency_stop_info.grid()  # show the label when the mouse enters the button
-        def hide_tooltip(event):
+        def hide_emergencyinfo(event):
             self.emergency_stop_info.grid_remove()  # hide the label when the mouse leaves the button
-        self.emergency_stop_button.bind("<Enter>", show_tooltip)
-        self.emergency_stop_button.bind("<Leave>", hide_tooltip)
+        self.emergency_stop_button.bind("<Enter>", show_emergencyinfo)
+        self.emergency_stop_button.bind("<Leave>", hide_emergencyinfo)
         
         # pause 
-        self.pause_button = tk.Button(master, text="PAUSE", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
+        self.pause_button = tk.Button(master, text="PAUSE", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.pause_clicked)
         self.pause_button.grid(row=5, column=0, sticky="w")
         self.pause_info = tk.Label(master, text="Pause physical and simulated robots.")
         self.pause_info.grid(row=5, column=0, sticky="e")
         self.pause_info.grid_remove()  # hide the label initially
-        def show_tooltip(event):
+        def show_pauseinfo(event):
             self.pause_info.grid()  # show the label when the mouse enters the button
-        def hide_tooltip(event):
+        def hide_pauseinfo(event):
             self.pause_info.grid_remove()  # hide the label when the mouse leaves the button
-        self.pause_button.bind("<Enter>", show_tooltip)
-        self.pause_button.bind("<Leave>", hide_tooltip)
+        self.pause_button.bind("<Enter>", show_pauseinfo)
+        self.pause_button.bind("<Leave>", hide_pauseinfo)
         
         # sim preview
         self.sim_preview_button = tk.Button(master, text="SIM PREVIEW", bg="yellow", fg="black", font=("Calibri", 10, "bold"), command=self.sim_preview_clicked)
@@ -69,12 +69,12 @@ class GUI:
         self.sim_preview_info = tk.Label(master, text="Pause physical robot and continue simulation.")
         self.sim_preview_info.grid(row=6, column=0, sticky="e")
         self.sim_preview_info.grid_remove()  # hide the label initially
-        def show_tooltip(event):
+        def show_previewinfo(event):
             self.sim_preview_info.grid()  # show the label when the mouse enters the button
-        def hide_tooltip(event):
+        def hide_previewinfo(event):
             self.sim_preview_info.grid_remove()  # hide the label when the mouse leaves the button
-        self.sim_preview_button.bind("<Enter>", show_tooltip)
-        self.sim_preview_button.bind("<Leave>", hide_tooltip)
+        self.sim_preview_button.bind("<Enter>", show_previewinfo)
+        self.sim_preview_button.bind("<Leave>", hide_previewinfo)
     
         # status indicator lights
 
@@ -99,11 +99,41 @@ class GUI:
         # /mover6_b_p/physical/joint_angles
         # /mover6_b_p/physical/moving_state
         # /mover6_b/robot_state
-        
-        self.hardware_light = tk.Label(master,bg="red", width=2, height=1)
-        self.hardware_light.grid(row=4, column=1, sticky="w")
-        self.hardware_label = tk.Label(master, text="Both Raspberry Pis connected")
-        self.hardware_label.grid(row=4, column=2, sticky="w")
+        self.Pi_light = tk.Label(master,bg="red", width=2, height=1)
+        self.Pi_light.grid(row=4, column=1, sticky="w")
+        self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected")
+        self.Pi_label.grid(row=4, column=2, sticky="w")
+
+        piServices = ' '.join(['/mover6_a_p/InputChannels',
+        '/mover6_a_p/JointJog',
+        '/mover6_a_p/OutputChannels',
+        '/mover6_a_p/joint_states',
+        '/mover6_a_p/physical/joint_angles',
+        '/mover6_a_p/physical/moving_state',
+        '/mover6_a/robot_state',
+        '/mover6_b_p/InputChannels',
+        '/mover6_b_p/JointJog',
+        '/mover6_b_p/OutputChannels',
+        '/mover6_b_p/joint_states',
+        '/mover6_b_p/physical/joint_angles',
+        '/mover6_b_p/physical/moving_state',
+        '/mover6_b/robot_state'])
+
+        try:
+            output = subprocess.check_output(['rosservice', 'find', piServices])
+            return_code = 0
+            # check if service name is found in output
+            if piServices in output.decode('utf-8'):
+                self.Pi_light.config(bg="green")
+            else:
+                self.Pi_light.config(bg="red")
+        except subprocess.CalledProcessError as e:
+            output = e.output
+            return_code = e.returncode
+            self.nodes_light.config(bg="red")
+        print(f"Output: {output}, return code: {return_code}")
+      
+
 
 
        # nodes configured light
@@ -111,16 +141,16 @@ class GUI:
         # to check that roscore is running and that the gui can communicate with it
         self.nodes_light = tk.Label(master, bg="red", width=2, height=1)
         self.nodes_light.grid(row=5, column=1, sticky="w")
-        self.nodes_label = tk.Label(master, text="Nodes configured")
+        self.nodes_label = tk.Label(master, text="Core nodes configured")
         self.nodes_label.grid(row=5, column=2, sticky="w")
         # self.required_services = ['/inverse_kinematics', '/inverse_kinematics_reachability', '/inverse_kinematics_server/get_loggers', '/inverse_kinematics_server/set_logger_level']
         # Wait for the service to become available
-        service_name = '/inverse_kinematics'
+        ik_service = '/inverse_kinematics'
         try:
-            output = subprocess.check_output(['rosservice', 'find', service_name])
+            output = subprocess.check_output(['rosservice', 'find', ik_service])
             return_code = 0
             # check if service name is found in output
-            if service_name in output.decode('utf-8'):
+            if ik_service in output.decode('utf-8'):
                 self.nodes_light.config(bg="green")
             else:
                 self.nodes_light.config(bg="red")
@@ -136,26 +166,52 @@ class GUI:
         # yellow if it is 1, 2 or 3
         # orange if it is 4
         # red if it is 5
-        self.error_light = tk.Label(master,bg="red", width=2, height=1)
-        self.error_light.grid(row=6, column=1, sticky="w")
-        self.error_label = tk.Label(master, text="Error status")
-        self.error_label.grid(row=6, column=2, sticky="w")
+        class ErrorDisplay:
+            def __init__(self, master):
+                self.master = master
+                self.master.title("Error Display")
+                
+                # error status light
+                # checks the status of the most recent error
+                # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
+                # yellow if it is 1, 2 or 3
+                # orange if it is 4
+                # red if it is 5
+                self.error_light = tk.Label(master, bg="red", width=2, height=1)
+                self.error_light.grid(row=0, column=0, sticky="w")
+                self.error_label = tk.Label(master, text="Error status")
+                self.error_label.grid(row=0, column=1, sticky="w")
 
+                # error message box
+                self.error_msg = tk.Text(master, height=5, width=50)
+                self.error_msg.grid(row=1, column=0, columnspan=2)
+
+                # subscribe to the rosout topic
+                self.sub = rospy.Subscriber("/rosout", String, self.callback)
+
+            def callback(self, data):
+                # update the error status light
+                level = int(data.split(":")[0][-1])
+                if level in [1, 2, 3]:
+                    self.error_light.config(bg="yellow")
+                elif level == 4:
+                    self.error_light.config(bg="orange")
+                elif level == 5:
+                    self.error_light.config(bg="red")
+                
+                # update the error message box
+                self.error_msg.insert("1.0", data.data + "\n")
+            
+       
         # blank space
         self.blank_label = tk.Label(master, text="")
         self.blank_label.grid(row=7, column=0, sticky="w")
+        frame = ttk.Frame(master, relief="sunken", padding=10)
+        frame.grid(row=8, column=0, columnspan=2, rowspan=3, sticky="nesw")
 
-        # joint angles
-        self.angles= tk.Label(master, text="Joint angles from base to end-effector: ")
-        self.angles.grid(row=8, column=0, sticky="w")
-        self.angles_A = tk.Label(master, text="Robot A joint angles (rad): ")
-        self.angles_A.grid(row=9, column=0, sticky="w")
-        self.angles_B = tk.Label(master, text="Robot B joint angles (rad): ")
-        self.angles_B.grid(row=10, column=0, sticky="w")
-        
 
         # Create a listener for the clock topic
-        rospy.init_node('listener', anonymous=True)
+        rospy.init_node('listener','error_display', anonymous=True)
         rospy.Subscriber('/clock', Float64, self.callback_time)
 
         # Create a listener for the video topic
@@ -190,18 +246,6 @@ class GUI:
         # Schedule the function call to update the simulation time label again after 100 milliseconds
         self.time_label.after(100, lambda: self.callback_time(data))
 
-    # update joints for robot A
-    def callback_joint_a(self, data):
-        joint_angles = data.joints
-        joint_angles_str = ["{:.1f}".format(joint_angle) for joint_angle in joint_angles]
-        self.angles_A.configure(text="Robot A joint angles (rad): " + ", ".join(joint_angles_str))
-
-    # update joints for robot B
-    def callback_joint_b(self, data):
-        joint_angles = data.joints
-        joint_angles_str = ["{:.1f}".format(joint_angle) for joint_angle in joint_angles]
-        self.angles_B.configure(text="Robot B joint angles (rad): " + ", ".join(joint_angles_str))
-   
     
     def emergency_stop_clicked(self):
             subprocess.call(['/usr/bin/python3', '/home/wiks2/catkin_ws/src/e_stop/scripts/e_stop.py'])
@@ -210,7 +254,7 @@ class GUI:
     def change_button_state(self):
         self.emergency_stop_button.config(text="START", bg="green", fg="black")
 
-    def pause_button_state(self):
+    def pause_clicked(self):
         self.pause_button.config(text="START", bg="green", fg="black")
     
     def sim_preview_clicked(self):
