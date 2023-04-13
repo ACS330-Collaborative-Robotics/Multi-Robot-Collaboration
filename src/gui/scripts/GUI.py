@@ -85,12 +85,11 @@ class GUI:
         self.hardware_label = tk.Label(master, text="Hardware connected")
         self.hardware_label.grid(row=4, column=2, sticky="w")
 
-        # april tags succcessfully scanned light 
 
-        # nodes configured light
+       # nodes configured light
         # the aim of these lights is to firstly check that the inverse_kinematics service is running (includes controllers)
         # to check that roscore is running and that the gui can communicate with it
-        self.nodes_light = tk.Label(master,bg="red", width=2, height=1)
+        self.nodes_light = tk.Label(master, bg="red", width=2, height=1)
         self.nodes_light.grid(row=5, column=1, sticky="w")
         self.nodes_label = tk.Label(master, text="Nodes configured")
         self.nodes_label.grid(row=5, column=2, sticky="w")
@@ -100,7 +99,11 @@ class GUI:
         try:
             output = subprocess.check_output(['rosservice', 'find', service_name])
             return_code = 0
-            self.nodes_light.config(bg="green")
+            # check if service name is found in output
+            if service_name in output.decode('utf-8'):
+                self.nodes_light.config(bg="green")
+            else:
+                self.nodes_light.config(bg="red")
         except subprocess.CalledProcessError as e:
             output = e.output
             return_code = e.returncode
