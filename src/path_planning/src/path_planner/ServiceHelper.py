@@ -378,7 +378,7 @@ class ServiceHelper:
                 difx = diffatt[0]
                 dify = diffatt[1]
                 difz = diffatt[2]
-                rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+                rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
 
             if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
                 PathComplete = 1
