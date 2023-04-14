@@ -19,7 +19,7 @@ class PlaceDown(PickUp.PickUp):
         """
         
         # Move 5cm above block
-        end_pose.position.z += 0.15
+        #end_pose.position.z += 0.15 #not needed?
 
         # Set End Effector orientation to point downwards using quaternions
         orientation_in_euler = [0,180*pi/180,0]
