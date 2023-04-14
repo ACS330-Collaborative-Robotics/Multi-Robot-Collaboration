@@ -114,7 +114,7 @@ def path_plan_test():
     initial_arm_state.pose = initial_pose
 
     # Call inverse_kinematics service
-    status = inv_kin_srv(initial_arm_state,1).success
+    status = inv_kin_srv(initial_arm_state,0).success
 
     if status:
         rospy.logwarn("Robot Initial Pose set succesfully.")
