@@ -4,7 +4,7 @@
 import rospy
 import tf2_ros
 import tf
-import tf_conversions
+#import tf_conversions
 from pathlib import Path
 
 from gazebo_msgs.msg import ModelState
@@ -320,10 +320,10 @@ class ServiceHelper:
         pose_object.position.y = Y/100
         pose_object.position.z = Z/100
 
-        pose_object.position.z += 0.15
+        #pose_object.position.z += 0.15 #not 100% sure this should be in as constant z additions are added at higher levels
 
         orientation_in_euler = [0, math.pi, 0]
-        orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+        orientation = tf.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
         pose_object.orientation.x = orientation[0]
         pose_object.orientation.y = orientation[1]
@@ -334,12 +334,12 @@ class ServiceHelper:
         
         inv_kin_request.state.pose = pose_object
         inv_kin_request.precise_orientation = False
-
+        return True #config thing to turn this function off
         if inv_kin_is_reachable(inv_kin_request).success:
-            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", self.target_block, self.robot_ns)
+            #rospy.loginfo("APF Planner - Point is reachable by %s", self.robot_ns)
             return True
         else:
-            rospy.loginfo("Assignment Selection - %s is not reachable by %s", self.target_block, self.robot_ns)
+            #rospy.loginfo("APF Planner - Point is not reachable by %s", self.robot_ns)
             return False
         
     def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
@@ -378,7 +378,6 @@ class ServiceHelper:
 
             if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
                 PathComplete = 1
-            
             else:
                 #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
                 nextx = PathPointsx[i] - Step_Size*difx
@@ -392,11 +391,15 @@ class ServiceHelper:
                 if self.is_block_reachable_APF(x,y,z) == False:
                     tempxobj.append(x)
                     tempyobj.append(y)
-                    tempzobj.append(z)
+                    tempzobj.append(z) 
+                    rospy.loginfo("APF Planner - Point is not reachable by %s, added tempobj at %.2f %.2f %.2f", self.robot_ns, x,y,z)
+                    #problem - if reachablility fucks up and says it can't reach, then it'll place an object on top of the block :(
+                    #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
                     PathPointsx.append(PathPointsx[i])
                     PathPointsy.append(PathPointsy[i])
                     PathPointsz.append(PathPointsz[i])
-                    objdistance = self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z)
+                    objdistance = 1.1*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
+                    #added Q scaling factor so Q is greater than distance to next point
                     tempQ.append(objdistance)
                 else:
                     PathPointsx.append(x)
@@ -451,5 +454,3 @@ class ServiceHelper:
         ax.plot(xpoints,ypoints,zpoints)
         plt.show()
         rospy.loginfo('PlotPath Complete')
-
-    
