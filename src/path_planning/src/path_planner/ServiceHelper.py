@@ -397,6 +397,9 @@ class ServiceHelper:
                     tempxobj.append(x)
                     tempyobj.append(y)
                     tempzobj.append(z)
+                    PathPointsx.append(PathPointsx[i])
+                    PathPointsy.append(PathPointsy[i])
+                    PathPointsz.append(PathPointsz[i])
                     objdistance = self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z)
                     tempQ.append(objdistance)
                 else:
