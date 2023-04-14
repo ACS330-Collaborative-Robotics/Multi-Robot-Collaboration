@@ -316,9 +316,9 @@ class ServiceHelper:
     
          # Create Initial Pose object
         pose_object = Pose()
-        pose_object.position.x = X
-        pose_object.position.y = Y
-        pose_object.position.z = Z
+        pose_object.position.x = X/100
+        pose_object.position.y = Y/100
+        pose_object.position.z = Z/100
 
         pose_object.position.z += 0.15
 
