@@ -335,13 +335,13 @@ class ServiceHelper:
         initial_pose.orientation.w = orientation[3]
         initial_pose.position.z += 0.15
 
-        inv_kin_request.state.model_name=robot_name
+        inv_kin_request.state.model_name=self.robot_ns
         
         inv_kin_request.state.pose = initial_pose
         inv_kin_request.precise_orientation = True
 
         if inv_kin_is_reachable(inv_kin_request).success:
-            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
+            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", self.target_block, self.robot_ns)
             return True
         else:
             return False
