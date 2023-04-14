@@ -393,19 +393,19 @@ class ServiceHelper:
                 z = nextz
                 if z < 0.05:
                     z = 0.05
-                if self.is_block_reachable_APF(x,y,z,'mover6_a') == False:
-                    tempxobj.append(x)
-                    tempyobj.append(y)
-                    tempzobj.append(z)
-                    PathPointsx.append(PathPointsx[i])
-                    PathPointsy.append(PathPointsy[i])
-                    PathPointsz.append(PathPointsz[i])
-                    objdistance = self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z)
-                    tempQ.append(objdistance)
-                else:
-                    PathPointsx.append(x)
-                    PathPointsy.append(y)
-                    PathPointsz.append(z)
+                #if self.is_block_reachable_APF(x,y,z,'mover6_a') == False:
+                 #   tempxobj.append(x)
+                  #  tempyobj.append(y)
+                   # tempzobj.append(z)
+                    #PathPointsx.append(PathPointsx[i])
+                    #PathPointsy.append(PathPointsy[i])
+                    #PathPointsz.append(PathPointsz[i])
+                    #objdistance = self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z)
+                    #tempQ.append(objdistance)
+                #else:
+                PathPointsx.append(x)
+                PathPointsy.append(y)
+                PathPointsz.append(z)
                 i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
