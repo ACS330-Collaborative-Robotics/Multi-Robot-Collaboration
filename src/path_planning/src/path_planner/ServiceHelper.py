@@ -382,7 +382,7 @@ class ServiceHelper:
 
             if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
                 PathComplete = 1
-                
+            
             else:
                 #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
                 nextx = PathPointsx[i] - Step_Size*difx
@@ -393,7 +393,7 @@ class ServiceHelper:
                 z = nextz
                 if z < 0.05:
                     z = 0.05
-                if is_block_reachable_APF(x,y,z,'mover6_a') == False:
+                if self.is_block_reachable_APF(x,y,z,'mover6_a') == False:
                     tempxobj.append(x)
                     tempyobj.append(y)
                     tempzobj.append(z)
