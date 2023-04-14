@@ -63,7 +63,7 @@ Robot Joints - `1 -> 6`
 | Desired Joint Angles | `robot_ns_p/physical/joint_angles` | custom_msgs/Joints |
 | Current Moving State | `robot_ns_p/physical/moving_state` | std_msgs/String |
 | CPR Robot State | `robot_ns_p/robot_state` | cpr_robot/RobotState |
-| Mover6 Gripper Control | `robot_ns_p/gripper_state` | std_msgs/Bool |
+| Mover6 Gripper Control | `robot_ns/gripper_state` | std_msgs/Bool |
 
 # How to Build and Run
 
