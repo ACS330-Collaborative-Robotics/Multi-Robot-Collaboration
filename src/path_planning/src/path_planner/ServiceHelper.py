@@ -389,7 +389,7 @@ class ServiceHelper:
                 z = nextz
                 if z < 0.05:
                     z = 0.05
-                if self.is_block_reachable_APF(x,y,z,'mover6_a') == False:
+                if self.is_block_reachable_APF(x,y,z) == False:
                     tempxobj.append(x)
                     tempyobj.append(y)
                     tempzobj.append(z)
