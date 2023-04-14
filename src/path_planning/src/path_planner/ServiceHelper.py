@@ -334,7 +334,7 @@ class ServiceHelper:
         
         inv_kin_request.state.pose = pose_object
         inv_kin_request.precise_orientation = False
-        return True #config thing to turn this function off
+        #return True #config thing to turn this function off
         if inv_kin_is_reachable(inv_kin_request).success:
             #rospy.loginfo("APF Planner - Point is reachable by %s", self.robot_ns)
             return True
