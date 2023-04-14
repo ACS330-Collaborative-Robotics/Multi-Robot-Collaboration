@@ -112,8 +112,6 @@ def path_plan_test():
     initial_arm_state.model_name = robot_name
 
     initial_arm_state.pose = initial_pose
-
-    initial_arm_state.reference_frame="world"
     # Call inverse_kinematics service
     status = inv_kin_srv(initial_arm_state,0).success
 
