@@ -336,6 +336,7 @@ class ServiceHelper:
         initial_pose.position.z += 0.15
 
         inv_kin_request.state.model_name=robot_name
+        
         inv_kin_request.state.pose = initial_pose
         inv_kin_request.precise_orientation = True
 
