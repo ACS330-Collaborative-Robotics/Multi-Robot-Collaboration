@@ -5,6 +5,8 @@ from path_planner import PickUp, PlaceDown, ServiceHelper, Movement
 
 from geometry_msgs.msg import Pose
 
+import rospy
+
 class PathPlanner:
     def __init__(self, robot_ns:str, block_name:str, end_pos:Pose) -> None:
         # Store init data
@@ -32,9 +34,13 @@ class PathPlanner:
         if not self.pickUp.pick(self.target_block):
             return False
 
+        rospy.logfatal("Path Planner - Pick Up Complete.")
+
         # Put down block
         if not self.placeDown.place(self.end_pos):
             return False
+        
+        rospy.logfatal("Path Planner - Place Down Complete.")
 
         return True
     
