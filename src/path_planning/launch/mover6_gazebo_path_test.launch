@@ -14,9 +14,9 @@
     <!-- Launch Robot Joint Controller -->
     <include file="$(find mover6_control)/launch/mover6_control.launch"/>
 
-    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_a" type="static_tf2_broadcaster.py" args="mover6_a_base world 0 0 0.02 0 0 0" output="screen"/>
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_a" type="static_tf2_broadcaster.py" args="mover6_a_base world 0 0.2 0.2 0 0 0" output="screen"/>
 
     <!-- Connect transforms in tree -->
-    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_a" type="static_tf2_broadcaster.py" args="mover6_a/world world 0 0 0.02 0 0 0" output="screen"/>
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_a" type="static_tf2_broadcaster.py" args="mover6_a/world world 0 0.2 0.2 0 0 0" output="screen"/>
 
 </launch>
