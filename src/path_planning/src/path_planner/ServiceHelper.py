@@ -45,7 +45,7 @@ class ServiceHelper:
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
-        with open('/home/uos/catkin_ws/src/path_planning/config/settings.yaml') as yamlfile:
+        with open('/home/stevencraig147/catkin_ws/src/path_planning/config/settings.yaml') as yamlfile: # add rright path
             self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.APFyamlData)
 
@@ -304,7 +304,44 @@ class ServiceHelper:
             allvectorsy += repulsionvect[1]
             allvectorsz += zrep
         return allvectorsx,allvectorsy,allvectorsz
+    def is_block_reachable_APF(self,X,Y,Z, robot_namespaces):
+        rospy.wait_for_service('inverse_kinematics_reachability')
+        inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
+    
+         # Create Initial Pose object
+        initial_pose = Pose()
+        initial_pose.position.x = X
+        initial_pose.position.y = Y
+        initial_pose.position.z = Z
+        quat = tf.transformations.quaternion_from_euler(initial_robot_orientation_x, initial_robot_orientation_y, initial_robot_orientation_z)
+        initial_pose.orientation.x = quat[0]
+        initial_pose.orientation.y = quat[1]
+        initial_pose.orientation.z = quat[2]
+        initial_pose.orientation.w = quat[3]
 
+        inv_kin_request = InvKinRequest()
+        #model_state = ModelState()
+
+        # for robot_name in robot_namespaces:
+        #    model_state.pose = specific_block_pose(block_name, robot_name)
+
+        orientation_in_euler = [0,90*math.pi/180,0]
+        orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+        
+        initial_pose.orientation.x = orientation[0]
+        initial_pose.orientation.y = orientation[1]
+        initial_pose.orientation.z = orientation[2]
+        initial_pose.orientation.w = orientation[3]
+        initial_pose.position.z += 0.15
+
+        inv_kin_request.state = initial_pose
+        inv_kin_request.precise_orientation = True
+
+        if inv_kin_is_reachable(inv_kin_request).success:
+            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
+            return True
+        else:
+            return False
         
     def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
         """
@@ -412,41 +449,4 @@ class ServiceHelper:
         plt.show()
         rospy.loginfo('PlotPath Complete')
 
-    def is_block_reachable_APF(self,X,Y,Z, robot_namespaces) -> bool:
-        rospy.wait_for_service('inverse_kinematics_reachability')
-        inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
     
-         # Create Initial Pose object
-        initial_pose = Pose()
-        initial_pose.position.x = X
-        initial_pose.position.y = Y
-        initial_pose.position.z = Z
-        quat = tf.transformations.quaternion_from_euler(initial_robot_orientation_x, initial_robot_orientation_y, initial_robot_orientation_z)
-        initial_pose.orientation.x = quat[0]
-        initial_pose.orientation.y = quat[1]
-        initial_pose.orientation.z = quat[2]
-        initial_pose.orientation.w = quat[3]
-
-        inv_kin_request = InvKinRequest()
-        #model_state = ModelState()
-
-        # for robot_name in robot_namespaces:
-        #    model_state.pose = specific_block_pose(block_name, robot_name)
-
-        orientation_in_euler = [0,90*math.pi/180,0]
-        orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
-        
-        initial_pose.orientation.x = orientation[0]
-        initial_pose.orientation.y = orientation[1]
-        initial_pose.orientation.z = orientation[2]
-        initial_pose.orientation.w = orientation[3]
-        initial_pose.position.z += 0.15
-
-        inv_kin_request.state = initial_pose
-        inv_kin_request.precise_orientation = True
-
-        if inv_kin_is_reachable(inv_kin_request).success:
-            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
-            return True
-        
-        return False
