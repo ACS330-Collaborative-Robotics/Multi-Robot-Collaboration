@@ -369,13 +369,14 @@ class ServiceHelper:
                 difx = diffrep[0] + diffreptemp[0] + 0.25*diffatt[0]
                 dify = diffrep[1] + diffreptemp[1] + 0.25*diffatt[1]
                 difz = diffrep[2] + diffreptemp[2] + 0.25*diffatt[2]
-                rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+                #rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             else:
                 difx = diffatt[0]
                 dify = diffatt[1]
                 difz = diffatt[2]
-                rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
-
+                #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+            rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
+            rospy.loginfo("TEMP Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffreptemp[0],-diffreptemp[1],-diffreptemp[2],d)
             if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
                 PathComplete = 1
             else:
@@ -399,7 +400,7 @@ class ServiceHelper:
                     PathPointsx.append(PathPointsx[i])
                     PathPointsy.append(PathPointsy[i])
                     PathPointsz.append(PathPointsz[i])
-                    objdistance = 1.1*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
+                    objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
                     #added Q scaling factor so Q is greater than distance to next point
                     tempQ.append(objdistance)
                 else:
