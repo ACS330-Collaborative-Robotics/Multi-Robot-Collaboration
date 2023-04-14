@@ -18,12 +18,15 @@ class PickUp(Movement.Movement):
         OUTPUT: bool Success
         """
         pose = self.serv_helper.getBlockPos(block_name)
-        
+
+        block_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
+        block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
+
         # Move 5cm above block
-        pose.position.z += 0.30
+        pose.position.z += 0.10
 
         # Set End Effector orientation to point downwards using quaternions
-        orientation_in_euler = [pi, 0, pi]
+        orientation_in_euler = [0, pi, block_orientation_euler[2]]
         orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
         pose.orientation.x = orientation[0]
