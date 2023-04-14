@@ -12,7 +12,8 @@ from yaml.loader import SafeLoader
 class Movement:
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
-        with open('/home/stevencraig147/catkin_ws/src/path_planning/config/settings.yaml') as yamlfile: # add right ppath
+        f = open(str(Path.home()) + '/catkin_ws/src/path_planning/config/settings.yaml')
+        with open(f) as yamlfile: # add right path
             self.serv_helper.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.serv_helper.APFyamlData)
     

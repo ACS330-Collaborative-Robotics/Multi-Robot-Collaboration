@@ -44,8 +44,8 @@ class ServiceHelper:
         # Setup tf2
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
-
-        with open('/home/stevencraig147/catkin_ws/src/path_planning/config/settings.yaml') as yamlfile: # add rright path
+        f = open(str(Path.home()) + '/catkin_ws/src/path_planning/config/settings.yaml')
+        with open(f) as yamlfile: # add right path
             self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.APFyamlData)
 
