@@ -314,7 +314,7 @@ class ServiceHelper:
         initial_pose.position.x = X
         initial_pose.position.y = Y
         initial_pose.position.z = Z
-        quat = tf.transformations.quaternion_from_euler(initial_robot_orientation_x, initial_robot_orientation_y, initial_robot_orientation_z)
+        quat = tf.transformations.quaternion_from_euler(initial_pose.position.x, initial_pose.position.y, initial_pose.position.z)
         initial_pose.orientation.x = quat[0]
         initial_pose.orientation.y = quat[1]
         initial_pose.orientation.z = quat[2]
