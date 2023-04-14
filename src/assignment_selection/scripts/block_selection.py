@@ -150,11 +150,13 @@ def choose_block():
                     rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
                     rospy.sleep(0.01)
 
-                status = path_client.get_result().success
-                if status:
+                status = path_client.get_result()
+                if status == None:
+                    rospy.logfatal("\n\nAssignment Selection - Path Client returned None. Investigate Source.\n\n")
+                elif status.success:
                     rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
                 else:
-                    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status)
+                    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)
                     
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
