@@ -112,13 +112,6 @@ def path_plan_test():
     initial_arm_state.model_name = robot_name
 
     initial_arm_state.pose = initial_pose
-    initial_arm_state.twist.linear.x=0
-    initial_arm_state.twist.linear.y=0
-    initial_arm_state.twist.linear.z=0
-
-    initial_arm_state.twist.angular.x=0
-    initial_arm_state.twist.angular.y=0
-    initial_arm_state.twist.angular.z=0
 
     initial_arm_state.reference_frame="world"
     # Call inverse_kinematics service
