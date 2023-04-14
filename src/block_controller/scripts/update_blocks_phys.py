@@ -46,12 +46,6 @@ def update():
         pos.orientation.w = orientation[3]
 
         model.pose=pos
-        model.twist.linear.x=0
-        model.twist.linear.y=0
-        model.twist.linear.z=0
-        model.twist.angular.x=0
-        model.twist.angular.y=0
-        model.twist.angular.z=0
         model.reference_frame="world"
 
         block_updater(model)
