@@ -46,7 +46,7 @@ def update():
         pos.orientation.w = orientation[3]
 
         model.pose=pos
-        model.reference_frame="world"
+        #model.reference_frame="world" #might cause issues
 
         block_updater(model)
             
