@@ -339,9 +339,10 @@ class ServiceHelper:
 
         if inv_kin_is_reachable(inv_kin_request).success:
             rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
-            return True
+            status = True
         else:
-            return False
+            status = False
+        return status
         
     def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
         """
@@ -390,7 +391,8 @@ class ServiceHelper:
                 z = nextz
                 if z < 0.05:
                     z = 0.05
-                if is_block_reachable_APF(x,y,z,'mover6_a') == False:
+                reachable = self.is_block_reachable_APF(x,y,z,'mover6_a')
+                if reachable == False:
                     tempxobj.append(x)
                     tempyobj.append(y)
                     tempzobj.append(z)
