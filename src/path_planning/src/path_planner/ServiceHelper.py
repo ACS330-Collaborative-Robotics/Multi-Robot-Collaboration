@@ -4,6 +4,7 @@
 import rospy
 import tf2_ros
 import tf
+import tf_conversions
 from pathlib import Path
 
 from gazebo_msgs.msg import ModelState
@@ -307,39 +308,31 @@ class ServiceHelper:
             allvectorsz += zrep
         return allvectorsx,allvectorsy,allvectorsz
 
-    def is_block_reachable_APF(self,X,Y,Z, robot_namespaces):
+    def is_block_reachable_APF(self, X, Y, Z):
         rospy.wait_for_service('inverse_kinematics_reachability')
         inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
-    
-         # Create Initial Pose object
-        initial_pose = Pose()
-        initial_pose.position.x = X
-        initial_pose.position.y = Y
-        initial_pose.position.z = Z
-        quat = tf.transformations.quaternion_from_euler(initial_pose.position.x, initial_pose.position.y, initial_pose.position.z)
-        initial_pose.orientation.x = quat[0]
-        initial_pose.orientation.y = quat[1]
-        initial_pose.orientation.z = quat[2]
-        initial_pose.orientation.w = quat[3]
 
         inv_kin_request = InvKinRequest()
-        #model_state = ModelState()
+    
+         # Create Initial Pose object
+        pose_object = Pose()
+        pose_object.position.x = X
+        pose_object.position.y = Y
+        pose_object.position.z = Z
 
-        # for robot_name in robot_namespaces:
-        #    model_state.pose = specific_block_pose(block_name, robot_name)
+        pose_object.position.z += 0.15
 
-        orientation_in_euler = [0,90*math.pi/180,0]
-        orientation = tf.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+        orientation_in_euler = [0, math.pi, 0]
+        orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
-        initial_pose.orientation.x = orientation[0]
-        initial_pose.orientation.y = orientation[1]
-        initial_pose.orientation.z = orientation[2]
-        initial_pose.orientation.w = orientation[3]
-        initial_pose.position.z += 0.15
+        pose_object.orientation.x = orientation[0]
+        pose_object.orientation.y = orientation[1]
+        pose_object.orientation.z = orientation[2]
+        pose_object.orientation.w = orientation[3]
 
         inv_kin_request.state.model_name=self.robot_ns
         
-        inv_kin_request.state.pose = initial_pose
+        inv_kin_request.state.pose = pose_object
         inv_kin_request.precise_orientation = False
 
         if inv_kin_is_reachable(inv_kin_request).success:
