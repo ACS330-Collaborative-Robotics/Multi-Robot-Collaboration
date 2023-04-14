@@ -345,6 +345,7 @@ class ServiceHelper:
             rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", self.target_block, self.robot_ns)
             return True
         else:
+            rospy.loginfo("Assignment Selection - %s is not reachable by %s", self.target_block, self.robot_ns)
             return False
         
     def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
