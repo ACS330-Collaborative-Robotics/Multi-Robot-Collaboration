@@ -45,8 +45,9 @@ class ServiceHelper:
         # Setup tf2
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
-        f = open(str(Path.home()) + '/catkin_ws/src/path_planning/config/settings.yaml')
-        with open(f) as yamlfile: # add right path
+
+        file_name = str(Path.home()) + '/catkin_ws/src/path_planning/config/settings.yaml'
+        with open(file_name) as yamlfile: # add right path
             self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.APFyamlData)
 
@@ -395,19 +396,19 @@ class ServiceHelper:
                 z = nextz
                 if z < 0.05:
                     z = 0.05
-                #if self.is_block_reachable_APF(x,y,z,'mover6_a') == False:
-                 #   tempxobj.append(x)
-                  #  tempyobj.append(y)
-                   # tempzobj.append(z)
-                    #PathPointsx.append(PathPointsx[i])
-                    #PathPointsy.append(PathPointsy[i])
-                    #PathPointsz.append(PathPointsz[i])
-                    #objdistance = self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z)
-                    #tempQ.append(objdistance)
-                #else:
-                PathPointsx.append(x)
-                PathPointsy.append(y)
-                PathPointsz.append(z)
+                if self.is_block_reachable_APF(x,y,z,'mover6_a') == False:
+                    tempxobj.append(x)
+                    tempyobj.append(y)
+                    tempzobj.append(z)
+                    PathPointsx.append(PathPointsx[i])
+                    PathPointsy.append(PathPointsy[i])
+                    PathPointsz.append(PathPointsz[i])
+                    objdistance = self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z)
+                    tempQ.append(objdistance)
+                else:
+                    PathPointsx.append(x)
+                    PathPointsy.append(y)
+                    PathPointsz.append(z)
                 rospy.loginfo('Path Points %.2f %.2f  %.2f',PathPointsx[i],PathPointsy[i],PathPointsz[i])
                 i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
