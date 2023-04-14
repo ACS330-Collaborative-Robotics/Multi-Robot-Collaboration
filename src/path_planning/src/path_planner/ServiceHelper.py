@@ -304,6 +304,7 @@ class ServiceHelper:
             allvectorsy += repulsionvect[1]
             allvectorsz += zrep
         return allvectorsx,allvectorsy,allvectorsz
+
     def is_block_reachable_APF(self,X,Y,Z, robot_namespaces):
         rospy.wait_for_service('inverse_kinematics_reachability')
         inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
@@ -334,15 +335,15 @@ class ServiceHelper:
         initial_pose.orientation.w = orientation[3]
         initial_pose.position.z += 0.15
 
-        inv_kin_request.state = initial_pose
+        inv_kin_request.state.model_name=robot_name
+        inv_kin_request.state.pose = initial_pose
         inv_kin_request.precise_orientation = True
 
         if inv_kin_is_reachable(inv_kin_request).success:
             rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
-            status = True
+            return True
         else:
-            status = False
-        return status
+            return False
         
     def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
         """
@@ -391,8 +392,7 @@ class ServiceHelper:
                 z = nextz
                 if z < 0.05:
                     z = 0.05
-                reachable = self.is_block_reachable_APF(x,y,z,'mover6_a')
-                if reachable == False:
+                if is_block_reachable_APF(x,y,z,'mover6_a') == False:
                     tempxobj.append(x)
                     tempyobj.append(y)
                     tempzobj.append(z)
