@@ -4,6 +4,7 @@
 import rospy
 import tf2_ros
 import tf
+from openpyxl import Workbook, load_workbook
 #import tf_conversions
 from pathlib import Path
 
@@ -360,23 +361,26 @@ class ServiceHelper:
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
         PathPointsz = [z]
         i = 0
+        Object_Files = Workbook()
+        Object_File = Object_Files.active
+        Object_File.title = 'Data'
         while PathComplete == 0 and not rospy.is_shutdown():
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
             diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
-            diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
+            #diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
             diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
             if any(diffrep) != 0:
-                difx = diffrep[0] + diffreptemp[0] + 0.25*diffatt[0]
-                dify = diffrep[1] + diffreptemp[1] + 0.25*diffatt[1]
-                difz = diffrep[2] + diffreptemp[2] + 0.25*diffatt[2]
+                difx = diffrep[0]  + 0.25*diffatt[0]
+                dify = diffrep[1]  + 0.25*diffatt[1]
+                difz = diffrep[2]  + 0.25*diffatt[2]
                 #rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             else:
                 difx = diffatt[0]
                 dify = diffatt[1]
                 difz = diffatt[2]
                 #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
-            rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
-            rospy.loginfo("TEMP Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffreptemp[0],-diffreptemp[1],-diffreptemp[2],d)
+            #rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
+            #rospy.loginfo("TEMP Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffreptemp[0],-diffreptemp[1],-diffreptemp[2],d)
             if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
                 PathComplete = 1
             else:
@@ -397,20 +401,22 @@ class ServiceHelper:
                     #problem - if reachablility fucks up and says it can't reach, then it'll place an object on top of the block :(
                     #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
                     #another problem - reachability seems to fail when very close to the block on various block positions
-                    PathPointsx.append(PathPointsx[i])
-                    PathPointsy.append(PathPointsy[i])
-                    PathPointsz.append(PathPointsz[i])
+                    #PathPointsx.append(PathPointsx[i])
+                    #PathPointsy.append(PathPointsy[i])
+                    #PathPointsz.append(PathPointsz[i])
                     objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
                     #added Q scaling factor so Q is greater than distance to next point
                     tempQ.append(objdistance)
-                else:
-                    PathPointsx.append(x)
-                    PathPointsy.append(y)
-                    PathPointsz.append(z)
+                #else:
+                PathPointsx.append(x)
+                PathPointsy.append(y)
+                PathPointsz.append(z)
+                Object_File.append([x,y,z])
                 #rospy.loginfo('Path Points %.2f %.2f  %.2f',PathPointsx[i],PathPointsy[i],PathPointsz[i])
                 i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
+        Object_Files.save('Object_Positions2.xlsx')
         return PathPointsx,PathPointsy,PathPointsz
 
     def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy
