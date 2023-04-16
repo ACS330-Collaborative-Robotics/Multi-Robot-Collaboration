@@ -4,7 +4,6 @@
 import rospy
 import tf2_ros
 import tf
-from openpyxl import Workbook, load_workbook
 #import tf_conversions
 from pathlib import Path
 
@@ -361,9 +360,6 @@ class ServiceHelper:
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
         PathPointsz = [z]
         i = 0
-        Object_Files = Workbook()
-        Object_File = Object_Files.active
-        Object_File.title = 'Data'
         while PathComplete == 0 and not rospy.is_shutdown():
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
             diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
@@ -411,12 +407,10 @@ class ServiceHelper:
                 PathPointsx.append(x)
                 PathPointsy.append(y)
                 PathPointsz.append(z)
-                Object_File.append([x,y,z])
                 #rospy.loginfo('Path Points %.2f %.2f  %.2f',PathPointsx[i],PathPointsy[i],PathPointsz[i])
                 i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
-        Object_Files.save('Object_Positions2.xlsx')
         return PathPointsx,PathPointsy,PathPointsz
 
     def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy

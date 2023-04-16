@@ -5,6 +5,7 @@ import rospy
 from pathlib import Path
 from geometry_msgs.msg import Pose
 from time import time
+from openpyxl import Workbook, load_workbook
 #import matplotlib.pyplot as plt
 
 import yaml
@@ -43,7 +44,9 @@ class Movement:
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
-        
+        Object_Files = Workbook() 
+        Object_File = Object_Files.active
+        Object_File.title = 'Data'
         while PathComplete==0 and not rospy.is_shutdown():
             start_time = time()
             #Obstacle positions relative to world then arm
@@ -112,7 +115,7 @@ class Movement:
             arm_pos.orientation.w= pos_robot_base_frame.orientation.w
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
-            
+            Object_File.append([arm_pos.position.x,arm_pos.position.y,arm_pos.position.z])
             d=self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             if d <= 3: #when close, use precise orientation
                 precise_angle_flag=1 #orientation does matter - small tolerance
@@ -133,5 +136,5 @@ class Movement:
                     startx = arm_pos.position.x*SF #start coords for end effector (now next step)
                     starty = arm_pos.position.y*SF
                     startz = arm_pos.position.z*SF
-
+        Object_Files.save('Object_Positions2.xlsx')
         return status #TODO: Implement zone checks
