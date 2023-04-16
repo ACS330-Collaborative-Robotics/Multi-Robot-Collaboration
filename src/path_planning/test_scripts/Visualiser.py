@@ -43,16 +43,16 @@ def plotAPF(X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
 def plotPath(PathTaken,xobj,yobj,zobj):
     fig = plt.figure()
     ax = plt.axes(projection='3d')
-    xpoints = PathTaken[0]
-    ypoints = PathTaken[1]
-    zpoints = PathTaken[2]
+    #xpoints = PathTaken[0]
+    #ypoints = PathTaken[1]
+    #zpoints = PathTaken[2]
 
     #for point in PathTaken[0]:
      #   xpoints.append(point[0])
       #  ypoints.append(point[1])
        # zpoints.append(point[2])
     ax.scatter(xobj,yobj,zobj,color='red',linewidth=10)
-    ax.plot(xpoints,ypoints,zpoints,linewidth=2.5)
+    #ax.plot(xpoints,ypoints,zpoints,linewidth=2.5)
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_title('End Effector Path in 3D space')
@@ -66,11 +66,11 @@ xline =[]
 yline = []
 zline = []
 for row in range(1,Path.max_row):
-    xline.append(Path['A'+str(row)].value*100)
-    yline.append(Path['B'+str(row)].value*100)
-    zline.append(Path['C'+str(row)].value*100)
+    xline.append(Path['A'+str(row)].value)
+    yline.append(Path['B'+str(row)].value)
+    zline.append(Path['C'+str(row)].value)
 PathTaken = xline,yline,zline
-plotPath(PathTaken,[0,18],[25,20],[20,5])
+plotPath([],xline,yline,zline)
 
 
 

@@ -342,16 +342,12 @@ class ServiceHelper:
             #rospy.loginfo("APF Planner - Point is not reachable by %s", self.robot_ns)
             return False
         
-    def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
-        """
+    def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D,tempxobj,tempyobj,tempzobj,tempQ): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
+        """   ## make temp inside of move)()
         returned as an array of points
         INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)   
         OUTPUT: PathPoints (an array of the via points ((x1,y1),(x2,y2),(x3,y3)....))
         """
-        tempxobj = []
-        tempyobj = []
-        tempzobj = []
-        tempQ = []
         Step_Size= self.APFyamlData["Step_Size"]
         Final_Att= self.APFyamlData["Final_Att"]
         Final_Distance= self.APFyamlData["Final_Distance"]
@@ -363,7 +359,7 @@ class ServiceHelper:
         while PathComplete == 0 and not rospy.is_shutdown():
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
             diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
-            #diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
+            diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
             diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
             if any(diffrep) != 0:
                 difx = diffrep[0]  + 0.25*diffatt[0]
@@ -411,7 +407,7 @@ class ServiceHelper:
                 i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
-        return PathPointsx,PathPointsy,PathPointsz
+        return PathPointsx,PathPointsy,PathPointsz,tempxobj,tempyobj,tempzobj,tempQ
 
     def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy
         x = np.linspace(-50, 50, 100)  # Creating X and Y axis

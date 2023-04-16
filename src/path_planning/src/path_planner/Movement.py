@@ -51,9 +51,13 @@ class Movement:
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
-            xobj=[] #adding base as an object
+            xobj=[]
             yobj=[]
             zobj=[]
+            tempxobj = []
+            tempyobj = []
+            tempzobj = []
+            tempQ = []
             robot_namespaces.remove(self.serv_helper.robot_ns) #remove own name from list of arms to avoid
             for obstacle_arm_ns in robot_namespaces:
                 for obs in range(0,7):
@@ -80,7 +84,7 @@ class Movement:
             #self.serv_helper.plotPath(PathTaken)
 
             ##X,Y,Z path the End effector will take
-            PathTakenSFx, PathTakenSFy, PathTakenSFz = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D)
+            PathTakenSFx, PathTakenSFy, PathTakenSFz, Objectx, Objecyy, Objectz, ObjectQ = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ)
             PathTakenx = [x/SF for x in PathTakenSFx] #rescale back to meters
             PathTakeny = [y/SF for y in PathTakenSFy]
             PathTakenz = [z/SF for z in PathTakenSFz]
@@ -115,7 +119,8 @@ class Movement:
             arm_pos.orientation.w= pos_robot_base_frame.orientation.w
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
-            Object_File.append([arm_pos.position.x,arm_pos.position.y,arm_pos.position.z])
+            for row in range(1,len(tempxobj)):
+                Object_File.append([tempxobj[row],tempyobj[row],tempzobj[row]])
             d=self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             if d <= 3: #when close, use precise orientation
                 precise_angle_flag=1 #orientation does matter - small tolerance
