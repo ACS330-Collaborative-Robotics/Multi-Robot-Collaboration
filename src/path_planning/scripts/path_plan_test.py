@@ -31,8 +31,8 @@ def path_plan_test():
 
     # Final Robot Cartesian Position
     final_robot_position_x = 0
-    final_robot_position_y = -0.25
-    final_robot_position_z = 0.2
+    final_robot_position_y = 0
+    final_robot_position_z = 0
 
     # Final Robot Euler Angle Orientation
     final_robot_orientation_x = 0*pi/180
