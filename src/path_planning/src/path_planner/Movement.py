@@ -44,10 +44,10 @@ class Movement:
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
-        Object_Files = Workbook() 
-        Object_File = Object_Files.active
-        Object_File.title = 'Data'
         while PathComplete==0 and not rospy.is_shutdown():
+            Object_Files = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
+            Object_File = Object_Files.active
+            Object_File.title = 'Data'
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -136,5 +136,5 @@ class Movement:
                     startx = arm_pos.position.x*SF #start coords for end effector (now next step)
                     starty = arm_pos.position.y*SF
                     startz = arm_pos.position.z*SF
-        Object_Files.save('Object_Positions2.xlsx')
+            Object_Files.save('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
         return status #TODO: Implement zone checks
