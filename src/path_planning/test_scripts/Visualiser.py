@@ -70,7 +70,7 @@ for row in range(1,Path.max_row):
     yline.append(Path['B'+str(row)].value*100)
     zline.append(Path['C'+str(row)].value*100)
 PathTaken = xline,yline,zline
-plotPath(PathTaken,[],[],[])
+plotPath(PathTaken,[0,18],[25,20],[20,5])
 
 
 
