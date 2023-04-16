@@ -14,7 +14,7 @@ from inv_kinematics.srv import InvKin
 
 from math import pi
 
-def path_plan_test(RobotPositionsx,RobotPositionsy,RobotPositionsz,BlockPositonsx,BlockPositonsy,BlockPositonsz):
+def path_plan_test(RobotPositionsx,RobotPositionsy,RobotPositionsz,BlockPositionsx,BlockPositionsy,BlockPositionsz):
     ###############################
     ##  Configurable parameters  ##
     ###############################
@@ -25,9 +25,9 @@ def path_plan_test(RobotPositionsx,RobotPositionsy,RobotPositionsz,BlockPositons
         initial_robot_position_z = RobotPositionsz[blocks]
 
         # Block Cartesian Position
-        block_robot_position_x = BlockPositonsx[blocks]
-        block_robot_position_y = BlockPositonsy[blocks]
-        block_robot_position_z = BlockPositonsz[blocks]
+        block_robot_position_x = BlockPositionsx[blocks]
+        block_robot_position_y = BlockPositionsy[blocks]
+        block_robot_position_z = BlockPositionsz[blocks]
 
     # Initial Robot Euler Angle Orientation
     initial_robot_orientation_x = 0*pi/180
@@ -172,7 +172,7 @@ RobotPositionsz = [0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2]
 
 BlockPositionsx = [-0.25, -0.25, 0, 0.25, 0.25, 0.25, 0, -0.25]
 BlockPositionsy = [0, -0.25, -0.25, -0.25, 0, 0.25, 0.25, 0.25]
-BlockPositionsz = [0.0.5,0.05,0.05,0.05,0.05,0.05,0.05,0.05]
+BlockPositionsz = [0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05]
 
 if __name__ == '__main__':
     try:
