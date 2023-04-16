@@ -59,9 +59,17 @@ def plotPath(PathTaken,xobj,yobj,zobj):
     plt.show()
     print('PlotPath Complete')
 
-filename = 'Object_Positions2.xlsx'
-PathTaken = load_workbook(filename,'r')
-
+filename = 'catkin_ws/src/path_planning/test_scripts/Object_Positions2.xlsx'
+PathFile = load_workbook('src/path_planning/test_scripts/Object_Positions2.xlsx')
+Path = PathFile.active
+xline =[]
+yline = []
+zline = []
+for row in range(1,Path.max_row):
+    xline.append(Path['A'+str(row)].value)
+    yline.append(Path['B'+str(row)].value)
+    zline.append(Path['C'+str(row)].value)
+PathTaken = xline,yline,zline
 plotPath(PathTaken,[],[],[])
 
 
