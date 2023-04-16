@@ -18,7 +18,7 @@ def path_plan_test():
     ###############################
     ##  Configurable parameters  ##
     ###############################
-
+    
     # Initial Robot Cartesian Position
     initial_robot_position_x = 0.2
     initial_robot_position_y = 0.2
