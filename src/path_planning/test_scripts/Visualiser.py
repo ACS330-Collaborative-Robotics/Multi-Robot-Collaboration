@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from openpyxl import Workbook, load_workbook
 from APF_Path import *
 
 def Space_Generation(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy
@@ -58,9 +59,10 @@ def plotPath(PathTaken,xobj,yobj,zobj):
     plt.show()
     print('PlotPath Complete')
 
+filename = 'Object_Positions2.xlsx'
+PathTaken = load_workbook(filename,'r')
 
-
-
+plotPath(PathTaken,[],[],[])
 
 
 
