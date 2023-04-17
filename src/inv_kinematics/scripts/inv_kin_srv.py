@@ -192,15 +192,15 @@ def analyse_robot_workspace():
     plt.show()
 
 def inverse_kinematics_reachability_service(req):
-    rospy.loginfo("Inverse Kinematics Reachability - %.3f\t%.3f\t%.3f", req.state.pose.position.x, req.state.pose.position.y, req.state.pose.position.z)
+    #rospy.loginfo("Inverse Kinematics Reachability - %.3f\t%.3f\t%.3f", req.state.pose.position.x, req.state.pose.position.y, req.state.pose.position.z)
 
     joints = trac_ik_inverse_kinematics(req.state.pose, True)
 
     if joints is None:
-        rospy.logwarn("Inverse Kinematics Reachability - Failed")
+        #rospy.logwarn("Inverse Kinematics Reachability - Failed")
         return False
     else:
-        rospy.loginfo("Inverse Kinematics Reachability - True")
+        #rospy.loginfo("Inverse Kinematics Reachability - True")
         return True
 
 def main():

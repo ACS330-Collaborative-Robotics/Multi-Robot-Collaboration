@@ -389,7 +389,7 @@ class ServiceHelper:
                     tempxobj.append(x)
                     tempyobj.append(y)
                     tempzobj.append(z) 
-                    rospy.loginfo("APF Planner - Point is not reachable by %s, added tempobj at %.2f %.2f %.2f", self.robot_ns, x,y,z)
+                    #rospy.loginfo("APF Planner - Point is not reachable by %s, added tempobj at %.2f %.2f %.2f", self.robot_ns, x,y,z)
                     #problem - if reachablility fucks up and says it can't reach, then it'll place an object on top of the block :(
                     #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
                     #another problem - reachability seems to fail when very close to the block on various block positions
