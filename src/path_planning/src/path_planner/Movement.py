@@ -143,7 +143,7 @@ class Movement:
                     starty = arm_pos.position.y*SF 
                     startz = arm_pos.position.z*SF
             Route_File.append([startx,starty,startz])
-            rospy.loginfo(startx,starty,startz)
+            rospy.loginfo('New Position - %.3f %.3f %.3f',startx,starty,startz)
             Object_Files.save('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
         return status #TODO: Implement zone checks
 

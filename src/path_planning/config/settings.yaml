@@ -1,6 +1,6 @@
 Att_Change_SF:     0.5      # default: 0.2 strength of attraction (actual calculation)
 Att_SF:            0.2      # default: 0.2 strength of attraction (visual)
-Rep_Change_SF:     1.0      # default: 1.0 strength of repulsion (actual calculation)
+Rep_Change_SF:     2.0      # default: 1.0 strength of repulsion (actual calculation)
 Rep_SF:            100      # default: 100 strength of repulsion (visual)
 Step_Size:         2        # default: 2 step size of gradient decent
 Final_Att:         0.2      # default: 0.2 end condition for attractive+repulsive potential
