@@ -60,16 +60,24 @@ def plotPath(PathTaken,xobj,yobj,zobj):
     print('PlotPath Complete')
 
 
-PathFile = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
-Path = PathFile.active
+ObjectsFile = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
+Objects = ObjectsFile.active
+RoutesFiles = load_workbook('/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
+Routes = RoutesFiles.active
 xline =[]
 yline = []
 zline = []
-for row in range(1,Path.max_row):
-    xline.append(Path['A'+str(row)].value)
-    yline.append(Path['B'+str(row)].value)
-    zline.append(Path['C'+str(row)].value)
-PathTaken = xline,yline,zline
+Pathx = []
+Pathy = []
+Pathz = []
+for row in range(1,Objects.max_row):
+    xline.append(Objects['A'+str(row)].value)
+    yline.append(Objects['B'+str(row)].value)
+    zline.append(Objects['C'+str(row)].value)
+for row in range(1,Routes.max_row):
+    Pathx.append(Routes['A'+str(row)].value)
+    Pathy.append(Routes['B'+str(row)].value)
+    Pathz.append(Routes['C'+str(row)].value)
 plotPath([],xline,yline,zline)
 
 
