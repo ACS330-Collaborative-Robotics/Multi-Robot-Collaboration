@@ -2,8 +2,11 @@ from openpyxl import Workbook, load_workbook
 wb = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
 wobj = wb['Objects']
 wroute = wb['Route']
-for column in range(1,3):
-    wobj.delete_cols(column)
-    wroute.delete_cols(column)
+wobj.delete_cols(0)
+wroute.delete_cols(0)
+wobj.delete_cols(1)
+wroute.delete_cols(1)
+wobj.delete_cols(2)
+wroute.delete_cols(2)
 
 wb.save('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
