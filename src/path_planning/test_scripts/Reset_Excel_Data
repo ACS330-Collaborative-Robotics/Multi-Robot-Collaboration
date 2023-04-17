@@ -1,4 +1,4 @@
-from openpyxl import Workbokk, load_workbook
+from openpyxl import Workbook, load_workbook
 wb = load_workbook('home/stevencraig147/catkin_ws/src/path_plannning/test_scripts/Testing.xlsx')
 wobj = wb['Objects']
 wroute = wb['Route']
