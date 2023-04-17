@@ -362,9 +362,9 @@ class ServiceHelper:
             diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
             diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
             if any(diffrep) != 0:
-                difx = diffrep[0]  + 0.25*diffatt[0]
-                dify = diffrep[1]  + 0.25*diffatt[1]
-                difz = diffrep[2]  + 0.25*diffatt[2]
+                difx = diffrep[0] + diffreptemp[0]  + 0.1*diffatt[0]
+                dify = diffrep[1] + diffreptemp[1]  + 0.1*diffatt[1]
+                difz = diffrep[2] + diffreptemp[2]  + 0.1*diffatt[2]
                 #rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             else:
                 difx = diffatt[0]

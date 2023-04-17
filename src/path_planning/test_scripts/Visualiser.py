@@ -43,16 +43,16 @@ def plotAPF(X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
 def plotPath(PathTaken,xobj,yobj,zobj):
     fig = plt.figure()
     ax = plt.axes(projection='3d')
-    #xpoints = PathTaken[0]
-    #ypoints = PathTaken[1]
-    #zpoints = PathTaken[2]
+    xpoints = PathTaken[0]
+    ypoints = PathTaken[1]
+    zpoints = PathTaken[2]
 
     #for point in PathTaken[0]:
      #   xpoints.append(point[0])
-      #  ypoints.append(point[1])
-       # zpoints.append(point[2])
-    ax.scatter(xobj,yobj,zobj,color='red',linewidth=10)
-    #ax.plot(xpoints,ypoints,zpoints,linewidth=2.5)
+       # ypoints.append(point[1])
+      #  zpoints.append(point[2])
+    ax.scatter(xobj,yobj,zobj,color='red',linewidth=5)
+    ax.plot(xpoints,ypoints,zpoints,linewidth=7.5)
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_title('End Effector Path in 3D space')
@@ -61,9 +61,8 @@ def plotPath(PathTaken,xobj,yobj,zobj):
 
 
 ObjectsFile = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
-Objects = ObjectsFile.active
-RoutesFiles = load_workbook('/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
-Routes = RoutesFiles.active
+Objects = ObjectsFile['Objects']
+Routes = ObjectsFile['Route']
 xline =[]
 yline = []
 zline = []
@@ -78,7 +77,8 @@ for row in range(1,Routes.max_row):
     Pathx.append(Routes['A'+str(row)].value)
     Pathy.append(Routes['B'+str(row)].value)
     Pathz.append(Routes['C'+str(row)].value)
-plotPath([],xline,yline,zline)
+PathTaken = Pathx,Pathy,Pathz
+plotPath(PathTaken,xline,yline,zline)
 
 
 

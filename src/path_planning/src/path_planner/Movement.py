@@ -45,12 +45,9 @@ class Movement:
         startz = start_pose.position.z*SF
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         while PathComplete==0 and not rospy.is_shutdown():
-            Object_Files = load_workbook('/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
-            Object_File = Object_Files.active
-            Object_File.title = 'Data'
-            Route_Files = load_workbook('/catkin_ws/src/path_planning/test_scripts/BotRoute.xlsx')
-            Route_File = Route_Files.active
-            Route_File.title = 'Data'
+            Object_Files = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
+            Object_File = Object_Files['Objects']
+            Route_File = Object_Files['Route']
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -93,29 +90,29 @@ class Movement:
             PathTakenz = [z/SF for z in PathTakenSFz]
             
             ##FILTERING
-            PathTakenLen=len(PathTakenx)
-            FilterPathTakenLen=30 #approximate filtered length, configurable constant
-            SamplePeriod=round(PathTakenLen/FilterPathTakenLen) #sample period
+            #PathTakenLen=len(PathTakenx)
+            #FilterPathTakenLen=30 #approximate filtered length, configurable constant
+            #SamplePeriod=round(PathTakenLen/FilterPathTakenLen) #sample period
 
-            FilterPathTakenx=[PathTakenx[0]]
-            FilterPathTakeny=[PathTakeny[0]]
-            FilterPathTakenz=[PathTakenz[0]]
-            if PathTakenLen>FilterPathTakenLen: #if too many path points, reduce
-                for i in range(PathTakenLen):
-                    if i%SamplePeriod == 0: #take a sample every SamplePeriod iterations
-                        FilterPathTakenx.append(PathTakenx[i])
-                        FilterPathTakeny.append(PathTakeny[i])
-                        FilterPathTakenz.append(PathTakenz[i])
-                rospy.loginfo("FILTERED PATH LENGTH= %d",len(FilterPathTakenx))
-            else: #if fewer than 30 path points, just use produced path
-                FilterPathTakenx=PathTakenx
-                FilterPathTakeny=PathTakeny
-                FilterPathTakenz=PathTakenz
+            #FilterPathTakenx=[PathTakenx[0]]
+            #FilterPathTakeny=[PathTakeny[0]]
+            #FilterPathTakenz=[PathTakenz[0]]
+            #if PathTakenLen>FilterPathTakenLen: #if too many path points, reduce
+             #   for i in range(PathTakenLen):
+             #       if i%SamplePeriod == 0: #take a sample every SamplePeriod iterations
+             #           FilterPathTakenx.append(PathTakenx[i])
+             #           FilterPathTakeny.append(PathTakeny[i])
+             #           FilterPathTakenz.append(PathTakenz[i])
+             #   rospy.loginfo("FILTERED PATH LENGTH= %d",len(FilterPathTakenx))
+            #else: #if fewer than 30 path points, just use produced path
+             #   FilterPathTakenx=PathTakenx
+             #   FilterPathTakeny=PathTakeny
+             #   FilterPathTakenz=PathTakenz
 
             arm_pos=Pose() #pose for next coordinate
-            arm_pos.position.x=FilterPathTakenx[1]
-            arm_pos.position.y=FilterPathTakeny[1]
-            arm_pos.position.z=FilterPathTakenz[1]
+            arm_pos.position.x=PathTakenx[1]
+            arm_pos.position.y=PathTakeny[1]
+            arm_pos.position.z=PathTakenz[1]
             arm_pos.orientation.x= pos_robot_base_frame.orientation.x 
             arm_pos.orientation.y= pos_robot_base_frame.orientation.y 
             arm_pos.orientation.z= pos_robot_base_frame.orientation.z 
@@ -142,11 +139,10 @@ class Movement:
                     PathComplete = 1
                 else:
                     startx = arm_pos.position.x*SF #start coords for end effector (now next step)
-                    starty = arm_pos.position.y*SF
+                    starty = arm_pos.position.y*SF 
                     startz = arm_pos.position.z*SF
             Route_File.append([startx,starty,startz])
-            Route_Files.save(('/catkin_ws/src/path_planning/test_scripts/BotRoute.xlsx'))
-            Object_Files.save('/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
+            Object_Files.save('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
         return status #TODO: Implement zone checks
 
 
