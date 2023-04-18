@@ -54,14 +54,14 @@ class GUI:
 
         # self.required_services = ['/inverse_kinematics', '/inverse_kinematics_reachability', '/inverse_kinematics_server/get_loggers', '/inverse_kinematics_server/set_logger_level']
         # Wait for the service to become available
-        rospy.wait_for_service('/inverse_kinematics')
+        #rospy.wait_for_service('/inverse_kinematics')
         # Check if the service is available
-        service_name = '/inverse_kinematics'
-        try:
-            subprocess.check_output(['rosservice', 'find', service_name])
-            self.nodes_light.config(bg="green")
-        except subprocess.CalledProcessError:
-            self.nodes_light.config(bg="red")
+        #service_name = '/inverse_kinematics'
+        #try:
+        #    subprocess.check_output(['rosservice', 'find', service_name])
+        #    self.nodes_light.config(bg="green")
+        #except subprocess.CalledProcessError:
+        #    self.nodes_light.config(bg="red")
 
    
 
@@ -101,6 +101,27 @@ class GUI:
         # Start a separate thread for the ROS spin loop
         self.thread = threading.Thread(target=rospy.spin)
         self.thread.start()
+
+        # Create a listener for the physical camera 
+        rospy.Subscriber('/usb_cam/image_raw', ImageMsg, self.camera_callback)
+    
+    
+    def camera_callback(self, msg):
+        # Convert the ROS message to an OpenCV image
+        img = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
+
+        # Resize the image to fit in the Tkinter window
+        img = cv2.resize(img, (640, 480))
+
+        # Convert the OpenCV image to a PIL Image
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(img)
+
+        # Convert the PIL Image to a Tkinter PhotoImage and display it in the canvas
+        img_tk = ImageTk.PhotoImage(img)
+        self.cam_canvas.create_image(0, 2, anchor=tk.NW, image=img_tk)
+
+        self.cam_canvas.image = img_tk
 
    
      # update video frame
