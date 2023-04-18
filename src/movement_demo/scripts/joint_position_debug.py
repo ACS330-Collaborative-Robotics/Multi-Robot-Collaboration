@@ -37,6 +37,11 @@ def talker():
     while not rospy.is_shutdown():
         print(command_state)
         print(simulation_state)
+
+        if len(command_state) == 6:
+            print(np.array(command_state) - np.array(simulation_state[0:6]))
+
+        print("\n")
         rospy.sleep(0.1)
 
 if __name__ == '__main__':
