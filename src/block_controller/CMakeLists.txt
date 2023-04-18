@@ -164,6 +164,7 @@ include_directories(
 catkin_install_python(PROGRAMS
    scripts/spawn_blocks.py
    scripts/block_pos_talker.py
+   scripts/spawn_test_block.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
