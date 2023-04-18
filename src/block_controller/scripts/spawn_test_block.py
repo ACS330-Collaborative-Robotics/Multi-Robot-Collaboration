@@ -4,7 +4,7 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
-from gazebo_msgs.srv import SpawnModel
+from gazebo_msgs.srv import SpawnModel, DeleteModel
 from geometry_msgs.msg import Pose
 from pathlib import Path
 
@@ -13,6 +13,12 @@ from random import random
 def spawner():
     # Setup Node
     rospy.init_node('block_spawner') 
+
+    # Setup model removal service
+    rospy.wait_for_service('gazebo/delete_model')
+    model_remover = rospy.ServiceProxy('gazebo/delete_model', DeleteModel)
+
+    model_remover("block0")
 
     # Setup URDF spawner service
     rospy.wait_for_service('gazebo/spawn_urdf_model')
@@ -27,7 +33,7 @@ def spawner():
 
     # Assign position, offset by robot base coordinates
     pos.position.x = 0.2
-    pos.position.y = 0
+    pos.position.y = 0.1
     pos.position.z = 0.01
 
     # quaternion roation w x y z
