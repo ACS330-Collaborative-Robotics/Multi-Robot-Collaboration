@@ -20,7 +20,7 @@ bool play_pause(custom_msgs::PlayPause::Request &req, custom_msgs::PlayPause::Re
 
     if ((desired_state != "play") && (desired_state != "pause")) {
         res.success = false;
-        ROS_ERROR_STREAM("Play/Pause - Error, cannot use value:\t" << desired_state);
+        ROS_ERROR_STREAM("Play/Pause - Error, cannot use value: " << desired_state);
         return false;
     }
 
@@ -52,6 +52,7 @@ bool play_pause(custom_msgs::PlayPause::Request &req, custom_msgs::PlayPause::Re
         for (auto & robot_name : robot_namespaces) {
             string pub_topic = "/" + robot_name + "/pause_physical";
             pause_physical_pub = n.advertise<std_msgs::Bool>(pub_topic, 10, true);
+            ros::Duration(0.1).sleep();
             pause_physical_pub.publish(physical_state);
             ROS_INFO_STREAM("Play/Pause Service - Published " << 1 << " to " << pub_topic);
         }
@@ -65,6 +66,7 @@ bool play_pause(custom_msgs::PlayPause::Request &req, custom_msgs::PlayPause::Re
         for (auto & robot_name : robot_namespaces) {
             string pub_topic = "/" + robot_name + "/pause_physical";
             pause_physical_pub = n.advertise<std_msgs::Bool>(pub_topic, 10, true);
+            ros::Duration(0.1).sleep();
             pause_physical_pub.publish(physical_state);
             ROS_INFO_STREAM("Play/Pause Service - Published " << 0 << " to " << pub_topic);
         }
