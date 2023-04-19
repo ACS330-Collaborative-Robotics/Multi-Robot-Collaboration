@@ -35,13 +35,14 @@ def talker():
     rospy.sleep(0.1) # Small delay for publishers & subscribers to register
 
     while not rospy.is_shutdown():
-        print(command_state)
-        print(simulation_state)
+        #print(command_state)
+        #print(simulation_state)
 
         if len(command_state) == 6:
-            print(np.array(command_state) - np.array(simulation_state[0:6]))
+            joint_state_error_rad = np.array(command_state) - np.array(simulation_state[0:6])
+            joint_state_error_degree = joint_state_error_rad * 180/pi
+            rospy.loginfo("%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n\n", joint_state_error_degree[0], joint_state_error_degree[1], joint_state_error_degree[2], joint_state_error_degree[3], joint_state_error_degree[4], joint_state_error_degree[5])
 
-        print("\n")
         rospy.sleep(0.1)
 
 if __name__ == '__main__':
