@@ -1,10 +1,11 @@
 # Name: Pick Up Class Definition
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
+from path_planner import Movement
+
 import rospy
 import tf_conversions
 from math import pi
-from path_planner import Movement
 
 class PickUp(Movement.Movement):
     def __init__(self, serv_helper):
@@ -19,10 +20,10 @@ class PickUp(Movement.Movement):
         pose = self.serv_helper.getBlockPos(block_name)
         
         # Move 5cm above block
-        pose.position.z += 0.15
+        pose.position.z += 0.30
 
         # Set End Effector orientation to point downwards using quaternions
-        orientation_in_euler = [0,180*pi/180,0]
+        orientation_in_euler = [pi, 0, pi]
         orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
         pose.orientation.x = orientation[0]
@@ -31,7 +32,7 @@ class PickUp(Movement.Movement):
         pose.orientation.w = orientation[3]
         rospy.loginfo("Path Planner - Pick Up - Moving to %s", block_name)
         
-        self.move(pose)
+        return self.move(pose)
 
     def moveGripper(self, state):
         pass
