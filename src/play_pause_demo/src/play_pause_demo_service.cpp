@@ -25,48 +25,50 @@ bool play_pause(custom_msgs::PlayPause::Request &req, custom_msgs::PlayPause::Re
     }
 
     // Setup pause physical robots publishers
-    ros::Publisher pause_physical_pub;
+    vector<ros::Publisher> pause_physical_pubs;
     for (auto & robot_name : robot_namespaces) {
-        ROS_WARN_STREAM("Play/Pause Service - Intialising: " << robot_name);
         string pub_topic = "/" + robot_name + "/pause_physical";
-        ROS_WARN_STREAM(pub_topic);
-        pause_physical_pub = n.advertise<std_msgs::Bool>(pub_topic, 10, true);
+        //ROS_INFO_STREAM("Play/Pause Service - Intialising: " << pub_topic);
+        pause_physical_pubs.push_back(n.advertise<std_msgs::Bool>(pub_topic, 10, true));
     }
-
-    ros::Duration(1).sleep();
+    ros::Duration(0.1).sleep();
+    
+    // Empty publisher to use in future
+    ros::Publisher pause_physical_pub;
+    std_msgs::Bool physical_state;
 
     if (desired_state == "play") {
         //** Resume physical robots **//
 
         // Update block positions from physical setup
+        ROS_WARN_STREAM("Play/Pause Service - TODO: Add block position reset.");
+
+        // Reset robot positions from physical setup
+        ROS_WARN_STREAM("Play/Pause Service - TODO: Add robot position reset.");
 
         // Re-enable physical robots
-        std_msgs::Bool physical_state;
         physical_state.data = 1;
 
         for (auto & robot_name : robot_namespaces) {
             string pub_topic = "/" + robot_name + "/pause_physical";
             pause_physical_pub = n.advertise<std_msgs::Bool>(pub_topic, 10, true);
             pause_physical_pub.publish(physical_state);
-            ROS_INFO("PUB - ENABLE");
+            ROS_INFO_STREAM("Play/Pause Service - Published " << 1 << " to " << pub_topic);
         }
 
     } else {
         //** Pause  physical robots **//
 
         // Disable physical robots
-        std_msgs::Bool physical_state;
         physical_state.data = 0;
 
         for (auto & robot_name : robot_namespaces) {
             string pub_topic = "/" + robot_name + "/pause_physical";
             pause_physical_pub = n.advertise<std_msgs::Bool>(pub_topic, 10, true);
             pause_physical_pub.publish(physical_state);
-            ROS_INFO("PUB - DISABLE");
+            ROS_INFO_STREAM("Play/Pause Service - Published " << 0 << " to " << pub_topic);
         }
     }
-
-    ros::Duration(1).sleep();
 
     res.success = true;
 
