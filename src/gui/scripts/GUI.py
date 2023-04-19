@@ -137,8 +137,6 @@ class GUI:
             return_code = e.returncode
             self.nodes_light.config(bg="red")
         print(f"Output: {output}, return code: {return_code}")
-      
-
 
        # nodes configured light
         # the aim of these lights is to firstly check that the inverse_kinematics service is running (includes controllers)
@@ -223,10 +221,27 @@ class GUI:
         error_msg.grid(row=1, column=0, columnspan=2)
 
         # subscribe to the rosout topic
-        sub = rospy.Subscriber("/rosout", Log, lambda data: callback(data, error_msg, error_light))
+        sub = rospy.Subscriber("/rosout", Log, lambda data: callback(data, error_msg, error_light))    
+    
+    def camera_callback(self, msg):
+        # Convert the ROS message to an OpenCV image
+        img = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
 
+        # Resize the image to fit in the Tkinter window
+        img = cv2.resize(img, (640, 480))
 
-    # update video frame
+        # Convert the OpenCV image to a PIL Image
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(img)
+
+        # Convert the PIL Image to a Tkinter PhotoImage and display it in the canvas
+        img_tk = ImageTk.PhotoImage(img)
+        self.cam_canvas.create_image(0, 2, anchor=tk.NW, image=img_tk)
+
+        self.cam_canvas.image = img_tk
+
+   
+     # update video frame
     def callback_video(self, data):
         cv_image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # ROS to cv2
         cv_image = cv2.resize(cv_image, (640, 480)) 
