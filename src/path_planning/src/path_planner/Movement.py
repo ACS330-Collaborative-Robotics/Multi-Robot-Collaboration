@@ -26,7 +26,7 @@ class Movement:
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
         SF = 100 #distance scale factor
-        Q = [10,10,10,10,10,10] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+        Q = [10,10,10,10,10,10,10] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = self.serv_helper.APFyamlData["D"]
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -70,7 +70,7 @@ class Movement:
                     zobj.append(pos_obstacle.position.z *SF)
                 #print(len(xobj),len(yobj),len(zobj))
 
-            xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
+            #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
             xobj.append(0) #own base as an object 
             yobj.append(0)
             zobj.append(0)
