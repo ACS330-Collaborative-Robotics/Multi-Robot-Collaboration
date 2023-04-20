@@ -215,6 +215,7 @@ sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers ros-noeti
 sudo apt install python3-pip
 pip install ikpy
 pip install numpy --upgrade
+pip install openpyxl
 ```
 
 ## Clone repository
