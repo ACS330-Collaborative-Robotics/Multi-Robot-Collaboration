@@ -170,7 +170,7 @@ def analyse_robot_workspace():
                 pose_object.position.y = y
                 pose_object.position.z = z
 
-                status = trac_ik_inverse_kinematics(pose_object)
+                status = trac_ik_inverse_kinematics(pose_object, True)
                 if status:
                     ax.scatter(x, y, z, c='k')
 
