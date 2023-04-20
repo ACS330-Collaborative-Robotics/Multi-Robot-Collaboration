@@ -26,7 +26,7 @@ class Movement:
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
         SF = 100 #distance scale factor
-        Q = [12,12,10,8,6,4,4] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+        Q = [10,10,10,10,10,10] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = self.serv_helper.APFyamlData["D"]
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -48,9 +48,9 @@ class Movement:
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
-            xobj=[]
-            yobj=[]
-            zobj=[]
+            xobj=[0, 0, 0, 0, 0, 0]
+            yobj=[0, 0, 0, 0, 0, 0]
+            zobj=[0, 5, 10, 15, 20, 25]
             tempxobj = []
             tempyobj = []
             tempzobj = []
