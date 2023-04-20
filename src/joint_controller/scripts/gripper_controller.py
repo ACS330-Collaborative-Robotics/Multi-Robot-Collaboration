@@ -48,12 +48,12 @@ def main():
             
         elif activateGripper == True:
             gripperstate.state = [False, False, False, False, True, True]
-            physical_gripper_angles = [1, 1]
+            physical_gripper_angles = [0.7, 0.7]
             rospy.logdebug(robot_name + " Gripper Open")
 
         elif activateGripper == False:
             gripperstate.state = [False, False, False, False, False, True]
-            physical_gripper_angles = [-0.5, -0.5]
+            physical_gripper_angles = [-0.3, -0.3]
             rospy.logdebug(robot_name + " Gripper Closed")
 
         for grip_num in range(len(physical_gripper_angles)):
