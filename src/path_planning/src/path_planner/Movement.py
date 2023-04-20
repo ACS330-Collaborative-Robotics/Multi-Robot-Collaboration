@@ -14,8 +14,9 @@ class Movement:
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
 
-        file_name = str(Path.home()) + '/catkin_ws/src/path_planning/config/settings.yaml'
-        with open(file_name) as yamlfile: # add right path
+        config_file_name = str(Path.home()) + '/catkin_ws/src/path_planning/config/settings.yaml'
+        
+        with open(config_file_name) as yamlfile: # add right path
             self.serv_helper.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.serv_helper.APFyamlData)
     
@@ -24,7 +25,7 @@ class Movement:
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
-        
+        excel_file_name=str(Path.home()) + '/catkin_ws/src/path_planning/test_scripts/Testing.xlsx'
         SF = 100 #distance scale factor
         Q = [12,12,10,8,6,4,4] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = self.serv_helper.APFyamlData["D"]
@@ -45,7 +46,7 @@ class Movement:
         startz = start_pose.position.z*SF
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         while PathComplete==0 and not rospy.is_shutdown():
-            Object_Files = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/BotRoute.xlsx')
+            Object_Files = load_workbook(excel_file_name)
             Object_File = Object_Files['Objects']
             Route_File = Object_Files['Route']
             start_time = time()
