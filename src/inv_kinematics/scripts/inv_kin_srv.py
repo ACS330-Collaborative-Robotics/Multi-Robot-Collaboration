@@ -209,7 +209,7 @@ def main():
     else:
         rospy.init_node('inverse_kinematics_server')
 
-    #analyse_robot_workspace()
+    analyse_robot_workspace()
 
     s1 = rospy.Service('inverse_kinematics', InvKin, inverse_kinematics_service)
     s2 = rospy.Service('inverse_kinematics_reachability', InvKin, inverse_kinematics_reachability_service)
