@@ -65,9 +65,9 @@ class Movement:
 
                     pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
                     pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
-                    xobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
-                    yobj.append(pos_obstacle.position.y *SF)
-                    zobj.append(pos_obstacle.position.z *SF)
+                    #xobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
+                    #yobj.append(pos_obstacle.position.y *SF)
+                    #zobj.append(pos_obstacle.position.z *SF)
                 #print(len(xobj),len(yobj),len(zobj))
 
             #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
