@@ -45,7 +45,7 @@ class Movement:
         startz = start_pose.position.z*SF
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         while PathComplete==0 and not rospy.is_shutdown():
-            Object_Files = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
+            Object_Files = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/BotRoute.xlsx')
             Object_File = Object_Files['Objects']
             Route_File = Object_Files['Route']
             start_time = time()
@@ -144,7 +144,7 @@ class Movement:
                     startz = arm_pos.position.z*SF
             Route_File.append([startx,starty,startz])
             rospy.loginfo('New Position - %.3f %.3f %.3f',startx,starty,startz)
-            Object_Files.save('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
+            Object_Files.save('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/BotRoute.xlsx')
         return status #TODO: Implement zone checks
 
 
