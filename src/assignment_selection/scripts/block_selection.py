@@ -97,14 +97,13 @@ def choose_block():
                 c=0
 
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
-        print(tower_pos)
 
         robot_number = 0
 
         # Publish assignments
         for block_number in range(len(tower_pos)):
             goal = PathPlanGoal()
-            rospy.logwarn("%d\t%d", block_number, robot_number)
+            rospy.logwarn("Assignment Selection - Block Number:%d\tRobot Number:%d", block_number, robot_number)
 
             goal.block_name = str(blockNames[block_number])
             goal.robot_name = str(robot_namespaces[robot_number])
