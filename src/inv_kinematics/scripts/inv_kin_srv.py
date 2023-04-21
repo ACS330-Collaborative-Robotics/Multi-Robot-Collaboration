@@ -100,7 +100,7 @@ def inverse_kinematics_service(req):
         rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f\n", time()-start_time)
         return False
     else:
-        joints_display = " ".join([str(round(joint, 2)) for joint in joints])
+        joints_display = " ".join([str(round(joint*180/pi, 2)) for joint in joints])
         rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.4f", joints_display, time()-start_time)
 
         if disable_fk != True:
@@ -114,7 +114,7 @@ def inverse_kinematics_service(req):
             final_orientation = list(end_effector_position.rot)
             final = final_position + final_orientation
 
-            rospy.logdebug("Type\tx\ty\tz\trx\try\trz\trw")
+            rospy.logdebug("Type\tx\ty\tz\trx\try\trz\t\trw")
 
             target_values_display = "\t".join([str(round(value, 3)) for value in target])
             rospy.logdebug("Goal\t%s", target_values_display)
