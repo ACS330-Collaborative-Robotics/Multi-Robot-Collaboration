@@ -5,6 +5,11 @@ import threading
 
 import tkinter as tk
 from tkinter import ttk
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.backends.backend_tkagg import (
+                                    FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.figure import Figure
+
 
 from PIL import Image, ImageTk
 from sensor_msgs.msg import Image as ImageMsg
@@ -30,6 +35,12 @@ class GUI:
         self.cam_label.grid(row=0, column=2, sticky="w")
         self.cam_canvas = tk.Canvas(master, width=540, height=380)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
+
+        # potential field plot
+        self.plot_label = tk.Label(master, text="Potential Field Plot: ")
+        self.plot_label.grid(row=0, column=3, sticky="w")
+        self.plot_canvas = tk.Canvas(master, width=540, height=380)
+        self.plot_canvas.grid(row=1, column=3, sticky="nsew")
 
         # buttons
         self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
@@ -104,6 +115,10 @@ class GUI:
 
         # Create a listener for the physical camera 
         rospy.Subscriber('/usb_cam/image_raw', ImageMsg, self.camera_callback)
+
+        # Create a listener for the Potential Field plot
+        rospy.init_node('listener', anonymous=True)
+        rospy.Subscriber('')
     
     
     def camera_callback(self, msg):
