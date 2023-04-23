@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 import rospy
+import numpy as np
 import subprocess
 import threading
 
 import tkinter as tk
 from tkinter import ttk
 from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.backends.backend_tkagg import (
-                                    FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.figure import Figure
 
 
@@ -37,10 +37,18 @@ class GUI:
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # potential field plot
+        fig = Figure(figsize=(5, 4), dpi=100)
+        canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+        canvas.draw()
         self.plot_label = tk.Label(master, text="Potential Field Plot: ")
         self.plot_label.grid(row=0, column=3, sticky="w")
         self.plot_canvas = tk.Canvas(master, width=540, height=380)
-        self.plot_canvas.grid(row=1, column=3, sticky="nsew")
+        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
+
+        ax = fig.add_subplot(111, projection="3d")
+        t = np.arange(0, 3, .01)
+        ax.plot(t, 2 * np.sin(2 * np.pi * t))
+
 
         # buttons
         self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
@@ -118,7 +126,7 @@ class GUI:
 
         # Create a listener for the Potential Field plot
         rospy.init_node('listener', anonymous=True)
-        rospy.Subscriber('')
+        #rospy.Subscriber('')
     
     
     def camera_callback(self, msg):
@@ -183,6 +191,7 @@ class GUI:
    
     def sim_preview_clicked(self):
         self.sim_preview_button.config(text="STOP PREVIEW", bg="red", fg="black")
+    
 
    
 
