@@ -4,7 +4,7 @@
 # Author: Tom Richards (tomtommrichards@gmail.com), Conor Nichols (cjnichols1@sheffield.ac.uk), Annanthavel Santhanavel Ramesh(asanthanavelramesh1@sheffield.ac.uk)
 
 import rospy
-
+import numpy as np
 from gazebo_msgs.srv import GetModelState
 from block_controller.msg import Blocks
 from path_planning.srv import PathPlan
@@ -38,6 +38,7 @@ def choose_block():
     # Setup path_planner action client
     path_client = actionlib.SimpleActionClient('path_planner', PathPlanAction)
     path_client.wait_for_server()
+    
 
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
@@ -101,6 +102,9 @@ def choose_block():
         b=0
         c=0
 
+        states=[]
+        robot_status=[]
+
         # Generate coordinates
         for i in range(layers):
             w=0 #width of blocks
@@ -119,11 +123,19 @@ def choose_block():
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
         # Publish assignments
-        #testing pull
         for i in range(len(tower_pos)):
             for j in range(len(robot_namespaces)):
-                goal = PathPlanGoal()
 
+                
+                goal = PathPlanGoal()
+                goal.robot_name = str(robot_namespaces[j])
+                
+                while (path_client.get_state() == 1):
+                    if j == 0:
+                        j = 1
+                    elif j==1:
+                        j = 0
+            
                 goal.block_name = str(goCollect[j][i])
                 goal.robot_name = str(robot_namespaces[j])
 
@@ -140,22 +152,27 @@ def choose_block():
                 end_pos.orientation.w = quat[3]
 
                 goal.end_pos = end_pos
-
                 tower_pos.pop(i)
-
                 path_client.send_goal(goal)
+
+
+                
 
                 rospy.sleep(0.01)
 
                 while (path_client.get_state() == 1) and not rospy.is_shutdown():
                     rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
-                    rospy.sleep(0.01)
+                    rospy.sleep(0.01)    
 
                 status = path_client.get_result().success
                 if status:
                     rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
                 else:
                     rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status)
+
+               
+
+
                     
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
