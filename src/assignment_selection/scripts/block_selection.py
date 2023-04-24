@@ -35,13 +35,15 @@ def choose_block():
     # Setup block_pos listener
     rospy.Subscriber('/blocks_pos', Blocks, callback)
 
-    # Setup path_planner action client
-    path_client = actionlib.SimpleActionClient('path_planner', PathPlanAction)
-    path_client.wait_for_server()
-    
-
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
+
+    # Setup path_planner action client
+    path_clients = []
+    for robot_name in robot_namespaces:
+        path_clients.append(actionlib.SimpleActionClient(robot_name+'/path_planner', PathPlanAction))
+        path_clients[-1].wait_for_server()
+
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
     
     tower_origin_coordinates = [0, 0.3, 0]
@@ -126,7 +128,7 @@ def choose_block():
         for i in range(len(tower_pos)):
             for j in range(len(robot_namespaces)):
 
-                while path_client[j] == 1:
+                while (path_clients[j].get_state() == 1):
                     if j == 0:
                         j = 1
                     elif j == 1:
@@ -150,18 +152,15 @@ def choose_block():
 
                 goal.end_pos = end_pos
                 tower_pos.pop(i)
-                path_client.send_goal(goal)
-
-
-                
+                path_clients[j].send_goal(goal)
 
                 rospy.sleep(0.01)
 
-                while (path_client.get_state() == 1) and not rospy.is_shutdown():
+                while (path_clients[j].get_state() == 1) and not rospy.is_shutdown():
                     rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
                     rospy.sleep(0.01)    
 
-                status = path_client.get_result().success
+                status = path_clients[j].get_result().success
                 if status:
                     rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
                 else:
@@ -214,7 +213,7 @@ def getRobotBaseCoordinates(robot_namespaces):
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
         while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)) and not rospy.is_shutdown():
-            rospy.logerr("Cannot find robot base transform - block_selection.py. Retrying now.")
+            rospy.logwarn("Cannot find robot base transform - block_selection.py. Retrying now.")
             rospy.sleep(0.1)
         
         transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
