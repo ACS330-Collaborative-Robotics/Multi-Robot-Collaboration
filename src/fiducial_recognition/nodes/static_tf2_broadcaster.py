@@ -18,7 +18,7 @@ if __name__ == '__main__':
         static_transformStamped = geometry_msgs.msg.TransformStamped()
 
         static_transformStamped.header.stamp = rospy.Time.now()
-        static_transformStamped.header.frame_id = "tag_0"
+        static_transformStamped.header.frame_id = "tag_0" #TODO Change to Arm_Bundle 
         static_transformStamped.child_frame_id = "mover6aBase"
 
         static_transformStamped.transform.translation.x = float(sys.argv[1])
@@ -33,5 +33,5 @@ if __name__ == '__main__':
         static_transformStamped.transform.rotation.w = quat[3]
 
         broadcaster.sendTransform(static_transformStamped)
-        rospy.loginfo("Node started: static_tf2_broadcaster - 'tag_0' to 'mover6aBase' is x:%s y:%s z:%s",static_transformStamped.transform.translation.x,static_transformStamped.transform.translation.y,static_transformStamped.transform.translation.z)
+        rospy.loginfo("Node started: static_tf2_broadcaster - %s to 'mover6aBase' is x:%s y:%s z:%s",static_transformStamped.header.frame_id,static_transformStamped.transform.translation.x,static_transformStamped.transform.translation.y,static_transformStamped.transform.translation.z)
         rospy.spin()
