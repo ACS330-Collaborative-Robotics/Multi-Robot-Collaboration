@@ -13,10 +13,8 @@ from block_controller.srv import UpdateBlocks
 import tf_conversions
 
 blockData_cam = None
-
-def update():
-    #subscribe to camera positions
-    rospy.Subscriber('/blocks_pos_cam', Blocks, callback)
+#to call, send True or False 
+def update(data):
     # Setup set model state service
     rospy.wait_for_service('gazebo/set_model_state')
     block_updater = rospy.ServiceProxy('gazebo/set_model_state', SetModelState)
@@ -49,6 +47,7 @@ def update():
         #model.reference_frame="world" #might cause issues
 
         block_updater(model)
+    return True
             
 def callback(data):
     global blockData_cam
@@ -56,7 +55,11 @@ def callback(data):
 
 def update_server():
     rospy.init_node("block_update_server")
-    s=rospy.Service('block_update',UpdateBlocks,update)
+    s = rospy.Service('block_update', UpdateBlocks, update)
+
+    #subscribe to camera positions
+    rospy.Subscriber('/blocks_pos_cam', Blocks, callback)
+
     rospy.spin()
         
 
