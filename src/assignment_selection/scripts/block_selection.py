@@ -126,18 +126,15 @@ def choose_block():
         for i in range(len(tower_pos)):
             for j in range(len(robot_namespaces)):
 
-                
-                goal = PathPlanGoal()
-                goal.robot_name = str(robot_namespaces[j])
-                
-                while (path_client.get_state() == 1):
+                while path_client[j] == 1:
                     if j == 0:
                         j = 1
-                    elif j==1:
+                    elif j == 1:
                         j = 0
-            
+
+                goal = PathPlanGoal()
+                goal.robot_name = str(robot_namespaces[j])      
                 goal.block_name = str(goCollect[j][i])
-                goal.robot_name = str(robot_namespaces[j])
 
                 end_pos = Pose()
                 end_pos.position.x = tower_pos[i][0] + tower_origin_coordinates[0]
