@@ -8,27 +8,27 @@ mover6_a:
   joint1_position_controller:
     type: effort_controllers/JointPositionController
     joint: joint1
-    pid: {p: 5.0, i: 0.01, d: 1.0}
+    pid: {p: 5.0, i: 0.01, d: 5.0}
   joint2_position_controller:
     type: effort_controllers/JointPositionController
     joint: joint2
-    pid: {p: 50.0, i: 0.2, d: 20.0}
+    pid: {p: 5.0, i: 0.01, d: 5.0}
   joint3_position_controller:
     type: effort_controllers/JointPositionController
     joint: joint3
-    pid: {p: 50.0, i: 0.01, d: 5.0}
+    pid: {p: 5.0, i: 0.01, d: 5.0}
   joint4_position_controller:
     type: effort_controllers/JointPositionController
     joint: joint4
-    pid: {p: 2.0, i: 0.01, d: 1.0}
+    pid: {p: 5.0, i: 0.01, d: 5.0}
   joint5_position_controller:
     type: effort_controllers/JointPositionController
     joint: joint5
-    pid: {p: 10.0, i: 0.1, d: 5.0}
+    pid: {p: 5.0, i: 0.01, d: 5.0}
   joint6_position_controller:
     type: effort_controllers/JointPositionController
     joint: joint6
-    pid: {p: 20.0, i: 0.1, d: 10.0}
+    pid: {p: 5.0, i: 0.1, d: 10.0}
   jointgripper_a_position_controller:
     type: effort_controllers/JointPositionController
     joint: joint_gripper_a

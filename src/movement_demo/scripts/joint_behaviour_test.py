@@ -46,13 +46,13 @@ def talker():
     #############################
 
     robot_name = "mover6_a"
-    joint_number = 3 # Range: 1-6
+    joint_number = 1 # Range: 1-6
 
     # Initial Angle -> Time Delay -> Final Angle -> Time Delay
     initial_angle_degrees = 0
-    final_angle_degrees = -90
+    final_angle_degrees = 90
     
-    time_delay_seconds = 14
+    time_delay_seconds = 20
 
     #############################
 
