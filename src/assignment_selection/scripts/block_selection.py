@@ -71,6 +71,27 @@ def choose_block():
 
         rospy.loginfo("Assignment Selection - Block list built.\n")
 
+        # Getting distance from each robot to blocks and sellecting the smallest
+        roboColect = []
+        for blockName in blockNames:
+            reldist = []
+            for robot in robot_namespaces:
+                temp_pose =  specific_block_pose(blockName, robot)
+                temp = [temp_pose.position.x, temp_pose.position.y, temp_pose.position.z]
+                reldist.append(math.sqrt(temp[0]**2+temp[1]**2+temp[2]**2))
+            roboColect.append([blockName, reldist.index(min(reldist)), min(reldist)])
+        
+        # Ordering list on nearest
+        sorted(roboColect,key=itemgetter(2))
+        
+        # Splitting into seperate lists
+        goCollect = []
+        for i in range(len(robot_namespaces)):
+            goCollect.append([])
+            for nextBlock in roboColect:
+                if nextBlock[1] == i:
+                    goCollect[i].append(nextBlock[0])
+
         # Setup tower block locations
         n = len(blockNames) #num of blocks
         layers = math.floor(n/2) #num of layers
@@ -169,11 +190,11 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
 
         model_state.pose.position.z += 0.10
 
-        if not inv_kin_is_reachable(model_state).success:
-            rospy.loginfo("Assignment Selection - Removing %s as it is not reachable by %s", block_name, robot_name)
-            return False
+        if inv_kin_is_reachable(model_state).success:
+            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
+            return True
         
-    return True
+    return False
 
 def getRobotBaseCoordinates(robot_namespaces):
     tfBuffer = tf2_ros.Buffer()
