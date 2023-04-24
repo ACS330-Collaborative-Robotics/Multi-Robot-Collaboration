@@ -276,6 +276,6 @@ class GUI:
    
 if __name__ == '__main__':
     root = tk.Tk()
-    root.geometry("{}x{}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
+    root.geometry("{}x{}+0+0".format(1200, 800))
     gui = GUI(root)
     root.mainloop()
