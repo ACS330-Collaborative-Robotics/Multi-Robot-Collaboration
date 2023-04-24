@@ -15,9 +15,9 @@ def choose_block():
     #############################
 
     goal.robot_name = "mover6_a"
-    goal.block_name = "block0"
+    goal.block_name = "block6"
 
-    cartesian_coordinates = [0.1, 0.2, 0]
+    cartesian_coordinates = [0.25, 0, 0]
     orientation_in_euler = [0, 0, 0]
 
     #############################
