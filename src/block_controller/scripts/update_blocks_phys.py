@@ -38,9 +38,10 @@ def update(data):
     rospy.loginfo("Block Updater - Got block and camera data.")
     
     while len(remainingTags) > 0 and not rospy.is_shutdown():
+        pos = Pose()
+        model = ModelState()
         for i in range(len(blockData_cam.block_data)):
-            pos = Pose()
-            model = ModelState()
+
             blocknumber = blockData_cam.block_data[i].block_number
             model.model_name = "block" + str(blocknumber)
 
