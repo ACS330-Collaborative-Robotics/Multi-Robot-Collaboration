@@ -125,12 +125,19 @@ def choose_block():
 
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
+        robots_on_hold = [False for x in range(len(robot_namespaces))]
+
+        print(robots_on_hold)
+
         # Publish assignments
-        while len(tower_pos) > 0:
+        while len(tower_pos) > 0 and not rospy.is_shutdown():
             # Find an availible robot
             for robot_number_iterator in range(len(robot_namespaces)):
                 print(path_clients[robot_number_iterator].get_state())
-                if path_clients[robot_number_iterator].get_state() == 0 or path_clients[robot_number_iterator].get_state() == 9:
+                print((path_clients[robot_number_iterator].get_state() == 0 or path_clients[robot_number_iterator].get_state() == 9))
+                print(not robots_on_hold[robot_number_iterator])
+                print(robots_on_hold)
+                if (path_clients[robot_number_iterator].get_state() == 0 or path_clients[robot_number_iterator].get_state() == 9) and not robots_on_hold[robot_number_iterator]:
                     robot_number = robot_number_iterator
                     break
             else:
@@ -141,8 +148,9 @@ def choose_block():
                 block_name = str(blockNames[0])
                 robot_name = str(robot_namespaces[robot_number])
 
-                if not is_block_reachable(block_name, robot_name):
+                if not is_block_reachable(block_name, [robot_name]):
                     rospy.logwarn("Assignment Selection - Cannot Allocate %s to %s.", block_name, robot_name)
+                    robots_on_hold[robot_number] = True
                 else:
                     rospy.logwarn("Assignment Selection - Allocating %s to %s.", block_name, robot_name)
 
@@ -166,6 +174,7 @@ def choose_block():
 
                     path_clients[robot_number].send_goal(goal)
                     tower_pos.pop(0)
+                    robots_on_hold = [False for x in range(len(robot_namespaces))]
                     rospy.sleep(0.01)
 
                     '''while (path_clients[robot_number].get_state() == 1) and not rospy.is_shutdown():
@@ -180,8 +189,13 @@ def choose_block():
                     else:
                         rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''           
             else:
-                rospy.logwarn("Assignment Selection - No robots available.")
-                rospy.sleep(0.1)    
+                rospy.logwarn("Assignment Selection - Robot %s not available.", robot_name)
+                robots_on_hold[robot_number] = True
+
+            if all(robots_on_hold):
+                rospy.logerr("Assignment Selection - No robots available for current block. Skipping block.")
+                tower_pos.pop(0)
+                robots_on_hold = [False for x in range(len(robot_namespaces))]
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Use service to get position of specific block named
@@ -215,6 +229,7 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
             rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
             return True
         
+        rospy.loginfo("Assignment Selection - %s cannot reach %s", robot_name, block_name)
     return False
 
 def getRobotBaseCoordinates(robot_namespaces):
