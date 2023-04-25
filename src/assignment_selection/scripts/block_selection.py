@@ -128,7 +128,8 @@ def choose_block():
         # Check if each robot is busy
         for robot_number_iterator in range(len(robot_namespaces)):
             # actionlib states: https://get-help.robotigniteacademy.com/t/get-state-responses-are-incorrect/6680
-            robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() in [0, 3, 9]) 
+            robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() in [0, 3, 4, 9]) 
+            #TODO: Add error handling 
 
         unavailable_robots = list(np.logical_or(robots_cannot_reach_next_block, robots_busy))
 
@@ -168,6 +169,7 @@ else:
 def allocate_task(block_name, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
     if not is_block_reachable(block_name, [robot_name]):
         rospy.logwarn("Assignment Selection - Cannot Allocate %s to %s.", block_name, robot_name)
+        #TODO: Implement is reachable for final position
         return False
     else:
         rospy.loginfo("Assignment Selection - Allocating %s to %s.", block_name, robot_name)
@@ -211,6 +213,8 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
     inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
 
     model_state = ModelState()
+
+    #TODO: Make check at multiple heights and proper orientation
 
     for robot_name in robot_namespaces:
         model_state.pose = specific_block_pose(block_name, robot_name)
