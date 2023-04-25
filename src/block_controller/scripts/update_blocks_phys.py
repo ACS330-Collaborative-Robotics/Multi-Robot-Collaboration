@@ -75,8 +75,8 @@ def update(data):
             for i in range(len(TagList)): #move blocks that aren't found to storage
                 if remainingTags.count(TagList[i])==1:
                     model.model_name = "block" + str(TagList[i])
-                    pos.position.x = block_storage_x
-                    pos.position.y = block_storage_y
+                    pos.position.x = block_storage_x[i]
+                    pos.position.y = block_storage_y[i]
                     pos.position.z = 0.01
   
                     pos.orientation.x = 1
