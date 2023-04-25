@@ -2,7 +2,11 @@
     <!-- Run transform from a to reference fiducial -->
     
     <!-- Run usb_cam -->
-    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node"/> 
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
+      <param name="video_device" value="/dev/video0" />
+      <param name="pixel_format" value="yuyv" />
+    </node> 
+
     <!-- Run image_proc -->
     <node name="image_proc" pkg="image_proc" ns="usb_cam" type="image_proc" output="screen"/>
     <!-- Arguments for apriltag_ros -->
