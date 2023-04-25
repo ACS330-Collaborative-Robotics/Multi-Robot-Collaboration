@@ -40,7 +40,7 @@ def choose_block():
     path_client.wait_for_server()
 
     # Define robot namespaces being used - also defines number of robots
-    robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_namespaces = ["mover6_a"]
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
     
     tower_origin_coordinates = [0.05, 0.36, 0]
@@ -94,7 +94,7 @@ def choose_block():
 
         # Setup tower block locations
         n = len(blockNames) #num of blocks
-        layers = math.floor(n/2) #num of layers
+        layers = math.ceil(n/2) #num of layers
         tower_pos = [] #this has to be a 3 column * layers(value) matrix
         h=0 #height of blocks
         #euler rotation comp
@@ -203,11 +203,11 @@ def getRobotBaseCoordinates(robot_namespaces):
     base_coordinates = []
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
-        while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)) and not rospy.is_shutdown():
+        while not tfBuffer.can_transform("world", robot_name+"/base_link", rospy.Time(0)) and not rospy.is_shutdown():
             rospy.logwarn("Cannot find robot base transform - block_selection.py. Retrying now.")
             rospy.sleep(0.1)
         
-        transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
+        transform_response = tfBuffer.lookup_transform("world", robot_name+"/base_link", rospy.Time(0))
 
         robot_base_coordinates.append(transform_response.transform.translation.x)
         robot_base_coordinates.append(transform_response.transform.translation.y)

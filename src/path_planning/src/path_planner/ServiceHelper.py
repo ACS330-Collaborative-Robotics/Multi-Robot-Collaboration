@@ -94,7 +94,7 @@ class ServiceHelper:
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             try:
-                new_pose = self.tfBuffer.transform(start_pose, target_frame+"_base")
+                new_pose = self.tfBuffer.transform(start_pose, target_frame+"/base_link")
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 rospy.logwarn("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
