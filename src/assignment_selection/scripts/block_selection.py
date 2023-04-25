@@ -98,15 +98,12 @@ def choose_block():
         # Setup tower block locations
         n = len(blockNames) #num of blocks
         layers = math.floor(n/2) #num of layers
-        tower_pos = [] #this has to be a 3 column * layers(value) matrix
+        tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
         h=0 #height of blocks
         #euler rotation comp
         a=0
         b=0
         c=0
-
-        states=[]
-        robot_status=[]
 
         # Generate coordinates
         for i in range(layers):
@@ -114,7 +111,7 @@ def choose_block():
             home_pos = [w,0,h,a,b,c]
             for j in range(2):
                 home_pos = [w,0,h,a,b,c]
-                tower_pos.append(home_pos)
+                tower_block_positions.append(home_pos)
                 w=w+0.08
             h=h+0.04
 
@@ -123,79 +120,79 @@ def choose_block():
             elif c==-90*(math.pi/180):
                 c=0
 
-        rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
+        rospy.loginfo("Assignment Selection - Assignment goal list complete. Beginnning publishing.")
 
-        robots_on_hold = [False for x in range(len(robot_namespaces))]
-
-        print(robots_on_hold)
+        robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
+        robots_busy = [False for x in range(len(robot_namespaces))]
 
         # Publish assignments
-        while len(tower_pos) > 0 and not rospy.is_shutdown():
-            # Find an availible robot
+        while len(tower_block_positions) > 0 and not rospy.is_shutdown():
+            # Check if each robot is busy
             for robot_number_iterator in range(len(robot_namespaces)):
-                print(path_clients[robot_number_iterator].get_state())
-                print((path_clients[robot_number_iterator].get_state() == 0 or path_clients[robot_number_iterator].get_state() == 9))
-                print(not robots_on_hold[robot_number_iterator])
-                print(robots_on_hold)
-                if (path_clients[robot_number_iterator].get_state() == 0 or path_clients[robot_number_iterator].get_state() == 9) and not robots_on_hold[robot_number_iterator]:
-                    robot_number = robot_number_iterator
-                    break
-            else:
-                robot_number = None
+                robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() == 0 or path_clients[robot_number_iterator].get_state() == 9)
+
+            unavailable_robots = list(np.logical_or(robots_cannot_reach_next_block, robots_busy))
+            print(unavailable_robots)
 
             # IF a robot is availible, attempt to allocate a task
-            if robot_number != None:
-                block_name = str(blockNames[0])
-                robot_name = str(robot_namespaces[robot_number])
+            if not all(unavailable_robots):
+                robot_number = unavailable_robots.index(False)
 
-                if not is_block_reachable(block_name, [robot_name]):
-                    rospy.logwarn("Assignment Selection - Cannot Allocate %s to %s.", block_name, robot_name)
-                    robots_on_hold[robot_number] = True
+                if not allocate_task(str(blockNames[0]), str(robot_namespaces[robot_number]), robot_number, tower_block_positions, tower_origin_coordinates, path_clients):
+                    robots_cannot_reach_next_block[robot_number] = True
                 else:
-                    rospy.logwarn("Assignment Selection - Allocating %s to %s.", block_name, robot_name)
+                    robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
 
-                    goal = PathPlanGoal()
-                    goal.block_name = block_name
-                    goal.robot_name = robot_name
-
-                    end_pos = Pose()
-                    end_pos.position.x = tower_pos[0][0] + tower_origin_coordinates[0]
-                    end_pos.position.y = tower_pos[0][1] + tower_origin_coordinates[1]
-                    end_pos.position.z = tower_pos[0][2] + tower_origin_coordinates[2]
-
-                    quat = tf.transformations.quaternion_from_euler(
-                            tower_pos[0][3],tower_pos[0][4],tower_pos[0][5])
-                    end_pos.orientation.x = quat[0]
-                    end_pos.orientation.y = quat[1]
-                    end_pos.orientation.z = quat[2]
-                    end_pos.orientation.w = quat[3]
-
-                    goal.end_pos = end_pos
-
-                    path_clients[robot_number].send_goal(goal)
-                    tower_pos.pop(0)
-                    robots_on_hold = [False for x in range(len(robot_namespaces))]
-                    rospy.sleep(0.01)
-
-                    '''while (path_clients[robot_number].get_state() == 1) and not rospy.is_shutdown():
-                        rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
-                        rospy.sleep(0.01)
-
-                    status = path_clients[robot_number].get_result()
-                    if status == None:
-                        rospy.logfatal("\n\nAssignment Selection - Path Client returned None. Investigate Source.\n\n")
-                    elif status.success:
-                        rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
-                    else:
-                        rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''           
-            else:
-                rospy.logwarn("Assignment Selection - Robot %s not available.", robot_name)
-                robots_on_hold[robot_number] = True
-
-            if all(robots_on_hold):
+            elif all(robots_busy):
+                rospy.logwarn("Assignment Selection - All robots busy, waiting till one is free.")
+                rospy.sleep(0.5)
+                
+            elif all(robots_cannot_reach_next_block):
                 rospy.logerr("Assignment Selection - No robots available for current block. Skipping block.")
-                tower_pos.pop(0)
-                robots_on_hold = [False for x in range(len(robot_namespaces))]
+                tower_block_positions.pop(0)
+                robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
+
+
+'''while (path_clients[robot_number].get_state() == 1) and not rospy.is_shutdown():
+    rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
+    rospy.sleep(0.01)
+
+status = path_clients[robot_number].get_result()
+if status == None:
+    rospy.logfatal("\n\nAssignment Selection - Path Client returned None. Investigate Source.\n\n")
+elif status.success:
+    rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
+else:
+    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''  
+
+def allocate_task(block_name, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
+    if not is_block_reachable(block_name, [robot_name]):
+        rospy.logwarn("Assignment Selection - Cannot Allocate %s to %s.", block_name, robot_name)
+        return False
+    else:
+        rospy.loginfo("Assignment Selection - Allocating %s to %s.", block_name, robot_name)
+
+        goal = PathPlanGoal()
+        goal.block_name = block_name
+        goal.robot_name = robot_name
+
+        end_pos = Pose()
+        end_pos.position.x = tower_block_positions[0][0] + tower_origin_coordinates[0]
+        end_pos.position.y = tower_block_positions[0][1] + tower_origin_coordinates[1]
+        end_pos.position.z = tower_block_positions[0][2] + tower_origin_coordinates[2]
+
+        quat = tf.transformations.quaternion_from_euler(
+                tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5])
+        end_pos.orientation.x = quat[0]
+        end_pos.orientation.y = quat[1]
+        end_pos.orientation.z = quat[2]
+        end_pos.orientation.w = quat[3]
+
+        goal.end_pos = end_pos
+
+        path_clients[robot_number].send_goal(goal)
+        tower_block_positions.pop(0)
+        rospy.sleep(0.01)
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Use service to get position of specific block named
