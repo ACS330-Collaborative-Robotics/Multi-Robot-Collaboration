@@ -126,10 +126,23 @@ def choose_block():
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
         robot_number = 0
+        block_number = 0
 
         # Publish assignments
-        for block_number in range(len(tower_pos)):
-            if path_clients[robot_number].get_state() == 0:
+        tower_length = len(tower_pos)
+        while tower_length > 0:
+            
+            if path_clients[0].get_state() == 0:
+                robot_number = 0
+            elif path_clients[1].get_state() == 0:
+                robot_number = 1
+            elif path_clients[0].get_state() == 1 and path_clients[1].get_state() == 1:
+                robot_number = 2
+                rospy.sleep(1)
+
+            if robot_number != 2:
+                #for block_number in range(len(tower_pos)):
+
                 goal = PathPlanGoal()
                 rospy.logwarn("Assignment Selection - Block Number:%d\tRobot Number:%d", block_number, robot_number)
 
@@ -148,16 +161,18 @@ def choose_block():
                 end_pos.orientation.z = quat[2]
                 end_pos.orientation.w = quat[3]
 
-                goal = PathPlanGoal()
-                goal.robot_name = str(robot_namespaces[robot_number])      
-                goal.block_name = str(goCollect[robot_number][block_number])
                 goal.end_pos = end_pos
 
                 path_clients[robot_number].send_goal(goal)
-
                 rospy.sleep(0.01)
+                block_number = block_number+1
 
-                while (path_clients[robot_number].get_state() == 1) and not rospy.is_shutdown():
+                if block_number >= tower_length:
+                    tower_length=0
+
+                        
+
+                '''while (path_clients[robot_number].get_state() == 1) and not rospy.is_shutdown():
                     rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
                     rospy.sleep(0.01)
 
@@ -167,7 +182,7 @@ def choose_block():
                 elif status.success:
                     rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
                 else:
-                    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)
+                    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''
 
             robot_number = (robot_number + 1) % len(robot_namespaces)                    
 
