@@ -33,7 +33,8 @@ def update(data):
         for i in range(len(blockData_cam.block_data)):
             pos = Pose()
             model = ModelState()
-            model.model_name = "block" + str(blockData_cam.block_data[i].block_number)
+            blocknumber = blockData_cam.block_data[i].block_number
+            model.model_name = "block" + str(blocknumber)
 
             pos.position.x = blockData_cam.block_data[i].x
             pos.position.y = blockData_cam.block_data[i].y
@@ -51,7 +52,10 @@ def update(data):
             model.pose = pos
             #model.reference_frame = "world" #might cause issues
             block_updater(model)
-            remainingTags.remove(blockData_cam.block_data[i].block_number)
+
+            if remainingTags.count(blocknumber) == 1:
+                remainingTags.remove(blocknumber)
+
             count = count+1
 
         if(count < 25):
