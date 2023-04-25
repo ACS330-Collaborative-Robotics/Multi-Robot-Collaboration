@@ -126,45 +126,46 @@ def choose_block():
 
         # Publish assignments
         for i in range(len(tower_pos)):
-            for j in range(len(robot_namespaces)):
+            #for j in range(len(robot_namespaces)):
+            
 
-                while (path_clients[j].get_state() == 1):
-                    if j == 0:
-                        j = 1
-                    elif j == 1:
-                        j = 0
+            end_pos = Pose()
+            end_pos.position.x = tower_pos[i][0] + tower_origin_coordinates[0]
+            end_pos.position.y = tower_pos[i][1] + tower_origin_coordinates[1]
+            end_pos.position.z = tower_pos[i][2] + tower_origin_coordinates[2]
 
-                goal = PathPlanGoal()
-                goal.robot_name = str(robot_namespaces[j])      
-                goal.block_name = str(goCollect[j][i])
+            quat = tf.transformations.quaternion_from_euler(
+                    tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
+            end_pos.orientation.x = quat[0]
+            end_pos.orientation.y = quat[1]
+            end_pos.orientation.z = quat[2]
+            end_pos.orientation.w = quat[3]
 
-                end_pos = Pose()
-                end_pos.position.x = tower_pos[i][0] + tower_origin_coordinates[0]
-                end_pos.position.y = tower_pos[i][1] + tower_origin_coordinates[1]
-                end_pos.position.z = tower_pos[i][2] + tower_origin_coordinates[2]
+            while path_clients[0].get_state() == 1:
+                j=1
+                
+            while path_clients[0].get_state() == 0:
+                j=0
 
-                quat = tf.transformations.quaternion_from_euler(
-                        tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
-                end_pos.orientation.x = quat[0]
-                end_pos.orientation.y = quat[1]
-                end_pos.orientation.z = quat[2]
-                end_pos.orientation.w = quat[3]
+            goal = PathPlanGoal()
+            goal.robot_name = str(robot_namespaces[j])      
+            goal.block_name = str(goCollect[j][i])
+            goal.end_pos = end_pos
+            #tower_pos.pop(i)
+            path_clients[j].send_goal(goal)
 
-                goal.end_pos = end_pos
-                tower_pos.pop(i)
-                path_clients[j].send_goal(goal)
+            rospy.sleep(0.01)
 
-                rospy.sleep(0.01)
+            while (path_clients[j].get_state() == 1) and not rospy.is_shutdown():
+                rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
+                rospy.sleep(0.01)    
 
-                while (path_clients[j].get_state() == 1) and not rospy.is_shutdown():
-                    rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
-                    rospy.sleep(0.01)    
-
-                status = path_clients[j].get_result().success
-                if status:
-                    rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
-                else:
-                    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status)
+            status = path_clients[j].get_result().success
+            if status:
+                rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
+            else:
+                rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status)
+            
 
                
 
