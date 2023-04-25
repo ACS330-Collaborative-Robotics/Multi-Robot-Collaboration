@@ -129,10 +129,10 @@ def choose_block():
         while len(tower_block_positions) > 0 and not rospy.is_shutdown():
             # Check if each robot is busy
             for robot_number_iterator in range(len(robot_namespaces)):
-                robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() == 0 or path_clients[robot_number_iterator].get_state() == 9)
+                # actionlib states: https://get-help.robotigniteacademy.com/t/get-state-responses-are-incorrect/6680
+                robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() in [0, 3, 9]) 
 
             unavailable_robots = list(np.logical_or(robots_cannot_reach_next_block, robots_busy))
-            print(unavailable_robots)
 
             # IF a robot is availible, attempt to allocate a task
             if not all(unavailable_robots):
@@ -142,14 +142,15 @@ def choose_block():
                     robots_cannot_reach_next_block[robot_number] = True
                 else:
                     robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
+                    blockNames.pop(0)
 
             elif all(robots_busy):
                 rospy.logwarn("Assignment Selection - All robots busy, waiting till one is free.")
                 rospy.sleep(0.5)
-                
+
             elif all(robots_cannot_reach_next_block):
                 rospy.logerr("Assignment Selection - No robots available for current block. Skipping block.")
-                tower_block_positions.pop(0)
+                blockNames.pop(0)
                 robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
 
 
