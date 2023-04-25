@@ -29,6 +29,7 @@
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_b" type="static_tf2_broadcaster.py" args="mover6_b/world world 0 0.72 0.02 0 0 -1.5708" output="screen"/>
     <node name="gui" pkg="gui" type="GUI.py" output="screen"/>
     
+    <!-- The Phical robot controller -->
     <node name="joint_controller" pkg="joint_controller" type="joint_controller.py" ns="/mover6_a" args="mover6_a" output="screen"/>
     <node name="gripper_controller" pkg="joint_controller" type="gripper_controller.py" ns="/mover6_a" args="mover6_a" output="screen"/>
     <node name="joint_controller" pkg="joint_controller" type="joint_controller.py" ns="/mover6_b" args="mover6_b" output="screen"/>

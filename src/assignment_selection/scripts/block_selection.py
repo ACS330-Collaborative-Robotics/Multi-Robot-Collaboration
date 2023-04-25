@@ -43,7 +43,7 @@ def choose_block():
     robot_namespaces = ["mover6_a"]
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
     
-    tower_origin_coordinates = [0.05, 0.36, 0]
+    tower_origin_coordinates = [0.1, 0.36, 0]
 
     # Set Loop rate
     T = 5
