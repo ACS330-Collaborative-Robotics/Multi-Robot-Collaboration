@@ -103,7 +103,7 @@ class GUI:
         self.thread.start()
 
         # Create a listener for the physical camera 
-        rospy.Subscriber('/usb_cam/image_raw', ImageMsg, self.camera_callback)
+        rospy.Subscriber('/tag_detections_image', ImageMsg, self.camera_callback)
     
     
     def camera_callback(self, msg):
