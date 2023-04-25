@@ -10,6 +10,7 @@ from gazebo_msgs.srv import GetModelState
 from geometry_msgs.msg import Pose
 from tf2_geometry_msgs import PoseStamped
 from inv_kinematics.srv import InvKin
+from std_msgs.msg import Bool
 
 from math import pi
 
@@ -28,6 +29,9 @@ class ServiceHelper:
         # Setup tf2
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
+
+        # Setup gripper publisher
+        self.gripper_publisher = rospy.Publisher(self.robot_ns + "/gripper_state", Bool, queue_size=10)
 
     def move(self, pos:Pose, final_link_name):
         """ Move arm to specified position.
@@ -51,6 +55,11 @@ class ServiceHelper:
         # Call inverse_kinematics service and log ArmPos
         return self.inv_kin(arm_pos).success
     
+    def moveGripper(self, state:bool):
+        self.gripper_publisher.publish(state)
+        
+        rospy.loginfo("Path Planner - Service Helper - Gripper set to state %i.", state)
+
     def getBlockPos(self, specific_model_name:str) -> Pose:
         """ Get block position relative to current robot arm
 
@@ -88,7 +97,7 @@ class ServiceHelper:
                 new_pose = self.tfBuffer.transform(start_pose, target_frame+"_base")
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                rospy.logerr("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
+                rospy.logwarn("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
                 continue
         

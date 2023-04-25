@@ -28,6 +28,6 @@ class Movement:
             rospy.logerr("Path Planner - Error, Target position unreachable.")
         else :
             #TODO: Force wait until robot has reached desired position. Temp fix:
-            rospy.sleep(5)
+            rospy.sleep(3)
 
         return status #TODO: Implement zone checks
