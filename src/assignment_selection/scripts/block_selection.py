@@ -91,9 +91,10 @@ def choose_block():
             for nextBlock in roboColect:
                 if nextBlock[1] == i:
                     goCollect[i].append(nextBlock[0])
-        
+
+        # Setup tower block locations
         n = len(blockNames) #num of blocks
-        layers = math.ceil(n/2) #num of layers
+        layers = math.floor(n/2) #num of layers
         tower_pos = [] #this has to be a 3 column * layers(value) matrix
         h=0 #height of blocks
         #euler rotation comp
@@ -118,43 +119,47 @@ def choose_block():
 
         rospy.loginfo("Assignment Selection - Assignment Selection complete. Beginnning publishing.")
 
+        robot_number = 0
+
         # Publish assignments
-        for i in range(len(tower_pos)):
-            for j in range(len(robot_namespaces)):
-                goal = PathPlanGoal()
+        for block_number in range(len(tower_pos)):
+            goal = PathPlanGoal()
+            rospy.logwarn("Assignment Selection - Block Number:%d\tRobot Number:%d", block_number, robot_number)
 
-                goal.block_name = str(goCollect[j][i])
-                goal.robot_name = str(robot_namespaces[j])
+            goal.block_name = str(blockNames[block_number])
+            goal.robot_name = str(robot_namespaces[robot_number])
 
-                end_pos = Pose()
-                end_pos.position.x = tower_pos[i][0] + tower_origin_coordinates[0]
-                end_pos.position.y = tower_pos[i][1] + tower_origin_coordinates[1]
-                end_pos.position.z = tower_pos[i][2] + tower_origin_coordinates[2]
+            end_pos = Pose()
+            end_pos.position.x = tower_pos[block_number][0] + tower_origin_coordinates[0]
+            end_pos.position.y = tower_pos[block_number][1] + tower_origin_coordinates[1]
+            end_pos.position.z = tower_pos[block_number][2] + tower_origin_coordinates[2]
 
-                quat = tf.transformations.quaternion_from_euler(
-                        tower_pos[i][3],tower_pos[i][4],tower_pos[i][5])
-                end_pos.orientation.x = quat[0]
-                end_pos.orientation.y = quat[1]
-                end_pos.orientation.z = quat[2]
-                end_pos.orientation.w = quat[3]
+            quat = tf.transformations.quaternion_from_euler(
+                    tower_pos[block_number][3],tower_pos[block_number][4],tower_pos[block_number][5])
+            end_pos.orientation.x = quat[0]
+            end_pos.orientation.y = quat[1]
+            end_pos.orientation.z = quat[2]
+            end_pos.orientation.w = quat[3]
 
-                goal.end_pos = end_pos
+            goal.end_pos = end_pos
 
-                tower_pos.pop(i)
+            path_client.send_goal(goal)
 
-                path_client.send_goal(goal)
+            rospy.sleep(0.01)
 
+            while (path_client.get_state() == 1) and not rospy.is_shutdown():
+                rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
                 rospy.sleep(0.01)
 
-                while (path_client.get_state() == 1) and not rospy.is_shutdown():
-                    rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
-                    rospy.sleep(0.01)
+            status = path_client.get_result()
+            if status == None:
+                rospy.logfatal("\n\nAssignment Selection - Path Client returned None. Investigate Source.\n\n")
+            elif status.success:
+                rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
+            else:
+                rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)
 
-                status = path_client.get_result().success
-                if status:
-                    rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
-                else:
-                    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status)
+            robot_number = (robot_number + 1) % len(robot_namespaces)
                     
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
@@ -175,7 +180,7 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
     for robot_name in robot_namespaces:
         model_state.pose = specific_block_pose(block_name, robot_name)
 
-        orientation_in_euler = [0,180*math.pi/180,0]
+        orientation_in_euler = [0, math.pi, 0]
         orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
         model_state.pose.orientation.x = orientation[0]
@@ -183,7 +188,7 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
         model_state.pose.orientation.z = orientation[2]
         model_state.pose.orientation.w = orientation[3]
 
-        model_state.pose.position.z += 0.15
+        model_state.pose.position.z += 0.10
 
         if inv_kin_is_reachable(model_state).success:
             rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
@@ -199,7 +204,7 @@ def getRobotBaseCoordinates(robot_namespaces):
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
         while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)) and not rospy.is_shutdown():
-            rospy.logerr("Cannot find robot base transform - block_selection.py. Retrying now.")
+            rospy.logwarn("Cannot find robot base transform - block_selection.py. Retrying now.")
             rospy.sleep(0.1)
         
         transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
