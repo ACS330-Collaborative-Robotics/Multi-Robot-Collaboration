@@ -21,11 +21,11 @@ if __name__ == '__main__':
     rospy.loginfo("Node started: tf2_listener - polling rate %s Hz",sys.argv[1])
     while not rospy.is_shutdown():
         blocks = []
-        for i in range(2,35): #cycle through tags 2-34
+        for i in range(10,20): #cycle through tags 2-34
             block = Block()
             tagID='tag_'+str(i)
             try:
-                trans = tfBuffer.lookup_transform('mover6_a/base_link', tagID, rospy.Time(0)) # get transform between tag_0 abd
+                trans = tfBuffer.lookup_transform('mover6_a_base', tagID, rospy.Time(0)) # get transform between tag_0 abd
                 block.block_number=i
                 block.x=trans.transform.translation.x #unit: meters
                 block.y=trans.transform.translation.y

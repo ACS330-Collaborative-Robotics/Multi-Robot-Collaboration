@@ -15,7 +15,7 @@ import tf_conversions
 blockData_cam = None
 #to call, send True or False 
 def update(data):
-    remainingTags=[0,1,10,11,12,13,14,15,16,17,18,19]
+    remainingTags=[10,11,12,13,14,15,16,17,18,19]
     count=0
 
     # Setup set model state service

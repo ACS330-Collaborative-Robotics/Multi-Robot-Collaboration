@@ -16,7 +16,7 @@
     <!-- Run apriltag_ros -->
     <include file="$(find apriltag_ros)/launch/continuous_detection.launch" pass_all_args="true"/>
     <!-- Run tf2_broadcaster (arg=static transform from tag0/Arm_Bundle to mover6_a/base_link)-->
-    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" type="static_tf2_broadcaster.py" args="head_camera mover6_a/world 0 0 10 0 0 0" output="screen"/>
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" type="static_tf2_broadcaster.py" args="mover6_a_base tag_0 0 0.195 0 0 0 1.5708" output="screen"/>
     <!-- Run tf2_listener (arg=publish rate)-->
     <node name="tf2_listener" pkg="fiducial_recognition" type="tf2_listener.py" args="2" output="screen"/>
 
