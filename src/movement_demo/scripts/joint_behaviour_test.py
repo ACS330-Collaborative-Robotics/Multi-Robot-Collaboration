@@ -45,7 +45,7 @@ def talker():
     ## Configurable Parameters ##
     #############################
 
-    robot_name = "mover6_a"
+    robot_name = "mover6_b"
     joint_number = 6 # Range: 1-6
 
     # Initial Angle -> Time Delay -> Final Angle -> Time Delay
@@ -60,7 +60,7 @@ def talker():
     final_angle = final_angle_degrees * pi/180
     
     positions_publisher = rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10)
-    joint_positions = [0 for i in range(6)]
+    joint_positions = [-pi/2,0,0,0,0,0]
 
     ## Initialise listeners
     command_positions_subscriber = rospy.Subscriber(robot_name + "/joint_angles", Joints, command_state_callback)

@@ -58,7 +58,7 @@ def talker(robot_name, angle, joint):
     final_angle = final_angle_degrees * pi/180
     
     positions_publisher = rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10)
-    joint_positions = [0 for i in range(6)]
+    joint_positions = [-pi/2,0,0,0,0,0]
 
     ## Initialise listeners
     command_positions_subscriber = rospy.Subscriber(robot_name + "/joint_angles", Joints, command_state_callback)
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     try:
         talker("mover6_b",-90,1)
         #talker("mover6_a",90,1)
-        talker("mover6_a",0,1)
-        talker("mover6_a",0,2)
+        #talker("mover6_a",90,1)
+        #talker("mover6_a",0,2)
     except rospy.ROSInterruptException:
         pass
