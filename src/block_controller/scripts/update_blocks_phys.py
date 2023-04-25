@@ -50,18 +50,19 @@ def update(data):
             pos.orientation.w = orientation[3]
 
             model.pose = pos
-            #model.reference_frame = "world" #might cause issues
             block_updater(model)
 
             if remainingTags.count(blocknumber) == 1:
                 remainingTags.remove(blocknumber)
 
-            count = count+1
+        count = count+1
 
-        if(count < 25):
+        if(count < 20):
             rospy.loginfo("Block Updater - Tags not found: %s",remainingTags)
+            rospy.sleep(0.05)
         else:
-            rospy.logwarn("Block Updater - Tags STILL not found: %s. Are tags in frame?",remainingTags)
+            rospy.logerr("Block Updater - Tags STILL not found: %s. Are tags in frame?",remainingTags)
+            return True
 
     return True
             
