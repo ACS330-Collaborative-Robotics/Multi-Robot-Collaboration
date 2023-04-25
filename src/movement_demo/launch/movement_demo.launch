@@ -10,5 +10,4 @@
   <node name="joint_controller" pkg="joint_controller" type="joint_controller.py" ns="/mover6_b" args="mover6_b" output="screen"/>
   <node name="gripper_controller" pkg="joint_controller" type="gripper_controller.py" ns="/mover6_b" args="mover6_b" output="screen"/>
   <node name="play_pause_srv" pkg="play_pause_demo" type="play_pause_serv" output="screen"/>
-  <node name="gui" pkg="gui" type="GUI.py" output="screen"/>
 </launch>
