@@ -24,7 +24,7 @@ def update(data):
 
     #wait for data from camera (MIGHT NOT BE NEEDED)
     while (blockData_cam is None) and not rospy.is_shutdown():
-        rospy.loginfo("Block Updater - Waiting for block and camera data.")
+        rospy.loginfo("Block Updater - Waiting for block and camera data. %s",blockData_cam)
         rospy.sleep(0.1)
 
     rospy.loginfo("Block Updater - Got block and camera data.")
@@ -39,9 +39,9 @@ def update(data):
             pos.position.x = blockData_cam.block_data[i].x
             pos.position.y = blockData_cam.block_data[i].y
             pos.position.z = blockData_cam.block_data[i].z
-            a = blockData_cam.block_data[i].a
-            b = blockData_cam.block_data[i].b
-            c = blockData_cam.block_data[i].c
+            a = 0 #blockData_cam.block_data[i].a
+            b = 0 #blockData_cam.block_data[i].b
+            c = blockData_cam.block_data[i].c+1.5708
 
             orientation = tf_conversions.transformations.quaternion_from_euler(a,b,c)
             pos.orientation.x = orientation[0]

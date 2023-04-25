@@ -25,7 +25,7 @@ if __name__ == '__main__':
             block = Block()
             tagID='tag_'+str(i)
             try:
-                trans = tfBuffer.lookup_transform('mover6aBase', tagID, rospy.Time(0)) # get transform between tag_0 abd
+                trans = tfBuffer.lookup_transform('mover6_a/base_link', tagID, rospy.Time(0)) # get transform between tag_0 abd
                 block.block_number=i
                 block.x=trans.transform.translation.x #unit: meters
                 block.y=trans.transform.translation.y
@@ -38,6 +38,7 @@ if __name__ == '__main__':
                 
                 blocks.append(block)
             except (tf2_ros.ConnectivityException,tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                rospy.logerr("TRANSFORM FAILED")
                 continue  
         pub.publish(blocks)
         
