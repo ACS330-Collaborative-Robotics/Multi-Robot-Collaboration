@@ -12,7 +12,7 @@
     <node name="spawn_urdf_a" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -z 0.1 -Y 1.5708 -urdf -model mover6_a -robot_namespace mover6_a  -J joint1 1.5708" />
 
     <!-- Spawn a robot into Gazebo -->
-    <node name="spawn_urdf_b" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -y 1.5 -z 0.1 -Y -1.5708 -urdf -model mover6_b -robot_namespace mover6_b  -J joint1 -1.5708"/>
+    <node name="spawn_urdf_b" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -y 0.72 -z 0.1 -Y -1.5708 -urdf -model mover6_b -robot_namespace mover6_b  -J joint1 -1.5708"/>
     
     <!-- Spawn a camera into Gazebo -->
     <node name="spawn_urdf_cam" pkg="gazebo_ros" type="spawn_model" args="-param camera_description -x 0.5 -y 0.25 -z 0.8 -R 3.14 -P 2.2 -urdf -model camera1"/>
@@ -24,10 +24,10 @@
     <node name="block_spawner" pkg="block_controller" type="spawn_blocks.py" output="screen"/>
 
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_a" type="static_tf2_broadcaster.py" args="mover6_a_base world 0 0 0.1 0 0 1.5708" output="screen"/>
-    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_b" type="static_tf2_broadcaster.py" args="mover6_b_base world 0 1.5 0.1 0 0 -1.5708" output="screen"/>
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_b" type="static_tf2_broadcaster.py" args="mover6_b_base world 0 0.72 0.1 0 0 -1.5708" output="screen"/>
 
     <!-- Connect transforms in tree -->
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_a" type="static_tf2_broadcaster.py" args="mover6_a/world world 0 0 0.1 0 0 1.5708" output="screen"/>
-    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_b" type="static_tf2_broadcaster.py" args="mover6_b/world world 0 1.5 0.1 0 0 -1.5708" output="screen"/>
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_b" type="static_tf2_broadcaster.py" args="mover6_b/world world 0 0.72 0.1 0 0 -1.5708" output="screen"/>
 
 </launch>
