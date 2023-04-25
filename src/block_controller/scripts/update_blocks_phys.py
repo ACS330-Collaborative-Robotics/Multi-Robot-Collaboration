@@ -43,26 +43,25 @@ def update(data):
         for i in range(len(blockData_cam.block_data)):
 
             blocknumber = blockData_cam.block_data[i].block_number
-            model.model_name = "block" + str(blocknumber)
 
-            pos.position.x = blockData_cam.block_data[i].x
-            pos.position.y = blockData_cam.block_data[i].y
-            pos.position.z = blockData_cam.block_data[i].z
-            a = 0 #blockData_cam.block_data[i].a #blocks should always be flat
-            b = 0 #blockData_cam.block_data[i].b
-            c = blockData_cam.block_data[i].c + 1.5708 #manual rotation 
+            if remainingTags.count(blocknumber) == 1: #only move once
+                model.model_name = "block" + str(blocknumber)
+                pos.position.x = blockData_cam.block_data[i].x
+                pos.position.y = blockData_cam.block_data[i].y
+                pos.position.z = blockData_cam.block_data[i].z
+                a = 0 #blockData_cam.block_data[i].a #blocks should always be flat
+                b = 0 #blockData_cam.block_data[i].b
+                c = blockData_cam.block_data[i].c + 1.5708 #manual rotation 
 
-            orientation = tf_conversions.transformations.quaternion_from_euler(a,b,c)
-            pos.orientation.x = orientation[0]
-            pos.orientation.y = orientation[1]
-            pos.orientation.z = orientation[2]
-            pos.orientation.w = orientation[3]
+                orientation = tf_conversions.transformations.quaternion_from_euler(a,b,c)
+                pos.orientation.x = orientation[0]
+                pos.orientation.y = orientation[1]
+                pos.orientation.z = orientation[2]
+                pos.orientation.w = orientation[3]
 
-            model.pose = pos
-            block_mover(model)
-
-            if remainingTags.count(blocknumber) == 1:
-                remainingTags.remove(blocknumber)
+                model.pose = pos
+                block_mover(model) #move block
+                remainingTags.remove(blocknumber) #remove from list
 
         if(count < 20): #debug logging 
             if len(remainingTags) == 0:
