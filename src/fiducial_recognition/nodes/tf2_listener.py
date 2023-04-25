@@ -38,7 +38,7 @@ if __name__ == '__main__':
                 
                 blocks.append(block)
             except (tf2_ros.ConnectivityException,tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                rospy.logerr("TRANSFORM FAILED")
+                #rospy.logerr("TRANSFORM FAILED")
                 continue  
         pub.publish(blocks)
         
