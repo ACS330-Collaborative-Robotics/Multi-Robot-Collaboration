@@ -165,6 +165,7 @@ catkin_install_python(PROGRAMS
    scripts/block_pos_talker.py
    scripts/spawn_blocks_phys.py
    scripts/update_blocks_phys.py
+   scripts/spawn_test_block.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

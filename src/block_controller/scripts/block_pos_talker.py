@@ -28,7 +28,7 @@ def callback(data):
     pub = rospy.Publisher('/blocks_pos', Blocks, queue_size=10)
 
     # Set rate to publish block positions at
-    publish_rate = 1
+    publish_rate = 0.1
 
     # Use subscriber method to get a list of all the block names
     block_names = []
@@ -75,7 +75,6 @@ def callback(data):
     # Log number of block positions published
     #rospy.loginfo("%d block positions published.", len(block_names))
 
-    # Wait 5 seconds before allowing next callback
     rospy.sleep(publish_rate)
 
 def specific_block_pos(specific_model_name):
