@@ -124,7 +124,7 @@ def choose_block():
     robots_busy = [False for x in range(len(robot_namespaces))]
 
     # Publish assignments
-    while len(tower_block_positions) > 0 and not rospy.is_shutdown():
+    while len(tower_block_positions) > 0 and len(blockNames) > 0 and not rospy.is_shutdown():
         # Check if each robot is busy
         for robot_number_iterator in range(len(robot_namespaces)):
             # actionlib states: https://get-help.robotigniteacademy.com/t/get-state-responses-are-incorrect/6680
