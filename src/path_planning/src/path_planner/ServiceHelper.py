@@ -68,6 +68,8 @@ class ServiceHelper:
 
         #rospy.loginfo("Path Planner - Service Helper - Calling ik for %s", self.robot_ns)
 
+        inv_kin_request = InvKinRequest()
+
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
         arm_pos.model_name = self.robot_ns
@@ -79,7 +81,7 @@ class ServiceHelper:
         inv_kin_request.precise_orientation = precise_orientation
 
         # Call inverse_kinematics service and log ArmPos
-        return self.inv_kin(inv_kin_request).success
+        return self.inv_kin(inv_kin_request)
     
     def moveGripper(self, state:bool):
         self.gripper_publisher.publish(state)
