@@ -177,7 +177,7 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
     for robot_name in robot_namespaces:
         model_state.pose = specific_block_pose(block_name, robot_name)
 
-        orientation_in_euler = [0,90*math.pi/180,0]
+        orientation_in_euler = [0,180*math.pi/180,0]
         orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
         model_state.pose.orientation.x = orientation[0]
