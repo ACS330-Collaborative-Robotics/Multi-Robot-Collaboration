@@ -1,6 +1,4 @@
 <launch>
-    <!-- Launch Camera recognition -->
-    <include file="$(find fiducial_recognition)/launch/fiducial_recognition.launch"/>
     <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find mover6_gazebo)/worlds/mover6.world"/>
