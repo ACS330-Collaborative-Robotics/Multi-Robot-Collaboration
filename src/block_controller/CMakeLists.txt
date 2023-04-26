@@ -56,11 +56,10 @@ add_message_files(
  )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+   FILES
+   UpdateBlocks.srv
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -164,6 +163,8 @@ include_directories(
 catkin_install_python(PROGRAMS
    scripts/spawn_blocks.py
    scripts/block_pos_talker.py
+   scripts/spawn_blocks_phys.py
+   scripts/update_blocks_phys.py
    scripts/spawn_test_block.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
