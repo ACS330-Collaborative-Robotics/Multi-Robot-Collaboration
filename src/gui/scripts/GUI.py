@@ -42,7 +42,7 @@ class GUI:
 
         # buttons
         # emergency stop
-        self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
+        self.emergency_stop_button = tk.Button(master, text="EMERGENCY STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
         self.emergency_stop_button.grid(row=4, column=0, sticky="w")
         self.emergency_stop_info = tk.Label(master, text="Emergency stop physical and simulated robots.")
         self.emergency_stop_info.grid(row=4, column=0, sticky="e")
