@@ -12,13 +12,13 @@ import tf.transformations
 
 
 if __name__ == '__main__':
-    rospy.init_node('tf2_listener')
+    rospy.init_node('block_position_publisher')
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer) #create transform listener
     pub = rospy.Publisher('/blocks_pos_cam', Blocks, queue_size=10)
     rate = rospy.Rate(float(sys.argv[1])) #default polling and publishing rate
 
-    rospy.loginfo("Node started: tf2_listener - polling rate %s Hz",sys.argv[1])
+    rospy.loginfo("Node started: block_position_publisher - polling rate %s Hz",sys.argv[1])
     while not rospy.is_shutdown():
         blocks = []
         for i in range(10,20): #cycle through tags 2-34
