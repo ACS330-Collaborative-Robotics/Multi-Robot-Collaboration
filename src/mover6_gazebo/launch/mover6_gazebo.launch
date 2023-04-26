@@ -34,7 +34,7 @@
     <node name="gui" pkg="gui" type="GUI.py" output="screen"/>
 
        <!-- Estop -->
-    <node name="e_stop" pkg="e_stop" type="e_stop_controller.py" output="screen"/>
+    <node name="e_stop_controller" pkg="e_stop" type="e_stop_controller.py" output="screen"/>
     
     <!-- Physical robot controller -->
     <node name="joint_controller" pkg="joint_controller" type="joint_controller.py" ns="/mover6_a" args="mover6_a" output="screen"/>
