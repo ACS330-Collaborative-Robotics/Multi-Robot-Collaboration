@@ -223,12 +223,12 @@ Close the terminal and reopen it.
 
 ```bash
 sudo apt-get update
-sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-apriltag ros-noetic-apriltag-ros ros-noetic-image-pipeline ros-noetic-usb-cam ros-noetic-trac-ik python3-pil.imagetk ros-noetic-rplidar_ros
+sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-apriltag ros-noetic-apriltag-ros ros-noetic-image-pipeline ros-noetic-usb-cam ros-noetic-trac-ik python3-pil.imagetk ros-noetic-rplidar-ros
 sudo apt install python3-pip
 pip install ikpy
 pip install numpy --upgrade
 ```
-installed rplidar_ros from: https://github.com/Slamtec/rplidar_ros
+installed rplidar_ros from: https://github.com/Slamtec/rplidar_ros (shouldnt need to clone this just install ^)
 ## Clone repository
 
 ```bash
