@@ -98,11 +98,15 @@ def assignment_selector():
     # Setup tower block locations
     number_layers = math.floor(len(blockNames)/2) #num of layers
     tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
-    height=0 #height of blocks
+    height = 0 #height of blocks
 
     euler_a = 0
     euler_b = 0
     euler_c = 0
+
+    block_width = 0.035
+    block_height = 0.035
+    block_length = 0.105
 
     # Generate coordinates
     for i in range(number_layers):
@@ -112,8 +116,9 @@ def assignment_selector():
         for j in range(2):
             home_pos = [width, 0, height, euler_a, euler_b, euler_c]
             tower_block_positions.append(home_pos)
-            width = width + 0.08
-        height = height + 0.04
+            width = width + 2*block_width
+
+        height = height + block_height
 
         if euler_c == 0:
             euler_c = -90*(math.pi/180)
