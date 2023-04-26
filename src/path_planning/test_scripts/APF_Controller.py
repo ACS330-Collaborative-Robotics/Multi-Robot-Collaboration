@@ -2,21 +2,21 @@ from Visualiser import *
 from Object_Creation import *
 #Author: Steven Craig
 ##inputs-  space is -50 to 50
-startx = -50
-starty = -50
-startz = 50
-xgoal = 50
-ygoal = 50
+startx = 5
+starty = 25
+startz = 20
+xgoal = 0
+ygoal = -25
 zgoal = 0
-xobj = [3,3,3]
-yobj = [0,20,40]
-zobj = [10,10,10]
-Q = [15,15,15]
+xobj = [0,0,0,0,0,0]
+yobj = [0,0,0,0,0,0]
+zobj = [0,10,20,30,40,50]
+Q = [30,30,30,30,30,30]
 D = 5
 xobj,yobj,zobj,Q = Link_Midpoints(xobj,yobj,zobj,Q)
 ##Visual Commands
 X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken = Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
-#plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
+plotAPF(X, Y, xline, yline, PotentialEnergy, EnergyPathTaken)
 plotPath(PathTaken,xobj,yobj,zobj )
 ##X,Y path the End effector will take
 #PathTakenx, PathTakeny, PathTakenz = PathPlanner(startx,starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)

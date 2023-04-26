@@ -12,10 +12,12 @@ from gazebo_msgs.msg import LinkState
 from gazebo_msgs.srv import GetModelState
 from gazebo_msgs.srv import GetLinkState
 from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Point
 from tf2_geometry_msgs import PoseStamped
 from inv_kinematics.srv import InvKin
 from inv_kinematics.srv import InvKinRequest
 from std_msgs.msg import Header
+from std_msgs.msg import Bool
 
 
 #from APF dependancies
@@ -33,12 +35,12 @@ class ServiceHelper:
         self.robot_ns = robot_ns
         self.target_block=target_block
         # Setup inverse_kinematics service
-        rospy.wait_for_service('inverse_kinematics')
-        self.inv_kin = rospy.ServiceProxy('inverse_kinematics', InvKin)
+        rospy.wait_for_service('/inverse_kinematics')
+        self.inv_kin = rospy.ServiceProxy('/inverse_kinematics', InvKin)
 
         # Setup get_model_state service
-        rospy.wait_for_service('gazebo/get_model_state')
-        self.model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
+        rospy.wait_for_service('/gazebo/get_model_state')
+        self.model_state_service = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
 
         rospy.wait_for_service('gazebo/get_link_state')
         self.link_state_service = rospy.ServiceProxy('gazebo/get_link_state', GetLinkState)
@@ -52,6 +54,11 @@ class ServiceHelper:
             self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.APFyamlData)
 
+        # Setup gripper publisher
+        self.gripper_publisher = rospy.Publisher(self.robot_ns + "/gripper_state", Bool, queue_size=10)
+
+        self.point_pub = rospy.Publisher('/APF_Point', Point, queue_size=10)
+
     def move(self, pos:Pose, final_link_name:str, precise_orientation:bool):
         """ Move arm to specified position.
 
@@ -59,9 +66,10 @@ class ServiceHelper:
 
         Uses inverse_kinematics service.
         """
-        rospy.wait_for_service('inverse_kinematics')
 
-        rospy.loginfo("Path Planner - Service Helper - Calling ik for %s for %s", self.robot_ns,self.target_block)
+        rospy.wait_for_service('/inverse_kinematics')
+
+        #rospy.loginfo("Path Planner - Service Helper - Calling ik for %s", self.robot_ns)
 
         inv_kin_request = InvKinRequest()
 
@@ -78,6 +86,11 @@ class ServiceHelper:
         # Call inverse_kinematics service and log ArmPos
         return self.inv_kin(inv_kin_request).success
     
+    def moveGripper(self, state:bool):
+        self.gripper_publisher.publish(state)
+        
+        #rospy.loginfo("Path Planner - Service Helper - Gripper set to state %i.", state)
+
     def getBlockPos(self, specific_model_name:str) -> Pose:
         """ Get block position relative to current robot arm
         INPUT: string specific_model_name
@@ -86,7 +99,9 @@ class ServiceHelper:
         Uses gazebo/get_model_state service.
         """
         # TODO: Replace with data from /blocks
-        rospy.wait_for_service('gazebo/get_model_state')
+
+        rospy.wait_for_service('/gazebo/get_model_state')
+
         # Extract Pose() object
         data = self.model_state_service(specific_model_name, "world").pose
         return data
@@ -99,7 +114,7 @@ class ServiceHelper:
         orientation_in_quaternion = [start_pose.pose.orientation.x, start_pose.pose.orientation.y, start_pose.pose.orientation.z, start_pose.pose.orientation.w]
         orientation_in_euler = tf_conversions.transformations.euler_from_quaternion(orientation_in_quaternion)
 
-        rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
+        #rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
 
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
@@ -109,17 +124,16 @@ class ServiceHelper:
         while not rospy.is_shutdown():
             try:
                 new_pose = self.tfBuffer.transform(start_pose, target_frame)
-                #rospy.loginfo("Frame Converter - New pose:%.2f,%.2f,%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                rospy.logerr("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
+                rospy.logwarn("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
                 continue
         
         orientation_in_quaternion = [new_pose.pose.orientation.x, new_pose.pose.orientation.y, new_pose.pose.orientation.z, new_pose.pose.orientation.w]
         orientation_in_euler = tf_conversions.transformations.euler_from_quaternion(orientation_in_quaternion)
         
-        rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
+        #rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
 
         return new_pose.pose
     
@@ -272,35 +286,51 @@ class ServiceHelper:
         allvectorsy = 0
         allvectorsz = 0
         repulsionangle = 0
+        repulsionvect = 0,0
+        zrep = 0
         for objNum in range(len(xobj)):
             #generate the vectors and angles
             homevect = [xgoal-x,ygoal-y,zgoal-z]
-            objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z)
+            objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z) # angles are ebcoming negative which causes wrogn ddirection
             anglegoal = math.atan2(homevect[1],homevect[0])
             angleobj = math.atan2(objvect[1],objvect[0])
-            angle = angleobj-anglegoal
+            angle =  angleobj-anglegoal   
+            #rospy.loginfo("ANGLE - %.2f",angle)
             zheight = z-zobj[objNum]
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
             zangle = math.atan2(zheight,d)
             # deciding the direction of the tangent
-            if angle > 0 or angle == 0:
-                repulsionangle = anglegoal + 100
+            rospy.logwarn("Distance; %.2f",d)
+            if d == 0:
+                d = 0.0001
+            scalings = (1/d**2) *(1/Q[objNum] - 1/d)
+            if scalings == 0:
+                0.00001
             if angle < 0:
+                rospy.logwarn("GO LEFT")
+                repulsionangle = anglegoal + 100
+                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(100) - objvect[1]*math.sin(100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(100) + objvect[1]*math.cos(100))
+            if angle > 0 or angle == 0:
+                rospy.logwarn("GO RIGHT")
                 repulsionangle = anglegoal - 100
-
+                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(-100) - objvect[1]*math.sin(-100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(-100) + objvect[1]*math.cos(-100))
             if zheight >= 0:
+                rospy.loginfo("GO UP")
                 zrepangle = zangle - 100
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.sin(-100)
             if zheight < 0:
+                rospy.loginfo("GO DOWN")
                 zrepangle = zangle + 100
-
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.sin(100)
             #deciding whether the obstacle is in range
             #if D<Q[objNum]:
-                #rospy.loginfo("in influence")
-            repulsionvect = Rep_Change_SF*math.cos(math.radians(angle))*math.cos(math.radians(repulsionangle)),Rep_Change_SF*math.cos(math.radians(angle))*math.sin(math.radians(repulsionangle))
-            repulsionvect = list(repulsionvect)
-            zrep = Rep_Change_SF*math.cos(math.radians(zangle))*math.sin(math.radians(zrepangle))
-            if D > Q[objNum]:
+                #rospy.logwarn("in influence")
+            #rospy.loginfo("repchange: %.2f ")
+            #repulsionvect = Rep_Change_SF*math.cos(math.radians(repulsionangle)),Rep_Change_SF*math.sin(math.radians(repulsionangle))
+            #repulsionvect = list(repulsionvect)
+            #zrep = Rep_Change_SF*math.cos(math.radians(zangle))*math.sin(math.radians(zrepangle))
+            if D > Q[objNum] or abs(angle) >90:
                 repulsionvect = 0,0
                 zrep = 0
             else:
@@ -362,99 +392,70 @@ class ServiceHelper:
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
         PathPointsz = [z]
         i = 0
-        while PathComplete == 0 and not rospy.is_shutdown():
-            d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
-            diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
-            diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
-            diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
-            if any(diffrep) != 0:
-                difx = diffrep[0] + diffreptemp[0]  + 0.1*diffatt[0]
-                dify = diffrep[1] + diffreptemp[1]  + 0.1*diffatt[1]
-                difz = diffrep[2] + diffreptemp[2]  + 0.1*diffatt[2]
-                #rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
-            else:
-                difx = diffatt[0]
-                dify = diffatt[1]
-                difz = diffatt[2]
-                #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+        d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
+        diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
+        #diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
+        diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
+        if any(diffrep) != 0:
+            difx = diffrep[0]  + 0.25*diffatt[0]
+            dify = diffrep[1]  + 0.25*diffatt[1]
+            difz = diffrep[2]  + 0.25*diffatt[2]
+                #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
+            rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
+
+        else:
+            difx = diffatt[0]
+            dify = diffatt[1]
+            difz = diffatt[2]
+            rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-diffatt[0],-diffatt[1],-diffatt[2],d)
+            #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             #rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
-            #rospy.loginfo("TEMP Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffreptemp[0],-diffreptemp[1],-diffreptemp[2],d)
-            if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
-                PathComplete = 1
-            else:
-                #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
-                nextx = PathPointsx[i] - Step_Size*difx
-                nexty = PathPointsy[i] - Step_Size*dify
-                nextz = PathPointsz[i] - Step_Size*difz
-                x = nextx
-                y = nexty
-                z = nextz
-                if z < -0.15:
-                    z = -0.15
-                if self.is_block_reachable_APF(x,y,z) == False:
-                    tempxobj.append(x)
-                    tempyobj.append(y)
-                    tempzobj.append(z) 
-                    #rospy.loginfo("APF Planner - Point is not reachable by %s, added tempobj at %.2f %.2f %.2f", self.robot_ns, x,y,z)
-                    #problem - if reachablility fucks up and says it can't reach, then it'll place an object on top of the block :(
-                    #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
-                    #another problem - reachability seems to fail when very close to the block on various block positions
-                    #PathPointsx.append(PathPointsx[i])
-                    #PathPointsy.append(PathPointsy[i])
-                    #PathPointsz.append(PathPointsz[i])
-                    objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
-                    #added Q scaling factor so Q is greater than distance to next point
-                    tempQ.append(objdistance)
+        
+        if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
+            PathComplete = 1
+        else:
+            #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
+            nextx = PathPointsx[i] - Step_Size*difx
+            nexty = PathPointsy[i] - Step_Size*dify
+            nextz = PathPointsz[i] - Step_Size*difz
+            x = nextx
+            y = nexty
+            z = nextz
+            if z < -0.15:
+                z = -0.15
+            if self.is_block_reachable_APF(x,y,z) == False:
+                tempxobj.append(x)
+                tempyobj.append(y)
+                tempzobj.append(z) 
+                #rospy.loginfo("APF Planner - Point is not reachable by %s, added tempobj at %.2f %.2f %.2f", self.robot_ns, x,y,z)
+                #problem - if reachablility fucks up and says it can't reach, then it'll place an object on top of the block :(
+                #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
+                #another problem - reachability seems to fail when very close to the block on various block positions
+                #PathPointsx.append(PathPointsx[i])
+                #PathPointsy.append(PathPointsy[i])
+                #PathPointsz.append(PathPointsz[i])
+                objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
+                #added Q scaling factor so Q is greater than distance to next point
+                tempQ.append(objdistance)
                 #else:
-                PathPointsx.append(x)
-                PathPointsy.append(y)
-                PathPointsz.append(z)
-                #rospy.loginfo('Path Points %.2f %.2f  %.2f',PathPointsx[i],PathPointsy[i],PathPointsz[i])
-                i += 1
+                #PathPointsx.append(x)
+                #PathPointsy.append(y)
+                #PathPointsz.append(z)
+            rospy.loginfo('Path Points: %.2f %.2f %.2f',x,y,z)
+                #i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
-        return PathPointsx,PathPointsy,PathPointsz,tempxobj,tempyobj,tempzobj,tempQ
+        self.publish_path_points(x,y,z)
+        return x,y,z,tempxobj,tempyobj,tempzobj,tempQ
 
-    def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy
-        x = np.linspace(-50, 50, 100)  # Creating X and Y axis
-        y = np.linspace(-50, 50, 100)
-        X, Y = np.meshgrid(x, y)  # Creates 2 arrays with respective x any y coordination for each point
-        PotentialEnergy = np.ndarray(shape=(len(x), len(y)))  # this acts as the z axis on graphs. Works better for visualisation
-        for i in range(len(X)):  # gets Z values for the X Y positions
-            for j in range(len(Y)):
-                PotentialEnergy[i, j] = self.PotentialAttraction2d(X[i,j],Y[i,j],xgoal,ygoal,D)+ self.PotentialRepulsion2d(X[i,j],Y[i,j],xobj,yobj,Q)
-                         # PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
-        PathTaken = self.PathPlanner(startx, starty,startz, xgoal, ygoal,zgoal, xobj, yobj,zobj,Q, D)  ## you are here ^^^
-        EnergyPathTaken = []
-        xline = PathTaken[0]
-        yline = PathTaken[1]
-        for i in range(len(PathTaken[0])):
+    def publish_path_points(self,x,y,z):
+        """  publish path points
+        INPUT: xyz points   
+        OUTPUT: publishs point to be used by gui
+        """
+        point = Point()
+        point.x=x
+        point.y=y
+        point.z=z
 
-            TotalPotential = self.PotentialAttraction2d(xline[i], yline[i], xgoal, ygoal, D) + self.PotentialRepulsion2d(xline[i], yline[i], xobj, yobj, Q)
-            EnergyPathTaken.append(TotalPotential)
-        rospy.loginfo('Space Generation Complete')
-        return X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
-
-    def plotAPF(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
-    # Making 3d Plot
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        ax.plot_surface(X, Y, PotentialEnergy)
-        ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
-        ax.set_xlabel('X axis')
-        ax.set_ylabel('Y axis')
-        plt.show()
-
-    def plotPath(self,PathTaken):
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        xpoints =[]
-        ypoints = []
-        zpoints = []
-        for point in PathTaken:
-            xpoints.append(point[0])
-            ypoints.append(point[1])
-            zpoints.append(point[2])
-        ax.plot(xpoints,ypoints,zpoints)
-        plt.show()
-        rospy.loginfo('PlotPath Complete')
+        self.point_pub.publish(point)

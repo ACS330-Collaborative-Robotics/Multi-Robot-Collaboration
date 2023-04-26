@@ -1,1 +1,1 @@
-catkin_make --only-pkg-with-deps cpr_robot
+catkin_make --only-pkg-with-deps joint_controller

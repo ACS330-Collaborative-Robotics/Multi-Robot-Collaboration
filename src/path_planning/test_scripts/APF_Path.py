@@ -26,7 +26,7 @@ def PathPlanner(x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently 
             difx = diffatt[0]
             dify = diffatt[1]
             difz = diffatt[2]
-            print(-difx,-dify,-difz)
+            print("att:",-difx,-dify,-difz)
 
         if abs(difx) <0.2 and abs(dify) <0.2 and abs(difz) <0.2 and d < 2:#
             PathComplete = 1
@@ -45,8 +45,8 @@ def PathPlanner(x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #you are currently 
             PathPointsx.append(x)
             PathPointsy.append(y)
             PathPointsz.append(z)
+        print(PathPointsx[i],PathPointsy[i])
         i += 1
-        #print(PathPointsx[i],PathPointsy[i])
     #PathPoints = list(zip(PathPointsx,PathPointsy))
     print('Path Complete')
     print(len(PathPointsx))

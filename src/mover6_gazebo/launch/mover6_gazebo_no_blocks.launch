@@ -7,7 +7,6 @@
 
     <!-- Convert an xacro and put on parameter server -->
     <param name="robot_description" command="$(find xacro)/xacro $(find mover6_description)/urdf/CPRMover6.urdf.xacro" />
-    <!-- Launch Camera recognition -->
     <param name="camera_description" command="$(find xacro)/xacro $(find mover6_description)/urdf/Camera.urdf.xacro" />
     
     <!-- Spawn a robot into Gazebo -->
@@ -17,20 +16,17 @@
     <node name="spawn_urdf_b" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -y 0.72 -z 0.02 -Y -1.5708 -urdf -model mover6_b -robot_namespace mover6_b  -J joint1 -1.5708"/>
     
     <!-- Spawn a camera into Gazebo -->
-    <node name="spawn_urdf_cam" pkg="gazebo_ros" type="spawn_model" args="-param camera_description -x -0.5 -y 0.36 -z 0.6 -R 0 -P 0.95 -urdf -model camera1"/>
+    <node name="spawn_urdf_cam" pkg="gazebo_ros" type="spawn_model" args="-param camera_description -x 0.5 -y 0.25 -z 0.6 -R 0 -P 2.2 -urdf -model camera1"/>
     
     <!-- Launch Robot Joint Controller -->
     <include file="$(find mover6_control)/launch/mover6_control.launch"/>
-
-    <!-- Run Block Spawner -->
-    <node name="block_spawner" pkg="block_controller" type="spawn_blocks.py" output="screen"/>
 
     <!-- Connect transforms in tree -->
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_a" type="static_tf2_broadcaster.py" args="mover6_a/world world 0 0 0.02 0 0 1.5708" output="screen"/>
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_b" type="static_tf2_broadcaster.py" args="mover6_b/world world 0 0.72 0.02 0 0 -1.5708" output="screen"/>
     <node name="gui" pkg="gui" type="GUI.py" output="screen"/>
-
-    <!-- Physical robot controller -->
+    
+    <!-- The Phical robot controller -->
     <node name="joint_controller" pkg="joint_controller" type="joint_controller.py" ns="/mover6_a" args="mover6_a" output="screen"/>
     <node name="gripper_controller" pkg="joint_controller" type="gripper_controller.py" ns="/mover6_a" args="mover6_a" output="screen"/>
     <node name="joint_controller" pkg="joint_controller" type="joint_controller.py" ns="/mover6_b" args="mover6_b" output="screen"/>

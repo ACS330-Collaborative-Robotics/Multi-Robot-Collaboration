@@ -53,8 +53,8 @@ def plotPath(PathTaken,xobj,yobj,zobj):
      #   xpoints.append(point[0])
        # ypoints.append(point[1])
       #  zpoints.append(point[2])
-    ax.scatter(xobj,yobj,zobj,color='red',linewidth=5)
-    ax.plot(xpoints,ypoints,zpoints,linewidth=7.5)
+    ax.scatter(xobj,yobj,zobj,color='red',linewidth=25)
+    ax.scatter(xpoints,ypoints,zpoints,color='blue',linewidth=7.5)
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_title('End Effector Path in 3D space')
@@ -63,25 +63,6 @@ def plotPath(PathTaken,xobj,yobj,zobj):
 
     
 
-ObjectsFile = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
-Objects = ObjectsFile['Objects']
-Routes = ObjectsFile['Route']
-xline =[]
-yline = []
-zline = []
-Pathx = []
-Pathy = []
-Pathz = []
-for row in range(1,Objects.max_row):
-    xline.append(Objects['A'+str(row)].value)
-    yline.append(Objects['B'+str(row)].value)
-    zline.append(Objects['C'+str(row)].value)
-for row in range(1,Routes.max_row):
-    Pathx.append(Routes['A'+str(row)].value)
-    Pathy.append(Routes['B'+str(row)].value)
-    Pathz.append(Routes['C'+str(row)].value)
-PathTaken = Pathx,Pathy,Pathz
-plotPath(PathTaken,xline,yline,zline)
 
 
 
