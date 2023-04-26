@@ -11,7 +11,7 @@ def main():
     rospy.init_node('e_stop')
 
     #Define the publishers
-    E_stop_pub = rospy.Publisher("/emergency_stop", Bool, queue_size=10)
+    E_stop_pub = rospy.Publisher("/emergency_stop_manual", Bool, queue_size=10)
 
     # TODO: Make this dynamic based on number of robots
     mover6_a_pub = rospy.Publisher("mover6_a/pause_physical", Bool, queue_size=10)
