@@ -1,6 +1,4 @@
 <launch>
-    <!-- Launch Camera recognition -->
-    <include file="$(find fiducial_recognition)/launch/fiducial_recognition.launch"/>
     <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find mover6_gazebo)/worlds/mover6.world"/>
@@ -22,7 +20,7 @@
     <include file="$(find mover6_control)/launch/mover6_control.launch"/>
 
     <!-- Spawn a camera into Gazebo -->
-    <node name="spawn_urdf_cam" pkg="gazebo_ros" type="spawn_model" args="-param camera_description -x -0.5 -y 0.36 -z 0.8 -R -3.14 -P 0.7 -urdf -model camera1"/>
+    <node name="spawn_urdf_cam" pkg="gazebo_ros" type="spawn_model" args="-param camera_description -x -0.5 -y 0.36 -z 0.6 -R 0 -P 0.95 -urdf -model camera1"/>
     
     <!-- Run Block Spawner -->
     <node name="block_updater" pkg="block_controller" type="update_blocks_phys.py" output="screen"/>
