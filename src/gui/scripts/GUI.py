@@ -177,6 +177,10 @@ class GUI:
         rospy.init_node('listener', anonymous=True)
         rospy.Subscriber('/rosout', Log, self.callback_error, callback_args=(self.error_msg, self.error_light))
 
+    # Initialize the ROS node for the e_stop
+        rospy.init_node('gui_publisher', anonymous=True)
+        self.gui_pub = rospy.Publisher('/gui', Bool, queue_size=10)
+
     # update error log
     def callback_error(self, data, args):
         error_msg, error_light = args
@@ -250,11 +254,17 @@ class GUI:
 
     
     def emergency_stop_clicked(self):
-        subprocess.call(['/usr/bin/python3', '/home/wiks2/catkin_ws/src/e_stop/scripts/e_stop.py'])
-        self.change_button_state()
-
-    def change_button_state(self):
+        #subprocess.call(['/usr/bin/python3', '/home/wiks2/catkin_ws/src/e_stop/scripts/e_stop.py'])
+        #self.change_button_state()
         self.emergency_stop_button.config(text="START", bg="green", fg="black")
+        gui_msg = Bool()
+        gui_msg.data = True
+
+        # Publish the message to the /gui topic
+        self.gui_pub.publish(gui_msg)
+
+    #def change_button_state(self):
+     #   self.emergency_stop_button.config(text="START", bg="green", fg="black")
 
     def sim_preview_clicked(self):
         self.sim_preview_button.config(text="STOP PREVIEW", bg="red", fg="black")
