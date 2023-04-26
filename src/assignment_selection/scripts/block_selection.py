@@ -39,8 +39,7 @@ def assignment_selector():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
 
-    #TODO: Intelligently pick blocks
-    #TODO: Not calling block_update function
+    #TODO: Optional home between movements
 
     update_block_positions()
 
@@ -101,7 +100,7 @@ def assignment_selector():
     else:
         tower_block_positions = [block_position + manual_block_location_euler_rotation for block_position in manual_block_location_xyz]
 
-    robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
+    robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
     robots_busy = [False for x in range(len(robot_namespaces))]
 
     while len(tower_block_positions) > 0 and len(block_names) > 0 and not rospy.is_shutdown():
@@ -110,8 +109,8 @@ def assignment_selector():
             # actionlib states: https://get-help.robotigniteacademy.com/t/get-state-responses-are-incorrect/6680
             robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() in [0, 3, 4, 9]) 
             #TODO: Add error handling 
-
-        unavailable_robots = list(np.logical_or(robots_cannot_reach_next_block, robots_busy))
+        
+        unavailable_robots = list(np.logical_or(robots_cannot_place_next_block, robots_busy))
         number_robots_busy = robots_busy.count(True)
 
         # IF a robot is availible, attempt to allocate a task
@@ -119,20 +118,30 @@ def assignment_selector():
             robot_number = unavailable_robots.index(False)
             
             update_block_positions()
+            
+            task_allocation_success = allocate_task(block_names, str(robot_namespaces[robot_number]), robot_number, tower_block_positions, tower_origin_coordinates, path_clients)
 
-            if not allocate_task(block_names, str(robot_namespaces[robot_number]), robot_number, tower_block_positions, tower_origin_coordinates, path_clients):
-                robots_cannot_reach_next_block[robot_number] = True
+            if task_allocation_success == None:
+                rospy.logfatal("Assignment Selection - Removing %s from selection as no blocks can be picked up by it.", str(robot_namespaces[robot_number]))
+                robot_namespaces.pop(robot_number)
+
+                robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
+                robots_busy = [False for x in range(len(robot_namespaces))]
+
+            elif not task_allocation_success:
+                robots_cannot_place_next_block[robot_number] = True
+
             else:
-                robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
+                robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
 
         elif number_robots_busy >= maximum_simulatenous_robots:
             rospy.loginfo("Assignment Selection - All robots busy, waiting till one is free.")
             rospy.sleep(1)
 
-        elif all(robots_cannot_reach_next_block):
-            rospy.logerr("Assignment Selection - No robots available for %s. Skipping block.", str(block_names[0]))
-            block_names.pop(0)
-            robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
+        elif all(robots_cannot_place_next_block):
+            rospy.logerr("Assignment Selection - No robots available for next assignment. Skipping block.")
+            tower_block_positions.pop(0)
+            robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
             
         rospy.sleep(0.1)
 
@@ -159,7 +168,7 @@ def update_block_positions():
     try:
         block_update(True)
     except rospy.ServiceException:
-        rospy.logwarn("Block update service failed.")
+        rospy.logwarn("Assignment Selection - Block update service call failed.")
 
 def generate_tower_block_positions(number_of_blocks, block_width, block_height, block_length):
     # Setup tower block locations
@@ -247,6 +256,10 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
             block_pose = specific_block_pose(block_name, "world")
             block_coordinates = [block_pose.position.x, block_pose.position.y]
             available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
+
+    if len(available_block_names) == 0:
+        rospy.logwarn("Assignment Selection - Cannot reach a block to place with %s.", robot_name)
+        return None
 
     block_name_index = available_block_distances.index(min(available_block_distances))
     goal.block_name = block_names[block_name_index]
