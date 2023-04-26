@@ -69,29 +69,8 @@ def assignment_selector():
 
     #############################
     
-    ## Making array of block names ##
+    ## Making array of block names
     block_names = build_block_list(robot_namespaces)
-
-    # Getting distance from each robot to blocks and sellecting the smallest
-    roboColect = []
-    for blockName in block_names:
-        reldist = []
-        for robot in robot_namespaces:
-            temp_pose =  specific_block_pose(blockName, robot)
-            temp = [temp_pose.position.x, temp_pose.position.y, temp_pose.position.z]
-            reldist.append(math.sqrt(temp[0]**2+temp[1]**2+temp[2]**2))
-        roboColect.append([blockName, reldist.index(min(reldist)), min(reldist)])
-    
-    # Ordering list on nearest
-    sorted(roboColect,key=itemgetter(2))
-    
-    # Splitting into seperate lists
-    goCollect = []
-    for i in range(len(robot_namespaces)):
-        goCollect.append([])
-        for nextBlock in roboColect:
-            if nextBlock[1] == i:
-                goCollect[i].append(nextBlock[0])
 
     ## Generate tower block positions
     if not use_manual_block_locations:
