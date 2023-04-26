@@ -29,6 +29,8 @@ class PathPlannerServer:
         path_planner_status = pathPlanner.pathPlan()
         temp.success = path_planner_status
 
+        rospy.loginfo("Path Planner - %s - Completed - %s\n", goal.robot_name, goal.block_name)
+
         if path_planner_status:
             self.server.set_succeeded(temp)
         else:
