@@ -45,12 +45,7 @@ def choose_block():
         path_clients[-1].wait_for_server()
 
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
-    
     tower_origin_coordinates = [0, 0.3, 0]
-
-    # Set Loop rate
-    T = 5
-    rate = rospy.Rate(1/T)
 
     ## Making array of block names ##
 
@@ -94,29 +89,29 @@ def choose_block():
                 goCollect[i].append(nextBlock[0])
 
     # Setup tower block locations
-    n = len(blockNames) #num of blocks
-    layers = math.floor(n/2) #num of layers
+    number_layers = math.floor(len(blockNames)/2) #num of layers
     tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
-    h=0 #height of blocks
-    #euler rotation comp
-    a=0
-    b=0
-    c=0
+    height=0 #height of blocks
+
+    euler_a = 0
+    euler_b = 0
+    euler_c = 0
 
     # Generate coordinates
-    for i in range(layers):
-        w=0 #width of blocks
-        home_pos = [w,0,h,a,b,c]
-        for j in range(2):
-            home_pos = [w,0,h,a,b,c]
-            tower_block_positions.append(home_pos)
-            w=w+0.08
-        h=h+0.04
+    for i in range(number_layers):
+        width = 0 #width of blocks
+        home_pos = [width, 0, height, euler_a, euler_b, euler_c]
 
-        if c==0:
-            c=-90*(math.pi/180)
-        elif c==-90*(math.pi/180):
-            c=0
+        for j in range(2):
+            home_pos = [width, 0, height, euler_a, euler_b, euler_c]
+            tower_block_positions.append(home_pos)
+            width = width + 0.08
+        height = height + 0.04
+
+        if euler_c == 0:
+            euler_c = -90*(math.pi/180)
+        elif euler_c == -90*(math.pi/180):
+            euler_c = 0
 
     rospy.loginfo("Assignment Selection - Assignment goal list complete. Beginnning publishing.")
 
