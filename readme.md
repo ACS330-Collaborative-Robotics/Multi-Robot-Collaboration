@@ -84,6 +84,17 @@ Run each of the following in its own terminal tab, after running `cd ~/catkin_ws
  - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
  - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
 
+### Launching the Lidar
+
+Run in terminal:
+`sudo chmod 666 /dev/ttyUSB0`
+
+Then:
+`roslaunch rplidar_ros rplidar.launch`
+
+In a seperate terminal run the line below to publish the data from the lidar to /emergency_stop:
+`rosrun human_zone human_detection.py`
+
 ### Alternative Startup Instructions
 
 Useful for testing various systems using test scripts in `movement_demo`.
@@ -212,12 +223,12 @@ Close the terminal and reopen it.
 
 ```bash
 sudo apt-get update
-sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-apriltag ros-noetic-apriltag-ros ros-noetic-image-pipeline ros-noetic-usb-cam ros-noetic-trac-ik python3-pil.imagetk
+sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-apriltag ros-noetic-apriltag-ros ros-noetic-image-pipeline ros-noetic-usb-cam ros-noetic-trac-ik python3-pil.imagetk ros-noetic-rplidar_ros
 sudo apt install python3-pip
 pip install ikpy
 pip install numpy --upgrade
 ```
-
+installed rplidar_ros from: https://github.com/Slamtec/rplidar_ros
 ## Clone repository
 
 ```bash
