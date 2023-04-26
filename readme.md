@@ -43,6 +43,7 @@ Robot Joints - `1 -> 6`
 
 | Nickname | Package | Description | Startup Script |
 | - | - | - | - |
+| Physical Robot homing | movement_demo | Takes the physical robot to the same starting point as the simulation robot | `rosrun movement_demo physical_robot_homing.py`  |
 | Joint Sweep Test | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun movement_demo joint_sweep_test.py`|
 | Inverse Kinematics Test | movement_demo | Completes one inverse kinematics service call. | `rosrun movement_demo inverse_kinematic_test.py` |
 | Joint Behaviour Test | movement_demo | Moves the a mover6 joint to a specific position and plots the simulation and physical response. | `rosrun movement_demo joint_behaviour_test.py`|
@@ -63,7 +64,7 @@ Robot Joints - `1 -> 6`
 | Desired Joint Angles | `robot_ns_p/physical/joint_angles` | custom_msgs/Joints |
 | Current Moving State | `robot_ns_p/physical/moving_state` | std_msgs/String |
 | CPR Robot State | `robot_ns_p/robot_state` | cpr_robot/RobotState |
-| Mover6 Gripper Control | `robot_ns_p/gripper_state` | std_msgs/Bool |
+| Mover6 Gripper Control | `robot_ns/gripper_state` | std_msgs/Bool |
 
 # How to Build and Run
 

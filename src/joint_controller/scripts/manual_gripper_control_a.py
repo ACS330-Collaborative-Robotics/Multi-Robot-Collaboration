@@ -7,7 +7,7 @@ import rospy
 from std_msgs.msg import Bool
 
 def talker():
-    pub = rospy.Publisher('mover6_a_p/gripper_state', Bool, queue_size=10)
+    pub = rospy.Publisher('mover6_a/gripper_state', Bool, queue_size=10)
     rospy.init_node('Gripper_ControlA')
 
     rate = rospy.Rate(10) # 10 Hz

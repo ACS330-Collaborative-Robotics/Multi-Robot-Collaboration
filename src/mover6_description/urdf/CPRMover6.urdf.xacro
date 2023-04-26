@@ -21,6 +21,17 @@
 		</inertial>
 	</xacro:macro>
 
+		<!-- Joint 2 Inertial -->
+	<xacro:macro name="j2_inertial" params="z_value mass">
+		<inertial>
+			<origin xyz="0 0 ${z_value}" rpy="0 0 0"/>
+			<mass value="${mass}" />
+			<inertia ixx="1" ixy="0.0" ixz="0.0"
+               iyy="1" iyz="0.0"
+               izz="1" />
+		</inertial>
+	</xacro:macro>
+
 
 	<link name="base_link">
 		<visual>
@@ -51,7 +62,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint1Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.5"/>
+		<xacro:j2_inertial z_value="0" mass="0.01"/>
 	</link>
 
 	<link name="link2">
@@ -67,7 +78,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint2Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.5"/>
+		<xacro:default_inertial z_value="0" mass="0.01"/>
 	</link>
 
 	<link name="link3">
@@ -83,7 +94,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint3Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.5"/>
+		<xacro:default_inertial z_value="0" mass="0.01"/>
 	</link>
 
 	<link name="link4">
@@ -99,7 +110,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint4Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.2"/>
+		<xacro:default_inertial z_value="0" mass="0.01"/>
 	</link>
 
 	<link name="link5">
@@ -115,7 +126,7 @@
 				<mesh filename="package://mover6_description/meshes/Joint5Coll.dae" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.2"/>
+		<xacro:default_inertial z_value="0" mass="0.1"/>
 	</link>
 
 	<link name="link6">
@@ -179,7 +190,7 @@
 				<mesh filename="package://mover6_description/meshes/gripper_b.STL" scale="1 1 1"/>
 			</geometry>
 		</collision>
-		<xacro:default_inertial z_value="0" mass="0.1"/>
+		<xacro:default_inertial z_value="0" mass="0.01"/>
 	</link>
 
 
@@ -188,8 +199,8 @@
 		<parent link="base_link"/>
 		<child link="link1"/>
 		<origin rpy="0 0 0" xyz="0 0 0.130"/>
-		<limit lower="-2.27" upper="2.27" effort="100" velocity="30"/>
-		<joint_properties damping="1.0" friction="10.0"/>
+		<limit lower="-2.27" upper="2.27" effort="10" velocity="0.15"/>
+		<joint_properties damping="20.0" friction="120.0"/>
 	</joint>
 
 	<joint name="joint2" type="revolute">
@@ -197,8 +208,8 @@
 		<parent link="link1"/>
 		<child link="link2"/>
 		<origin rpy="0 0 0" xyz="0 0 0.0625"/>
-		<limit lower="-0.87" upper="1.05" effort="100" velocity="30"/>
-		<joint_properties damping="1.0" friction="10.0"/>
+		<limit lower="-0.87" upper="1.05" effort="10" velocity="0.15"/>
+		<joint_properties damping="10.0" friction="150.0"/>
 	</joint>
 
 	<joint name="joint3" type="revolute">
@@ -206,8 +217,8 @@
 		<parent link="link2"/>
 		<child link="link3"/>
 		<origin rpy="0 1.57079632679 0" xyz="0 0 0.190"/>
-		<limit lower="-1.92" upper="1.31" effort="100" velocity="30"/>
-		<joint_properties damping="1.0" friction="10.0"/>
+		<limit lower="-1.92" upper="1.31" effort="10" velocity="0.1"/>
+		<joint_properties damping="10.0" friction="100.0"/>
 	</joint>
 
 	<joint name="joint4" type="revolute">
@@ -215,8 +226,8 @@
 		<parent link="link3"/>
 		<child link="link4"/>
 		<origin rpy="0 0 0" xyz="-0.06 0 0"/>
-		<limit lower="-2.44" upper="2.44" effort="100" velocity="30"/>
-		<joint_properties damping="1.0" friction="10.0"/>
+		<limit lower="-2.44" upper="2.44" effort="10" velocity="0.06"/>
+		<joint_properties damping="10.0" friction="100.0"/>
 	</joint>
 
 	<joint name="joint5" type="revolute">
@@ -224,8 +235,8 @@
 		<parent link="link4"/>
 		<child link="link5"/>
 		<origin rpy="0 0 0" xyz="0 0 0.290"/>
-		<limit lower="-1.22" upper="1.05" effort="100" velocity="40"/>
-		<joint_properties damping="1.0" friction="1.0"/>
+		<limit lower="-1.22" upper="1.05" effort="10" velocity="0.03"/>
+		<joint_properties damping="10.0" friction="100.0"/>
 	</joint>
 
 	<joint name="joint6" type="revolute">
@@ -233,8 +244,8 @@
 		<parent link="link5"/>
 		<child link="link6"/>
 		<origin rpy="0 0 0" xyz="0 0 0.055"/>
-		<limit lower="-2.09" upper="2.09" effort="100" velocity="100"/>
-		<joint_properties damping="1.0" friction="1.0"/>
+		<limit lower="-2.09" upper="2.09" effort="10" velocity="0.03"/>
+		<joint_properties damping="10.0" friction="100.0"/>
 	</joint>
 
 	<joint name="joint7" type="fixed">
@@ -242,8 +253,8 @@
 		<parent link="link6"/>
 		<child link="link7"/>
 		<origin rpy="3.14159 0 1.5708" xyz="0 0 0"/>
-		<limit lower="-2.09" upper="2.09" effort="100" velocity="100"/>
-		<joint_properties damping="1.0" friction="1.0"/>
+		<limit lower="-2.09" upper="2.09" effort="10" velocity="0.15"/>
+		<joint_properties damping="10.0" friction="100.0"/>
 	</joint>
 
 	<joint name="joint_gripper_a" type="revolute">
@@ -357,4 +368,34 @@
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
     </plugin>
     </gazebo>
+	<gazebo reference="link1">
+		<gravity>0</gravity>
+	</gazebo>
+	<gazebo reference="link2">
+		<gravity>0</gravity>
+	</gazebo>
+	<gazebo reference="link3">
+		<gravity>0</gravity>
+	</gazebo>
+	<gazebo reference="link4">
+		<gravity>0</gravity>
+	</gazebo>
+	<gazebo reference="link5">
+		<gravity>0</gravity>
+	</gazebo>
+	<gazebo reference="link6">
+		<gravity>0</gravity>
+	</gazebo>
+	<gazebo reference="link7">
+		<gravity>0</gravity>
+	</gazebo>
+	<gazebo reference="gripper_a">
+		<gravity>0</gravity>
+	</gazebo>
+	<gazebo reference="gripper_b">
+		<gravity>0</gravity>
+	</gazebo>
+
+
+
 </robot>
