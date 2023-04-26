@@ -47,6 +47,10 @@ def choose_block():
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
     tower_origin_coordinates = [0, 0.3, 0]
 
+    # Set Loop rate
+    T = 5
+    rate = rospy.Rate(1/T)
+
     ## Making array of block names ##
 
     # Wait for blockData to read in by subscriber
