@@ -97,20 +97,7 @@ class GUI:
         self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected")
         self.Pi_label.grid(row=4, column=2, sticky="w")
 
-        piServices = ' '.join(['/mover6_a_p/InputChannels',
-        '/mover6_a_p/JointJog',
-        '/mover6_a_p/OutputChannels',
-        '/mover6_a_p/joint_states',
-        '/mover6_a_p/physical/joint_angles',
-        '/mover6_a_p/physical/moving_state',
-        '/mover6_a/robot_state',
-        '/mover6_b_p/InputChannels',
-        '/mover6_b_p/JointJog',
-        '/mover6_b_p/OutputChannels',
-        '/mover6_b_p/joint_states',
-        '/mover6_b_p/physical/joint_angles',
-        '/mover6_b_p/physical/moving_state',
-        '/mover6_b/robot_state'])
+        piServices = ' '.join(['/mover6_a_p/JointJog','/mover6_b_p/JointJog'])
 
         try:
             output = subprocess.check_output(['rosservice', 'find', piServices])
