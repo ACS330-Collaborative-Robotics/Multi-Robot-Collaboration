@@ -50,8 +50,6 @@ def assignment_selector():
         path_clients.append(actionlib.SimpleActionClient(robot_name+'/path_planner', PathPlanAction))
         path_clients[-1].wait_for_server()
 
-    robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
-
     #############################
     ## Configurable Parameters ##
     #############################
@@ -122,11 +120,10 @@ def assignment_selector():
             
             update_block_positions()
 
-            if not allocate_task(str(block_names[0]), str(robot_namespaces[robot_number]), robot_number, tower_block_positions, tower_origin_coordinates, path_clients):
+            if not allocate_task(block_names, str(robot_namespaces[robot_number]), robot_number, tower_block_positions, tower_origin_coordinates, path_clients):
                 robots_cannot_reach_next_block[robot_number] = True
             else:
                 robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
-                block_names.pop(0)
 
         elif number_robots_busy >= maximum_simulatenous_robots:
             rospy.loginfo("Assignment Selection - All robots busy, waiting till one is free.")
@@ -213,41 +210,54 @@ def build_block_list(robot_namespaces):
 
     return block_names
 
-def allocate_task(block_name, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
-    if not is_block_reachable(block_name, robot_name):
-        rospy.logwarn("Assignment Selection - %s cannot reach %s.", robot_name, block_name)
+def allocate_task(block_names, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
+    goal = PathPlanGoal()
+    goal.robot_name = robot_name
+
+    # Setup End Position
+    end_pos = Pose()
+    end_pos.position.x = tower_block_positions[0][0] + tower_origin_coordinates[0]
+    end_pos.position.y = tower_block_positions[0][1] + tower_origin_coordinates[1]
+    end_pos.position.z = tower_block_positions[0][2] + tower_origin_coordinates[2]
+
+    quat = tf.transformations.quaternion_from_euler(
+            tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5])
+    end_pos.orientation.x = quat[0]
+    end_pos.orientation.y = quat[1]
+    end_pos.orientation.z = quat[2]
+    end_pos.orientation.w = quat[3]
+
+    goal.end_pos = end_pos
+
+    # Ensure end position is reachable
+    if not is_block_position_reachable(end_pos.position.x, end_pos.position.y, end_pos.position.z, tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5], robot_name):
+        rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
         return False
-    else:
-        rospy.loginfo("Assignment Selection - Allocating %s to %s.", block_name, robot_name)
+    
+    # Find optimal block to move
+    available_block_names = []
+    available_block_distances = []
 
-        goal = PathPlanGoal()
-        goal.block_name = block_name
-        goal.robot_name = robot_name
+    robot_base_coordinates = getRobotBaseCoordinates([robot_name])[0]
 
-        end_pos = Pose()
-        end_pos.position.x = tower_block_positions[0][0] + tower_origin_coordinates[0]
-        end_pos.position.y = tower_block_positions[0][1] + tower_origin_coordinates[1]
-        end_pos.position.z = tower_block_positions[0][2] + tower_origin_coordinates[2]
+    for block_name in block_names:
+        if is_block_reachable(block_name, robot_name):
+            available_block_names.append(block_name)
 
-        quat = tf.transformations.quaternion_from_euler(
-                tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5])
-        end_pos.orientation.x = quat[0]
-        end_pos.orientation.y = quat[1]
-        end_pos.orientation.z = quat[2]
-        end_pos.orientation.w = quat[3]
+            block_pose = specific_block_pose(block_name, "world")
+            block_coordinates = [block_pose.position.x, block_pose.position.y]
+            available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
 
-        if not is_block_position_reachable(end_pos.position.x, end_pos.position.y, end_pos.position.z, tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5], robot_name):
-            rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
-            return False
+    block_name_index = available_block_distances.index(min(available_block_distances))
+    goal.block_name = block_names[block_name_index]
 
-        goal.end_pos = end_pos
+    path_clients[robot_number].send_goal(goal)
+    tower_block_positions.pop(0)
+    block_names.remove(goal.block_name)
 
-        path_clients[robot_number].send_goal(goal)
-        tower_block_positions.pop(0)
+    rospy.sleep(0.01)
 
-        rospy.sleep(0.01)
-
-        return True
+    return True
 
 def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Use service to get position of specific block named
@@ -309,7 +319,7 @@ def getRobotBaseCoordinates(robot_namespaces):
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
         while not tfBuffer.can_transform("world", robot_name+"/base_link", rospy.Time(0)) and not rospy.is_shutdown():
-            rospy.logwarn("Cannot find robot base transform - block_selection.py. Retrying now.")
+            rospy.loginfo("Cannot find robot base transform - block_selection.py. Retrying now.")
             rospy.sleep(0.1)
         
         transform_response = tfBuffer.lookup_transform("world", robot_name+"/base_link", rospy.Time(0))
@@ -318,6 +328,8 @@ def getRobotBaseCoordinates(robot_namespaces):
         robot_base_coordinates.append(transform_response.transform.translation.y)
 
         base_coordinates.append(robot_base_coordinates)
+    
+    return base_coordinates
 
 def frameConverter(target_frame:str, reference_frame:str, goal_pose:Pose) -> Pose:
     # Setup tf2
@@ -338,7 +350,7 @@ def frameConverter(target_frame:str, reference_frame:str, goal_pose:Pose) -> Pos
             new_pose = tfBuffer.transform(start_pose, target_frame+"/base_link")
             break
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-            rospy.logwarn("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
+            rospy.loginfo("Error - Frame converter in Assignment Selection block_selection.py failed. Retrying now.")
             rate.sleep()
             continue
     
