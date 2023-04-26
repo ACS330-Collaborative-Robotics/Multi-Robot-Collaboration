@@ -9,18 +9,22 @@ from tkinter import ttk
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 
 
 from PIL import Image, ImageTk
 from sensor_msgs.msg import Image as ImageMsg
 from cv_bridge import CvBridge
 import cv2
+from mpl_toolkits import mplot3d
 
 from custom_msgs.msg import Joints
 from std_msgs.msg import String, Float64, Float64MultiArray
 from custom_msgs.msg import apf_coords
 
-
+coords_x = None
+coords_y = None
+coords_z = None
 class GUI:
     def __init__(self, master):
         # simulation
@@ -38,9 +42,18 @@ class GUI:
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # potential field plot
+        while(coords_x is None and coords_y is None and coords_z is None) and not rospy.is_shutdown():
+            rospy.loginfo("Waiting for data")
+            rospy.sleep(0.05)
         self.plot_label = tk.Label(master, text="Potential Field Plot: ")
         self.plot_label.grid(row=0, column=3, sticky="w")
         self.plot_canvas = tk.Canvas(master, width=540, height=380)
+        fig = Figure(figsize=(5, 4), dpi=100)
+        canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+        canvas.draw()
+        ax = fig.add_subplot(111, projection="3d")
+        ax.scatter3D(coords_x, coords_y, coords_z, c=coords_z, cmap='Greens');
+        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
 
 
         # buttons
@@ -122,15 +135,13 @@ class GUI:
         rospy.Subscriber("apf_plot", apf_coords, self.apf_callback)
     
     def apf_callback(self, data):
-        fig = Figure(figsize=(5, 4), dpi=100)
-        canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
-        canvas.draw()
-        ax = fig.add_subplot(111, projection="3d")
-        coords_x=data.plot_data[0]
-        coords_y=data.plot_data[1]
-        coords_z=data.plot_data[2]
-        ax.plot3D(coords_x,coords_y,coords_z)
-        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
+        global coords_x
+        global coords_y
+        global coords_z
+        coords_x=data.plot_data[0,:]
+        coords_y=data.plot_data[1,:]
+        coords_z=data.plot_data[2,:]
+
 
     
     def camera_callback(self, msg):

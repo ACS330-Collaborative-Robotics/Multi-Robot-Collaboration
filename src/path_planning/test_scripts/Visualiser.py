@@ -61,15 +61,7 @@ def plotPath(PathTaken,xobj,yobj,zobj):
     plt.show()
     print('PlotPath Complete')
 
-    pub = rospy.Publisher('apf_plot', apf_coords, queue_size=10)
-    plot_coords=np.array[[xpoints],[ypoints],[zpoints]]
-    rospy.init_node('Visualiser', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
-    while not rospy.is_shutdown():
-        rospy.loginfo(plot_coords)
-        pub.publish(plot_coords)
-        rate.sleep()
-
+    
 
 ObjectsFile = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
 Objects = ObjectsFile['Objects']

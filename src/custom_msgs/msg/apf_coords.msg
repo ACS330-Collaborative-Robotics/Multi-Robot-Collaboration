@@ -1,1 +1,1 @@
-apf_coords[] plot_data
+std_msgs/Float64MultiArray[] plot_data
