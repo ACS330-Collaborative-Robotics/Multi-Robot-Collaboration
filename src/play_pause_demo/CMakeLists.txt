@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(fiducial_recognition)
+project(play_pause_demo)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -9,6 +9,7 @@ project(fiducial_recognition)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   custom_msgs
+  gazebo_msgs
   roscpp
   rospy
   std_msgs
@@ -71,7 +72,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   custom_msgs#   std_msgs
+#   custom_msgs#   gazebo_msgs#   std_msgs
 # )
 
 ################################################
@@ -105,8 +106,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES fiducial_recognition
-#  CATKIN_DEPENDS custom_msgs roscpp rospy std_msgs
+#  LIBRARIES play_pause_demo
+#  CATKIN_DEPENDS custom_msgs gazebo_msgs roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -123,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/fiducial_recognition.cpp
+#   src/${PROJECT_NAME}/play_pause_demo.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -134,7 +135,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/fiducial_recognition_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/play_pause_demo_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -160,10 +161,10 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-catkin_install_python(PROGRAMS
-  scripts/block_position_publisher.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# catkin_install_python(PROGRAMS
+#   scripts/my_python_script
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -198,10 +199,14 @@ catkin_install_python(PROGRAMS
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_fiducial_recognition.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_play_pause_demo.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(play_pause_serv src/play_pause_demo_service.cpp) 
+target_link_libraries(play_pause_serv ${catkin_LIBRARIES})
+add_dependencies(play_pause_serv ${catkin_EXPORTED_TARGETS})

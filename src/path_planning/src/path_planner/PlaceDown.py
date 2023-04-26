@@ -18,17 +18,44 @@ class PlaceDown(PickUp.PickUp):
         OUTPUT: bool Success
         """
         
-        # Move 5cm above block
-        end_pose.position.z += 0.15
+        block_orientation_quaternion = [end_pose.orientation.x, end_pose.orientation.y, end_pose.orientation.z, end_pose.orientation.w]
+        block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
 
         # Set End Effector orientation to point downwards using quaternions
-        orientation_in_euler = [0,180*pi/180,0]
+        orientation_in_euler = [0, pi, block_orientation_euler[2]]
         orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
         end_pose.orientation.x = orientation[0]
         end_pose.orientation.y = orientation[1]
         end_pose.orientation.z = orientation[2]
         end_pose.orientation.w = orientation[3]
-        rospy.loginfo("Path Planner - Place down - Moving to %.2f\t%.2f\t%.2f", end_pose.position.x, end_pose.position.y, end_pose.position.z)
+
+        # Move above block
+        rospy.loginfo("Path Planner - Place Down - Moving above.")
+        end_pose.position.z += 0.15
+        if not self.move(end_pose):
+            return False
         
-        return self.move(end_pose)
+        # Move down onto block
+        rospy.loginfo("Path Planner - Place Down - Lowering onto.")
+        end_pose.position.z -= 0.05
+        if not self.move(end_pose):
+            return False
+        
+        # Open Gripper
+        rospy.loginfo("Path Planner - Place Down - Opening Gripper.")
+        self.serv_helper.moveGripper(1)
+        rospy.sleep(1)
+
+        # Move down onto block
+        rospy.loginfo("Path Planner - Place Down - Lifting up.")
+        end_pose.position.z += 0.05
+        if not self.move(end_pose):
+            return False
+        
+        # Close Gripper
+        rospy.loginfo("Path Planner - Place Down - Closing Gripper.")
+        self.serv_helper.moveGripper(0)
+        rospy.sleep(2)
+
+        return True

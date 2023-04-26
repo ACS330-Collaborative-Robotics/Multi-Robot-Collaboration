@@ -96,7 +96,7 @@ def inverse_kinematics_service(req):
         rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f\n", time()-start_time)
         return False
     else:
-        joints_display = " ".join([str(round(joint, 2)) for joint in joints])
+        joints_display = " ".join([str(round(joint*180/pi, 2)) for joint in joints])
         rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.4f", joints_display, time()-start_time)
 
         if disable_fk != True:
@@ -110,7 +110,7 @@ def inverse_kinematics_service(req):
             final_orientation = list(end_effector_position.rot)
             final = final_position + final_orientation
 
-            rospy.logdebug("Type\tx\ty\tz\trx\try\trz\trw")
+            rospy.logdebug("Type\tx\ty\tz\trx\try\trz\t\trw")
 
             target_values_display = "\t".join([str(round(value, 3)) for value in target])
             rospy.logdebug("Goal\t%s", target_values_display)
@@ -131,14 +131,13 @@ def inverse_kinematics_service(req):
 def analyse_robot_workspace():
     x_range = [-0.5, 0.5]
     y_range = [-0.5, 0.5]
-    z_range = [-0.1, 0.3]
+    z_values = [0, 0.05, 0.10, 0.15]
 
-    number_of_points = 5
+    number_of_points = 10
     number_of_points -= 1
 
     x_step = (max(x_range) - min(x_range))/number_of_points
     y_step = (max(y_range) - min(y_range))/number_of_points
-    z_step = (max(z_range) - min(z_range))/number_of_points
 
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
@@ -159,9 +158,7 @@ def analyse_robot_workspace():
         for y_multiplier in range(0, number_of_points+1):
             y = y_multiplier*y_step + min(y_range)
 
-            for z_multiplier in range(0, number_of_points+1):
-                z = z_multiplier*z_step + min(z_range)
-                
+            for z in z_values:
                 pose_object.position.x = x
                 pose_object.position.y = y
                 pose_object.position.z = z
