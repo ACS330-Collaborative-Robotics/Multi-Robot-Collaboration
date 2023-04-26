@@ -43,6 +43,7 @@ Robot Joints - `1 -> 6`
 
 | Nickname | Package | Description | Startup Script |
 | - | - | - | - |
+| Physical Robot homing | movement_demo | Takes the physical robot to the same starting point as the simulation robot | `rosrun movement_demo physical_robot_homing.py`  |
 | Joint Sweep Test | movement_demo | Moves the mover6 joint's through the full range of motion via joint position | `rosrun movement_demo joint_sweep_test.py`|
 | Inverse Kinematics Test | movement_demo | Completes one inverse kinematics service call. | `rosrun movement_demo inverse_kinematic_test.py` |
 | Joint Behaviour Test | movement_demo | Moves the a mover6 joint to a specific position and plots the simulation and physical response. | `rosrun movement_demo joint_behaviour_test.py`|

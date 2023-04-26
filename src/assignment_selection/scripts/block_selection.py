@@ -21,6 +21,7 @@ from tf2_geometry_msgs import PoseStamped
 from gazebo_msgs.msg import ModelState
 from inv_kinematics.srv import InvKin
 from path_planning.msg import PathPlanAction, PathPlanGoal
+from block_controller.srv import UpdateBlocks
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -39,6 +40,14 @@ def assignment_selector():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
 
+    
+    rospy.wait_for_service('block_update')
+    block_update = rospy.ServiceProxy('block_update',UpdateBlocks)
+    try:
+        resp1 = block_update(True)
+    except rospy.ServiceException as exc:
+        rospy.logwarn("Service did not process request: to update blocks")
+
     # Setup path_planner action client
     path_clients = []
     for robot_name in robot_namespaces:
@@ -46,8 +55,8 @@ def assignment_selector():
         path_clients[-1].wait_for_server()
 
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
-    tower_origin_coordinates = [0, 0.3, 0]
-
+    tower_origin_coordinates = [0.1, 0.36, 0]
+    
     # Set Loop rate
     T = 5
     rate = rospy.Rate(1/T)
@@ -268,11 +277,11 @@ def getRobotBaseCoordinates(robot_namespaces):
     base_coordinates = []
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
-        while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)) and not rospy.is_shutdown():
+        while not tfBuffer.can_transform("world", robot_name+"/base_link", rospy.Time(0)) and not rospy.is_shutdown():
             rospy.logwarn("Cannot find robot base transform - block_selection.py. Retrying now.")
             rospy.sleep(0.1)
         
-        transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))
+        transform_response = tfBuffer.lookup_transform("world", robot_name+"/base_link", rospy.Time(0))
 
         robot_base_coordinates.append(transform_response.transform.translation.x)
         robot_base_coordinates.append(transform_response.transform.translation.y)

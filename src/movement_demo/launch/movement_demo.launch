@@ -6,5 +6,4 @@
   <node name="path_planner_server" pkg="path_planning" type="path_plan.py"  ns="/mover6_a" output="screen"/>
   <node name="path_planner_server" pkg="path_planning" type="path_plan.py"  ns="/mover6_b" output="screen"/>
   <node name="play_pause_srv" pkg="play_pause_demo" type="play_pause_serv" output="screen"/>
-  <node name="gui" pkg="gui" type="GUI.py" output="screen"/>
 </launch>
