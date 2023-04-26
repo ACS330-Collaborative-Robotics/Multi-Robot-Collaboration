@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
-disable_fk = False
+disable_fk = True
 try:
     import kinpy as kp
 except ModuleNotFoundError:
