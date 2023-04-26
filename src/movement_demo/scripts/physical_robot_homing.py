@@ -4,6 +4,7 @@
 import rospy
 from custom_msgs.msg import Joints
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Bool
 
 from math import pi
 import matplotlib.pyplot as plt
@@ -36,7 +37,7 @@ def physical_state_callback(data):
         physical_state_time.append(time)
         physical_state_state.append(joint_positions[joint_number-1])
     
-def talker(robot_name, angle, joint):
+def talker(robot_name, angle, joint,GripperState):
     rospy.init_node('joint_behaviour_test')
 
     global joint_number
@@ -64,6 +65,7 @@ def talker(robot_name, angle, joint):
     command_positions_subscriber = rospy.Subscriber(robot_name + "/joint_angles", Joints, command_state_callback)
     simulation_positions_subscriber = rospy.Subscriber(robot_name + "/joint_states", JointState, simulation_state_callback)
     physical_positions_subscriber = rospy.Subscriber(robot_name + "_p/joint_states", JointState, physical_state_callback)
+    pubGripper = rospy.Publisher(robot_name+'/gripper_state', Bool, queue_size=10)
 
     rospy.sleep(0.1) # Small delay for publishers & subscribers to register
 
@@ -81,17 +83,26 @@ def talker(robot_name, angle, joint):
     rospy.logwarn("Publishing joint %d to angle %.2f", joint_number, final_angle_degrees)
     rospy.sleep(time_delay_seconds)
 
+
+    ## opening the gripper
+    rospy.logwarn("Opening Gipper")
+    pubGripper.publish(GripperState)
+
     ## Disable subscribers
     command_positions_subscriber.unregister()
     simulation_positions_subscriber.unregister()
     physical_positions_subscriber.unregister()
+    pubGripper.unregister()
+
+
+    
 
     rospy.sleep(0.1) # Small delay for subscriber to unregister
 
 if __name__ == '__main__':
     try:
-        talker("mover6_b",-90,1)
-        talker("mover6_a",90,1)
+        talker("mover6_b",-90,1,True)
+        talker("mover6_a",90,1,True)
         #talker("mover6_a",90,1)
         #talker("mover6_a",0,2)
     except rospy.ROSInterruptException:
