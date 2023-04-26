@@ -9,7 +9,6 @@ import tf
 import tf2_ros
 import tf_conversions
 
-
 import numpy as np
 import math
 from operator import itemgetter
@@ -42,14 +41,8 @@ def assignment_selector():
 
     #TODO: Intelligently pick blocks
     #TODO: Not calling block_update function
-    
-    rospy.wait_for_service('block_update')
-    block_update = rospy.ServiceProxy('block_update', UpdateBlocks)
 
-    try:
-        block_update(True)
-    except rospy.ServiceException:
-        rospy.logwarn("Block update service failed.")
+    update_block_positions()
 
     # Setup path_planner action client
     path_clients = []
@@ -69,6 +62,8 @@ def assignment_selector():
     block_width = 0.035
     block_height = 0.035
     block_length = 0.105
+
+    maximum_simulatenous_robots = 1
 
     #############################
     
@@ -114,10 +109,13 @@ def assignment_selector():
             #TODO: Add error handling 
 
         unavailable_robots = list(np.logical_or(robots_cannot_reach_next_block, robots_busy))
+        number_robots_busy = robots_busy.count(True)
 
         # IF a robot is availible, attempt to allocate a task
-        if not all(unavailable_robots):
+        if (not all(unavailable_robots)) and number_robots_busy < maximum_simulatenous_robots:
             robot_number = unavailable_robots.index(False)
+            
+            update_block_positions()
 
             if not allocate_task(str(block_names[0]), str(robot_namespaces[robot_number]), robot_number, tower_block_positions, tower_origin_coordinates, path_clients):
                 robots_cannot_reach_next_block[robot_number] = True
@@ -125,7 +123,7 @@ def assignment_selector():
                 robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
                 block_names.pop(0)
 
-        elif all(robots_busy):
+        elif number_robots_busy >= maximum_simulatenous_robots:
             rospy.loginfo("Assignment Selection - All robots busy, waiting till one is free.")
             rospy.sleep(1)
 
@@ -147,6 +145,19 @@ elif status.success:
     rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
 else:
     rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''  
+
+def update_block_positions():
+    try:
+        rospy.wait_for_service('block_update', 1)
+    except rospy.ROSException:
+        return False
+    
+    block_update = rospy.ServiceProxy('block_update', UpdateBlocks)
+
+    try:
+        block_update(True)
+    except rospy.ServiceException:
+        rospy.logwarn("Block update service failed.")
 
 def generate_tower_block_positions(number_of_blocks, block_width, block_height, block_length):
     # Setup tower block locations
