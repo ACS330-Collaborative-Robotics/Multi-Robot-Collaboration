@@ -73,11 +73,11 @@ def assignment_selector():
     #############################
     
     ## Making array of block names ##
-    blockNames = build_block_list(robot_namespaces)
+    block_names = build_block_list(robot_namespaces)
 
     # Getting distance from each robot to blocks and sellecting the smallest
     roboColect = []
-    for blockName in blockNames:
+    for blockName in block_names:
         reldist = []
         for robot in robot_namespaces:
             temp_pose =  specific_block_pose(blockName, robot)
@@ -97,7 +97,7 @@ def assignment_selector():
                 goCollect[i].append(nextBlock[0])
 
     ## Generate tower block positions
-    tower_block_positions = generate_tower_block_positions(len(blockNames), block_width, block_height, block_length)
+    tower_block_positions = generate_tower_block_positions(len(block_names), block_width, block_height, block_length)
     #tower_blocks_positions = [x, y, z, euler_a, euler_b, euler_c]
 
     rospy.loginfo("Assignment Selection - Assignment goal list complete. Beginnning publishing.\n")
@@ -106,7 +106,7 @@ def assignment_selector():
     robots_busy = [False for x in range(len(robot_namespaces))]
 
     # Publish assignments
-    while len(tower_block_positions) > 0 and len(blockNames) > 0 and not rospy.is_shutdown():
+    while len(tower_block_positions) > 0 and len(block_names) > 0 and not rospy.is_shutdown():
         # Check if each robot is busy
         for robot_number_iterator in range(len(robot_namespaces)):
             # actionlib states: https://get-help.robotigniteacademy.com/t/get-state-responses-are-incorrect/6680
@@ -119,19 +119,19 @@ def assignment_selector():
         if not all(unavailable_robots):
             robot_number = unavailable_robots.index(False)
 
-            if not allocate_task(str(blockNames[0]), str(robot_namespaces[robot_number]), robot_number, tower_block_positions, tower_origin_coordinates, path_clients):
+            if not allocate_task(str(block_names[0]), str(robot_namespaces[robot_number]), robot_number, tower_block_positions, tower_origin_coordinates, path_clients):
                 robots_cannot_reach_next_block[robot_number] = True
             else:
                 robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
-                blockNames.pop(0)
+                block_names.pop(0)
 
         elif all(robots_busy):
             rospy.loginfo("Assignment Selection - All robots busy, waiting till one is free.")
             rospy.sleep(1)
 
         elif all(robots_cannot_reach_next_block):
-            rospy.logerr("Assignment Selection - No robots available for %s. Skipping block.", str(blockNames[0]))
-            blockNames.pop(0)
+            rospy.logerr("Assignment Selection - No robots available for %s. Skipping block.", str(block_names[0]))
+            block_names.pop(0)
             robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
             
         rospy.sleep(0.1)
@@ -182,20 +182,20 @@ def build_block_list(robot_namespaces):
     rospy.loginfo("Assignment Selection - Got block data.")
 
     # Iterate through blockData and retrieve list of block names
-    blockNames = []
+    block_names = []
     for block_num in range(len(blockData.block_data)):
         block_name = "block" + str(blockData.block_data[block_num].block_number)
 
         for robot_name in robot_namespaces:
             if is_block_reachable(block_name, robot_name):
-                blockNames.append(block_name)
+                block_names.append(block_name)
                 break
         else:
             rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable by %s.", block_name, robot_name)
 
     rospy.loginfo("Assignment Selection - Block list built.\n")
 
-    return blockNames
+    return block_names
 
 def allocate_task(block_name, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
     if not is_block_reachable(block_name, robot_name):
