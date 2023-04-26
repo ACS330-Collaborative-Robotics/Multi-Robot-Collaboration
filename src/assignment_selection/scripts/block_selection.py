@@ -20,6 +20,7 @@ from gazebo_msgs.msg import ModelState
 from inv_kinematics.srv import InvKin
 from path_planning.msg import PathPlanAction, PathPlanGoal
 from block_controller.srv import UpdateBlocks
+from custom_msgs.msg import Joints
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -37,8 +38,6 @@ def assignment_selector():
 
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
-
-    #TODO: Optional home between movements
 
     update_block_positions()
 
@@ -59,6 +58,9 @@ def assignment_selector():
     manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
     manual_block_location_euler_rotation = [0, 0, 0]
 
+    enable_home_between_assignments = False
+    home_joint_positions = [90*math.pi/180, 0, 0, 0, 0, 0]
+
     block_width = 0.035
     block_height = 0.035
     block_length = 0.105
@@ -67,6 +69,11 @@ def assignment_selector():
     #maximum_simulatenous_robots = len(robot_namespaces)
 
     #############################
+
+    joint_pubs = []
+    if enable_home_between_assignments:
+        for robot_name in robot_namespaces:
+            joint_pubs.append(rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10))
     
     ## Making array of block names
     block_names = build_block_list(robot_namespaces)
@@ -85,8 +92,11 @@ def assignment_selector():
         # Check if each robot is busy
         for robot_number_iterator in range(len(robot_namespaces)):
             # actionlib states: https://get-help.robotigniteacademy.com/t/get-state-responses-are-incorrect/6680
-            robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() in [0, 3, 4, 9]) 
             #TODO: Add error handling 
+            robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() in [0, 3, 4, 9]) 
+
+            if enable_home_between_assignments and not robots_busy[robot_number_iterator]:
+                drive_joints(robot_namespaces[robot_number_iterator], home_joint_positions)
         
         unavailable_robots = list(np.logical_or(robots_cannot_place_next_block, robots_busy))
         number_robots_busy = robots_busy.count(True)
@@ -97,10 +107,10 @@ def assignment_selector():
             
             update_block_positions()
             
-            task_allocation_success = allocate_task(block_names, str(robot_namespaces[robot_number]), robot_number, tower_block_positions, tower_origin_coordinates, path_clients)
+            task_allocation_success = allocate_task(block_names, robot_namespaces[robot_number], robot_number, tower_block_positions, tower_origin_coordinates, path_clients)
 
             if task_allocation_success == None:
-                rospy.logfatal("Assignment Selection - Removing %s from selection as no blocks can be picked up by it.", str(robot_namespaces[robot_number]))
+                rospy.logfatal("Assignment Selection - Removing %s from selection as no blocks can be picked up by it.", robot_namespaces[robot_number])
                 robot_namespaces.pop(robot_number)
                 if len(robot_namespaces) == 0:
                     rospy.logfatal("Assignment Selection - No robots remaining. Terminating assignment selection.\n\n\n")
@@ -116,7 +126,7 @@ def assignment_selector():
                 robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
 
         elif number_robots_busy >= maximum_simulatenous_robots:
-            rospy.loginfo("Assignment Selection - All robots busy, waiting till one is free.")
+            rospy.loginfo_throttle(30, "Assignment Selection - All robots busy, waiting till one is free.")
             rospy.sleep(1)
 
         elif all(robots_cannot_place_next_block):
@@ -137,6 +147,10 @@ elif status.success:
     rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
 else:
     rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''  
+
+def drive_joints(robot_name, joint_positions):
+    pub = rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10)  
+    pub.publish(joint_positions)
 
 def update_block_positions():
     try:
