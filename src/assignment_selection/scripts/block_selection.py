@@ -213,24 +213,28 @@ def is_block_reachable(block_name, robot_namespaces) -> bool:
 
     model_state = ModelState()
 
-    #TODO: Make check at multiple heights and proper orientation
-
     for robot_name in robot_namespaces:
         model_state.pose = specific_block_pose(block_name, robot_name)
 
-        orientation_in_euler = [0, math.pi, 0]
-        orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+        block_orientation_quaternion = [model_state.pose.orientation.x, model_state.pose.orientation.y, model_state.pose.orientation.z, model_state.pose.orientation.w]
+        block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
+
+        orientation_euler = [0, math.pi, block_orientation_euler[2]]
+        orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
         
-        model_state.pose.orientation.x = orientation[0]
-        model_state.pose.orientation.y = orientation[1]
-        model_state.pose.orientation.z = orientation[2]
-        model_state.pose.orientation.w = orientation[3]
+        model_state.pose.orientation.x = orientation_quaternion[0]
+        model_state.pose.orientation.y = orientation_quaternion[1]
+        model_state.pose.orientation.z = orientation_quaternion[2]
+        model_state.pose.orientation.w = orientation_quaternion[3]
 
+        # Test at two heights above the block
         model_state.pose.position.z += 0.10
-
         if inv_kin_is_reachable(model_state).success:
-            #rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
-            return True
+
+            model_state.pose.position.z += 0.05
+            if inv_kin_is_reachable(model_state).success:
+                #rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
+                return True
         
         #rospy.loginfo("Assignment Selection - %s cannot reach %s", robot_name, block_name)
     return False
