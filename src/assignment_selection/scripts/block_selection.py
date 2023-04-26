@@ -40,6 +40,8 @@ def assignment_selector():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
 
+    #TODO: Intelligently pick blocks
+    #TODO: Not calling block_update function
     
     rospy.wait_for_service('block_update')
     block_update = rospy.ServiceProxy('block_update',UpdateBlocks)
