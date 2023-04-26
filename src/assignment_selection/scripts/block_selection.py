@@ -59,6 +59,10 @@ def assignment_selector():
     # tower_origin_coordinates = [x, y, z]
     tower_origin_coordinates = [0.1, 0.36, 0]
 
+    use_manual_block_locations = False
+    manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
+    manual_block_location_euler_rotation = [0, 0, 0]
+
     block_width = 0.035
     block_height = 0.035
     block_length = 0.105
@@ -92,8 +96,13 @@ def assignment_selector():
                 goCollect[i].append(nextBlock[0])
 
     ## Generate tower block positions
-    tower_block_positions = generate_tower_block_positions(len(block_names), block_width, block_height, block_length)
-    #tower_blocks_positions = [x, y, z, euler_a, euler_b, euler_c]
+    if not use_manual_block_locations:
+        tower_block_positions = generate_tower_block_positions(len(block_names), block_width, block_height, block_length)
+        #tower_blocks_positions = [x, y, z, euler_a, euler_b, euler_c]
+    else:
+        tower_block_positions = [block_position + manual_block_location_euler_rotation for block_position in manual_block_location_xyz]
+
+    print(tower_block_positions)
 
     rospy.loginfo("Assignment Selection - Assignment goal list complete. Beginnning publishing.\n")
 
