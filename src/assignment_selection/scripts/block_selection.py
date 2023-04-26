@@ -21,6 +21,7 @@ from tf2_geometry_msgs import PoseStamped
 from gazebo_msgs.msg import ModelState
 from inv_kinematics.srv import InvKin
 from path_planning.msg import PathPlanAction, PathPlanGoal
+from block_controller.srv import UpdateBlocks
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -38,6 +39,14 @@ def assignment_selector():
 
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
+
+    
+    rospy.wait_for_service('block_update')
+    block_update = rospy.ServiceProxy('block_update',UpdateBlocks)
+    try:
+        resp1 = block_update(True)
+    except rospy.ServiceException as exc:
+        rospy.logwarn("Service did not process request: to update blocks")
 
     # Setup path_planner action client
     path_clients = []
