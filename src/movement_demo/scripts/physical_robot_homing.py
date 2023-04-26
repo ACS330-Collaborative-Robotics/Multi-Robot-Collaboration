@@ -76,13 +76,6 @@ def talker(robot_name, angle, joint,GripperState):
     rospy.logwarn("Publishing joint %d to angle %.2f", joint_number, initial_angle_degrees)
     rospy.sleep(time_delay_seconds)
 
-    ## Publish Final Angle
-    joint_positions[joint_number-1] = final_angle
-    positions_publisher.publish(joint_positions)
-
-    rospy.logwarn("Publishing joint %d to angle %.2f", joint_number, final_angle_degrees)
-    rospy.sleep(time_delay_seconds)
-
 
     ## opening the gripper
     rospy.logwarn("Opening Gipper")

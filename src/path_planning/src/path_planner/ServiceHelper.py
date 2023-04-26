@@ -31,7 +31,7 @@ class ServiceHelper:
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
         # Setup gripper publisher
-        self.gripper_publisher = rospy.Publisher(self.robot_ns + "/gripper_state", Bool, queue_size=10)
+        self.gripper_publisher = rospy.Publisher("gripper_state", Bool, queue_size=10)
 
     def move(self, pos:Pose, final_link_name):
         """ Move arm to specified position.
