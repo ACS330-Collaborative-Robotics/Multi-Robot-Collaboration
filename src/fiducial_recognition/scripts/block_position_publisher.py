@@ -12,20 +12,20 @@ import tf.transformations
 
 
 if __name__ == '__main__':
-    rospy.init_node('tf2_listener')
+    rospy.init_node('block_position_publisher')
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer) #create transform listener
-    pub = rospy.Publisher('/blocks_pos', Blocks, queue_size=10)
+    pub = rospy.Publisher('/blocks_pos_cam', Blocks, queue_size=10)
     rate = rospy.Rate(float(sys.argv[1])) #default polling and publishing rate
 
-    rospy.loginfo("Node started: tf2_listener - polling rate %s Hz",sys.argv[1])
+    rospy.loginfo("Node started: block_position_publisher - polling rate %s Hz",sys.argv[1])
     while not rospy.is_shutdown():
         blocks = []
-        for i in range(2,35): #cycle through tags 2-34
+        for i in range(10,20): #cycle through tags 2-34
             block = Block()
             tagID='tag_'+str(i)
             try:
-                trans = tfBuffer.lookup_transform('mover6aBase', tagID, rospy.Time(0)) # get transform between tag_0 abd
+                trans = tfBuffer.lookup_transform('mover6_a_base', tagID, rospy.Time(0)) # get transform between tag_0 and mover6_a_base
                 block.block_number=i
                 block.x=trans.transform.translation.x #unit: meters
                 block.y=trans.transform.translation.y
@@ -38,6 +38,7 @@ if __name__ == '__main__':
                 
                 blocks.append(block)
             except (tf2_ros.ConnectivityException,tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                #rospy.logerr("TRANSFORM FAILED")
                 continue  
         pub.publish(blocks)
         
