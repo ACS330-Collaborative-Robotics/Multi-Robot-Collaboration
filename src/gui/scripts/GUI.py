@@ -7,7 +7,7 @@ import threading
 import tkinter as tk
 from tkinter import ttk
 from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
 from matplotlib.figure import Figure
 
 
@@ -18,6 +18,7 @@ import cv2
 
 from custom_msgs.msg import Joints
 from std_msgs.msg import String, Float64, Float64MultiArray
+from custom_msgs.msg import apf_coords
 
 
 class GUI:
@@ -37,17 +38,9 @@ class GUI:
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # potential field plot
-        fig = Figure(figsize=(5, 4), dpi=100)
-        canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
-        canvas.draw()
         self.plot_label = tk.Label(master, text="Potential Field Plot: ")
         self.plot_label.grid(row=0, column=3, sticky="w")
         self.plot_canvas = tk.Canvas(master, width=540, height=380)
-        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
-
-        ax = fig.add_subplot(111, projection="3d")
-        t = np.arange(0, 3, .01)
-        ax.plot(t, 2 * np.sin(2 * np.pi * t))
 
 
         # buttons
@@ -126,8 +119,19 @@ class GUI:
 
         # Create a listener for the Potential Field plot
         rospy.init_node('listener', anonymous=True)
-        #rospy.Subscriber('')
+        rospy.Subscriber("apf_plot", apf_coords, self.apf_callback)
     
+    def apf_callback(self, data):
+        fig = Figure(figsize=(5, 4), dpi=100)
+        canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+        canvas.draw()
+        ax = fig.add_subplot(111, projection="3d")
+        coords_x=data.plot_data[0]
+        coords_y=data.plot_data[1]
+        coords_z=data.plot_data[2]
+        ax.plot3D(coords_x,coords_y,coords_z)
+        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
+
     
     def camera_callback(self, msg):
         # Convert the ROS message to an OpenCV image
@@ -147,7 +151,7 @@ class GUI:
         self.cam_canvas.image = img_tk
 
    
-     # update video frame
+    # update video frame
     def callback_video(self, data):
         # Convert the ROS image message to a cv2 image
         cv_image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8')

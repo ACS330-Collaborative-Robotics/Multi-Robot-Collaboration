@@ -1,6 +1,8 @@
 #Author: Steven Craig
 #this is the script for getting 3d plots of what the APF sees
 import numpy as np
+import rospy
+from custom_msgs.msg import apf_coords
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from openpyxl import Workbook, load_workbook
@@ -58,6 +60,15 @@ def plotPath(PathTaken,xobj,yobj,zobj):
     ax.set_title('End Effector Path in 3D space')
     plt.show()
     print('PlotPath Complete')
+
+    pub = rospy.Publisher('apf_plot', apf_coords, queue_size=10)
+    plot_coords=np.array[[xpoints],[ypoints],[zpoints]]
+    rospy.init_node('Visualiser', anonymous=True)
+    rate = rospy.Rate(10) # 10hz
+    while not rospy.is_shutdown():
+        rospy.loginfo(plot_coords)
+        pub.publish(plot_coords)
+        rate.sleep()
 
 
 ObjectsFile = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/Testing.xlsx')
