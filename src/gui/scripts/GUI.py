@@ -54,18 +54,6 @@ class GUI:
         self.emergency_stop_button.bind("<Enter>", show_emergencyinfo)
         self.emergency_stop_button.bind("<Leave>", hide_emergencyinfo)
         
-        # pause 
-        self.pause_button = tk.Button(master, text="PAUSE", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.pause_clicked)
-        self.pause_button.grid(row=5, column=0, sticky="w")
-        self.pause_info = tk.Label(master, text="Pause physical and simulated robots.")
-        self.pause_info.grid(row=5, column=0, sticky="e")
-        self.pause_info.grid_remove()  # hide the label initially
-        def show_pauseinfo(event):
-            self.pause_info.grid()  # show the label when the mouse enters the button
-        def hide_pauseinfo(event):
-            self.pause_info.grid_remove()  # hide the label when the mouse leaves the button
-        self.pause_button.bind("<Enter>", show_pauseinfo)
-        self.pause_button.bind("<Leave>", hide_pauseinfo)
         
         # sim preview
         self.sim_preview_button = tk.Button(master, text="SIM PREVIEW", bg="yellow", fg="black", font=("Calibri", 10, "bold"), command=self.sim_preview_clicked)
@@ -281,9 +269,6 @@ class GUI:
     def change_button_state(self):
         self.emergency_stop_button.config(text="START", bg="green", fg="black")
 
-    def pause_clicked(self):
-        self.pause_button.config(text="START", bg="green", fg="black")
-    
     def sim_preview_clicked(self):
         self.sim_preview_button.config(text="STOP PREVIEW", bg="red", fg="black")
 
