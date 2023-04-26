@@ -137,8 +137,6 @@ class GUI:
             return_code = e.returncode
             self.nodes_light.config(bg="red")
         print(f"Output: {output}, return code: {return_code}")
-      
-
 
        # nodes configured light
         # the aim of these lights is to firstly check that the inverse_kinematics service is running (includes controllers)
@@ -225,9 +223,42 @@ class GUI:
         else:
             error_light.config(bg="red")
 
-
     
     # update video frame
+    def error_display(master):
+        master.title("Error Display")
+
+        error_light = tk.Label(master, bg="yellow", width=2, height=1)
+        error_light.grid(row=0, column=0, sticky="w")
+        error_label = tk.Label(master, text="Error status")
+        error_label.grid(row=0, column=1, sticky="w")
+
+        # error message box
+        error_msg = tk.Text(master, height=5, width=50)
+        error_msg.grid(row=1, column=0, columnspan=2)
+
+        # subscribe to the rosout topic
+        sub = rospy.Subscriber("/rosout", Log, lambda data: callback(data, error_msg, error_light))    
+    
+    def camera_callback(self, msg):
+        # Convert the ROS message to an OpenCV image
+        img = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
+
+        # Resize the image to fit in the Tkinter window
+        img = cv2.resize(img, (640, 480))
+
+        # Convert the OpenCV image to a PIL Image
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(img)
+
+        # Convert the PIL Image to a Tkinter PhotoImage and display it in the canvas
+        img_tk = ImageTk.PhotoImage(img)
+        self.cam_canvas.create_image(0, 2, anchor=tk.NW, image=img_tk)
+
+        self.cam_canvas.image = img_tk
+
+   
+     # update video frame
     def callback_video(self, data):
         cv_image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # ROS to cv2
         cv_image = cv2.resize(cv_image, (640, 480)) 
@@ -262,6 +293,6 @@ class GUI:
    
 if __name__ == '__main__':
     root = tk.Tk()
-    root.attributes("-fullscreen", True)
+    root.geometry("{}x{}+0+0".format(1200, 800))
     gui = GUI(root)
     root.mainloop()

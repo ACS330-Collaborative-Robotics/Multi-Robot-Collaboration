@@ -19,10 +19,10 @@ class PlaceDown(PickUp.PickUp):
         """
         
         # Move 5cm above block
-        end_pose.position.z += 0.15
+        end_pose.position.z += 0.30
 
         # Set End Effector orientation to point downwards using quaternions
-        orientation_in_euler = [0,180*pi/180,0]
+        orientation_in_euler = [0,pi,0]
         orientation = tf_conversions.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
         end_pose.orientation.x = orientation[0]
