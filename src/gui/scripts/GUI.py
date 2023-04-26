@@ -20,7 +20,7 @@ class GUI:
         # simulation
         self.sim_label = tk.Label(master, text="Simulation: ")
         self.sim_label.grid(row=0, column=0, sticky="w")
-        self.sim_canvas = tk.Canvas(master, width=540, height=380)
+        self.sim_canvas = tk.Canvas(master, width=640, height=480)
         self.sim_canvas.grid(row=1, column=0, sticky="nsew")
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
@@ -28,7 +28,7 @@ class GUI:
         # physical camera feed
         self.cam_label = tk.Label(master, text="Physical camera feed: ")
         self.cam_label.grid(row=0, column=2, sticky="w")
-        self.cam_canvas = tk.Canvas(master, width=540, height=380)
+        self.cam_canvas = tk.Canvas(master, width=640, height=480)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # buttons
@@ -103,7 +103,7 @@ class GUI:
         self.thread.start()
 
         # Create a listener for the physical camera 
-        rospy.Subscriber('/usb_cam/image_raw', ImageMsg, self.camera_callback)
+        rospy.Subscriber('/tag_detections_image', ImageMsg, self.camera_callback)
     
     
     def camera_callback(self, msg):

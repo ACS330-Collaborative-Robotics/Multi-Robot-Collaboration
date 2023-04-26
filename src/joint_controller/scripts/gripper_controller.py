@@ -35,7 +35,7 @@ def main():
         for grip_num in range(len(physical_gripper_angles)):
             pubGripper_simulation.append(rospy.Publisher(robot_name + "/jointgripper_" + gripper_arm_letters[grip_num] + "_position_controller/command", Float64, queue_size=10))
 
-        rospy.Subscriber(robot_name + "_p/gripper_state", Bool, callback_gripper)
+        rospy.Subscriber(robot_name + "/gripper_state", Bool, callback_gripper)
         rospy.Subscriber("/emergency_stop", Bool, callback_emergency_stop)
         rospy.Subscriber(robot_name + "/pause_physical", Bool, callback_gripper_robo_spec)
 
@@ -48,12 +48,12 @@ def main():
             
         elif activateGripper == True:
             gripperstate.state = [False, False, False, False, True, True]
-            physical_gripper_angles = [1, 1]
+            physical_gripper_angles = [0.7, 0.7]
             rospy.logdebug(robot_name + " Gripper Open")
 
         elif activateGripper == False:
             gripperstate.state = [False, False, False, False, False, True]
-            physical_gripper_angles = [-0.5, -0.5]
+            physical_gripper_angles = [-0.3, -0.3]
             rospy.logdebug(robot_name + " Gripper Closed")
 
         for grip_num in range(len(physical_gripper_angles)):

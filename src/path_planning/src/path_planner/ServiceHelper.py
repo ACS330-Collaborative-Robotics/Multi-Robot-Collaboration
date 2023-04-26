@@ -16,6 +16,7 @@ from tf2_geometry_msgs import PoseStamped
 from inv_kinematics.srv import InvKin
 from inv_kinematics.srv import InvKinRequest
 from std_msgs.msg import Header
+from std_msgs.msg import Bool
 
 
 #from APF dependancies
@@ -33,12 +34,12 @@ class ServiceHelper:
         self.robot_ns = robot_ns
         self.target_block=target_block
         # Setup inverse_kinematics service
-        rospy.wait_for_service('inverse_kinematics')
-        self.inv_kin = rospy.ServiceProxy('inverse_kinematics', InvKin)
+        rospy.wait_for_service('/inverse_kinematics')
+        self.inv_kin = rospy.ServiceProxy('/inverse_kinematics', InvKin)
 
         # Setup get_model_state service
-        rospy.wait_for_service('gazebo/get_model_state')
-        self.model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
+        rospy.wait_for_service('/gazebo/get_model_state')
+        self.model_state_service = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
 
         rospy.wait_for_service('gazebo/get_link_state')
         self.link_state_service = rospy.ServiceProxy('gazebo/get_link_state', GetLinkState)
@@ -52,6 +53,9 @@ class ServiceHelper:
             self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.APFyamlData)
 
+        # Setup gripper publisher
+        self.gripper_publisher = rospy.Publisher(self.robot_ns + "/gripper_state", Bool, queue_size=10)
+
     def move(self, pos:Pose, final_link_name:str, precise_orientation:bool):
         """ Move arm to specified position.
 
@@ -59,11 +63,10 @@ class ServiceHelper:
 
         Uses inverse_kinematics service.
         """
-        rospy.wait_for_service('inverse_kinematics')
 
-        rospy.loginfo("Path Planner - Service Helper - Calling ik for %s for %s", self.robot_ns,self.target_block)
+        rospy.wait_for_service('/inverse_kinematics')
 
-        inv_kin_request = InvKinRequest()
+        #rospy.loginfo("Path Planner - Service Helper - Calling ik for %s", self.robot_ns)
 
         # Initialise and fill ArmPos object
         arm_pos = ModelState()
@@ -78,6 +81,11 @@ class ServiceHelper:
         # Call inverse_kinematics service and log ArmPos
         return self.inv_kin(inv_kin_request).success
     
+    def moveGripper(self, state:bool):
+        self.gripper_publisher.publish(state)
+        
+        #rospy.loginfo("Path Planner - Service Helper - Gripper set to state %i.", state)
+
     def getBlockPos(self, specific_model_name:str) -> Pose:
         """ Get block position relative to current robot arm
         INPUT: string specific_model_name
@@ -86,7 +94,9 @@ class ServiceHelper:
         Uses gazebo/get_model_state service.
         """
         # TODO: Replace with data from /blocks
-        rospy.wait_for_service('gazebo/get_model_state')
+
+        rospy.wait_for_service('/gazebo/get_model_state')
+
         # Extract Pose() object
         data = self.model_state_service(specific_model_name, "world").pose
         return data
@@ -99,7 +109,7 @@ class ServiceHelper:
         orientation_in_quaternion = [start_pose.pose.orientation.x, start_pose.pose.orientation.y, start_pose.pose.orientation.z, start_pose.pose.orientation.w]
         orientation_in_euler = tf_conversions.transformations.euler_from_quaternion(orientation_in_quaternion)
 
-        rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
+        #rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
 
         start_pose.header.frame_id = reference_frame
         start_pose.header.stamp = rospy.get_rostime()
@@ -108,18 +118,17 @@ class ServiceHelper:
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             try:
-                new_pose = self.tfBuffer.transform(start_pose, target_frame)
-                #rospy.loginfo("Frame Converter - New pose:%.2f,%.2f,%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z)
+                new_pose = self.tfBuffer.transform(start_pose, target_frame+"/base_link")
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                rospy.logerr("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
+                rospy.logwarn("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
                 continue
         
         orientation_in_quaternion = [new_pose.pose.orientation.x, new_pose.pose.orientation.y, new_pose.pose.orientation.z, new_pose.pose.orientation.w]
         orientation_in_euler = tf_conversions.transformations.euler_from_quaternion(orientation_in_quaternion)
         
-        rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
+        #rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
 
         return new_pose.pose
     
