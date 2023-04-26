@@ -44,11 +44,12 @@ def assignment_selector():
     #TODO: Not calling block_update function
     
     rospy.wait_for_service('block_update')
-    block_update = rospy.ServiceProxy('block_update',UpdateBlocks)
+    block_update = rospy.ServiceProxy('block_update', UpdateBlocks)
+
     try:
-        resp1 = block_update(True)
-    except rospy.ServiceException as exc:
-        rospy.logwarn("Service did not process request: to update blocks")
+        block_update(True)
+    except rospy.ServiceException:
+        rospy.logwarn("Block update service failed.")
 
     # Setup path_planner action client
     path_clients = []
@@ -57,18 +58,26 @@ def assignment_selector():
         path_clients[-1].wait_for_server()
 
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
-    tower_origin_coordinates = [0.1, 0.36, 0]
-    
-    # Set Loop rate
-    T = 5
-    rate = rospy.Rate(1/T)
 
+    #############################
+    ## Configurable Parameters ##
+    #############################
+
+    # tower_origin_coordinates = [x, y, z]
+    tower_origin_coordinates = [0.1, 0.36, 0]
+
+    block_width = 0.035
+    block_height = 0.035
+    block_length = 0.105
+
+    #############################
+    
     ## Making array of block names ##
 
     # Wait for blockData to read in by subscriber
     while (blockData is None) and not(rospy.is_shutdown()):
         rospy.loginfo_once("Assignment Selection - Waiting for data.")
-        rate.sleep()
+        rospy.sleep(0.2)
     rospy.loginfo("Assignment Selection - Got block data.")
 
     # Iterate through blockData and retrieve list of block names
@@ -106,35 +115,8 @@ def assignment_selector():
             if nextBlock[1] == i:
                 goCollect[i].append(nextBlock[0])
 
-    # Setup tower block locations
-    number_layers = math.floor(len(blockNames)/2) #num of layers
-    tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
-    height = 0 #height of blocks
-
-    euler_a = 0
-    euler_b = 0
-    euler_c = 0
-
-    block_width = 0.035
-    block_height = 0.035
-    block_length = 0.105
-
-    # Generate coordinates
-    for i in range(number_layers):
-        width = 0 #width of blocks
-        home_pos = [width, 0, height, euler_a, euler_b, euler_c]
-
-        for j in range(2):
-            home_pos = [width, 0, height, euler_a, euler_b, euler_c]
-            tower_block_positions.append(home_pos)
-            width = width + 2*block_width
-
-        height = height + block_height
-
-        if euler_c == 0:
-            euler_c = -90*(math.pi/180)
-        elif euler_c == -90*(math.pi/180):
-            euler_c = 0
+    #tower_blocks_positions = [x, y, z, euler_a, euler_b, euler_c]
+    tower_block_positions = generate_tower_block_positions(len(blockNames), block_width, block_height, block_length)
 
     rospy.loginfo("Assignment Selection - Assignment goal list complete. Beginnning publishing.\n")
 
@@ -183,6 +165,32 @@ elif status.success:
     rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
 else:
     rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''  
+
+def generate_tower_block_positions(number_of_blocks, block_width, block_height, block_length):
+    # Setup tower block locations
+    number_layers = math.floor(number_of_blocks/2) #num of layers
+    tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
+    height = 0 #height of blocks
+
+    euler_c = 0
+    # Generate coordinates
+    for i in range(number_layers):
+        width = 0 #width of blocks
+        home_pos = [width, 0, height, 0, 0, euler_c]
+
+        for j in range(2):
+            home_pos = [width, 0, height, 0, 0, euler_c]
+            tower_block_positions.append(home_pos)
+            width = width + 2*block_width
+
+        height = height + block_height
+
+        if euler_c == 0:
+            euler_c = -90*(math.pi/180)
+        elif euler_c == -90*(math.pi/180):
+            euler_c = 0
+    
+    return tower_block_positions
 
 def allocate_task(block_name, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
     if not is_block_reachable(block_name, robot_name):
