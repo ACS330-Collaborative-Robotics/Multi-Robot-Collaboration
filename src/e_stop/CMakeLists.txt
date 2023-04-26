@@ -123,6 +123,7 @@ include_directories(
 
 catkin_install_python(PROGRAMS 
   scripts/e_stop.py
+  scripts/e_stop_manual.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
