@@ -97,6 +97,13 @@ Run each of the following in its own terminal tab, after running `cd ~/catkin_ws
  - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
  - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
 
+### Launching the Lidar
+Run in terminal:
+sudo chmod 666 /dev/ttyUSB0
+then:
+roslaunch rplidar_ros rplidar.launch
+In a seperate terminal run the line below to publish the data from the lidar to /emergency_stop:
+rosrun human_zone human_detection.py
 ### Mover6 Dashboard with RViz
 
 ```
