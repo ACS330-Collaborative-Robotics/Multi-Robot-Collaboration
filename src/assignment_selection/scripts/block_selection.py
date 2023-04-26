@@ -64,10 +64,12 @@ def choose_block():
     for block_num in range(len(blockData.block_data)):
         block_name = "block" + str(blockData.block_data[block_num].block_number)
 
-        if is_block_reachable(block_name, robot_namespaces):
-            blockNames.append(block_name)
+        for robot_name in robot_namespaces:
+            if is_block_reachable(block_name, robot_name):
+                blockNames.append(block_name)
+                break
         else:
-            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
+            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable by %s.", block_name, robot_name)
 
     rospy.loginfo("Assignment Selection - Block list built.\n")
 
@@ -207,37 +209,37 @@ def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Return ModelState object with position relative to world 
     return data
 
-def is_block_reachable(block_name, robot_namespaces) -> bool:
+def is_block_reachable(block_name, robot_name) -> bool:
     rospy.wait_for_service('inverse_kinematics_reachability')
     inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
 
     model_state = ModelState()
 
-    for robot_name in robot_namespaces:
-        model_state.pose = specific_block_pose(block_name, robot_name)
+    model_state.pose = specific_block_pose(block_name, robot_name)
 
-        block_orientation_quaternion = [model_state.pose.orientation.x, model_state.pose.orientation.y, model_state.pose.orientation.z, model_state.pose.orientation.w]
-        block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
+    block_orientation_quaternion = [model_state.pose.orientation.x, model_state.pose.orientation.y, model_state.pose.orientation.z, model_state.pose.orientation.w]
+    block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
 
-        orientation_euler = [0, math.pi, block_orientation_euler[2]]
-        orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
-        
-        model_state.pose.orientation.x = orientation_quaternion[0]
-        model_state.pose.orientation.y = orientation_quaternion[1]
-        model_state.pose.orientation.z = orientation_quaternion[2]
-        model_state.pose.orientation.w = orientation_quaternion[3]
+    orientation_euler = [0, math.pi, block_orientation_euler[2]]
+    orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
+    
+    model_state.pose.orientation.x = orientation_quaternion[0]
+    model_state.pose.orientation.y = orientation_quaternion[1]
+    model_state.pose.orientation.z = orientation_quaternion[2]
+    model_state.pose.orientation.w = orientation_quaternion[3]
 
-        # Test at two heights above the block
-        model_state.pose.position.z += 0.10
+    # Test at two heights above the block
+    model_state.pose.position.z += 0.10
+    if inv_kin_is_reachable(model_state).success:
+
+        model_state.pose.position.z += 0.05
         if inv_kin_is_reachable(model_state).success:
-
-            model_state.pose.position.z += 0.05
-            if inv_kin_is_reachable(model_state).success:
-                #rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
-                return True
-        
-        #rospy.loginfo("Assignment Selection - %s cannot reach %s", robot_name, block_name)
+            #rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
+            return True
+    
+    #rospy.loginfo("Assignment Selection - %s cannot reach %s", robot_name, block_name)
     return False
+    
 
 def getRobotBaseCoordinates(robot_namespaces):
     tfBuffer = tf2_ros.Buffer()
