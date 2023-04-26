@@ -11,7 +11,7 @@ def PotentialAttractionChange(x,y,z,xgoal,ygoal,zgoal,D):
         PotentialChange = [SF*x-SF*xgoal,SF*y-SF*ygoal,SF*z-SF*zgoal]
     if d > D:
         PotentialChange = [(SF*x-SF*xgoal)/d,(SF*y-SF*ygoal)/d,(SF*z-SF*zgoal)/d]
-    #print('attraction change:',PotentialChange)
+    print('attraction change:',PotentialChange)
     return PotentialChange
 
 #Function for Potential attraction

@@ -26,7 +26,7 @@ class Movement:
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
         SF = 100 #distance scale factor
-        Q = [10,10,10,10,10,10] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+        Q = [30,30,30,30,30,30] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = self.serv_helper.APFyamlData["D"]
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -36,7 +36,6 @@ class Movement:
         xgoal = pos_robot_base_frame.position.x*SF 
         ygoal = pos_robot_base_frame.position.y*SF
         zgoal = pos_robot_base_frame.position.z*SF 
-        
         ##Start position relative to world then arm
         start_pose_world=self.serv_helper.getLinkPos(self.serv_helper.robot_ns,"link6") 
         start_pose = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", start_pose_world)
@@ -50,7 +49,7 @@ class Movement:
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
             xobj=[0, 0, 0, 0, 0, 0]
             yobj=[0, 0, 0, 0, 0, 0]
-            zobj=[0, 5, 10, 15, 20, 25]
+            zobj=[0, 10, 20, 30, 40, 50]
             tempxobj = []
             tempyobj = []
             tempzobj = []
@@ -75,36 +74,12 @@ class Movement:
             #yobj.append(0)
             #zobj.append(0)
             #Q.append(0.1)
-            ##Visual Commands
-            #X,Y,Z, xline, yline,zline, PotentialEnergy, EnergyPathTaken, PathTaken = self.serv_helper.Space_Generation(startx, starty,startz,xgoal, ygoal,zgoal, xobj, yobj,zobj, Q, D)
-            #self.serv_helper.plotAPF(xobj, yobj,zobj, xline, yline,zline, PotentialEnergy, EnergyPathTaken)
-            #self.serv_helper.plotPath(PathTaken)
 
             ##X,Y,Z path the End effector will take
             PathTakenSFx, PathTakenSFy, PathTakenSFz, Objectx, Objecyy, Objectz, ObjectQ = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ)
             PathTakenx = [x/SF for x in PathTakenSFx] #rescale back to meters
             PathTakeny = [y/SF for y in PathTakenSFy]
             PathTakenz = [z/SF for z in PathTakenSFz]
-            
-            ##FILTERING
-            #PathTakenLen=len(PathTakenx)
-            #FilterPathTakenLen=30 #approximate filtered length, configurable constant
-            #SamplePeriod=round(PathTakenLen/FilterPathTakenLen) #sample period
-
-            #FilterPathTakenx=[PathTakenx[0]]
-            #FilterPathTakeny=[PathTakeny[0]]
-            #FilterPathTakenz=[PathTakenz[0]]
-            #if PathTakenLen>FilterPathTakenLen: #if too many path points, reduce
-             #   for i in range(PathTakenLen):
-             #       if i%SamplePeriod == 0: #take a sample every SamplePeriod iterations
-             #           FilterPathTakenx.append(PathTakenx[i])
-             #           FilterPathTakeny.append(PathTakeny[i])
-             #           FilterPathTakenz.append(PathTakenz[i])
-             #   rospy.loginfo("FILTERED PATH LENGTH= %d",len(FilterPathTakenx))
-            #else: #if fewer than 30 path points, just use produced path
-             #   FilterPathTakenx=PathTakenx
-             #   FilterPathTakeny=PathTakeny
-             #   FilterPathTakenz=PathTakenz
 
             arm_pos=Pose() #pose for next coordinate
             arm_pos.position.x=PathTakenx[1]
@@ -115,7 +90,7 @@ class Movement:
             arm_pos.orientation.z= pos_robot_base_frame.orientation.z 
             arm_pos.orientation.w= pos_robot_base_frame.orientation.w
 
-            #rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
+            rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
             d=self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             if d <= 3: #when close, use precise orientation
                 precise_angle_flag=1 #orientation does matter - small tolerance
@@ -123,6 +98,10 @@ class Movement:
                 precise_angle_flag=0 #orientation does not matter - wide tolerance
 
             rospy.loginfo("Potential Fields - Step Calculation Time: %.4f",time()-start_time)
+            #deltax =  startx - arm_pos.position.x*SF
+            #deltay =  starty - arm_pos.position.y*SF
+            #deltaz =  startz - arm_pos.position.z*SF
+            #rospy.loginfo("deltas: %.2f %.2f %.2f",deltax,deltay,deltaz)
             # Move robot to new position, in robot reference frame
             status = self.serv_helper.move(arm_pos, final_link_name,precise_angle_flag)
             #TODO: Force wait until robot has reached desired position. Temp fix:

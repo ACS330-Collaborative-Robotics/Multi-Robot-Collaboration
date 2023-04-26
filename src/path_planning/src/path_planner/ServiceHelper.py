@@ -266,35 +266,51 @@ class ServiceHelper:
         allvectorsy = 0
         allvectorsz = 0
         repulsionangle = 0
+        repulsionvect = 0,0
+        zrep = 0
         for objNum in range(len(xobj)):
             #generate the vectors and angles
             homevect = [xgoal-x,ygoal-y,zgoal-z]
-            objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z)
+            objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z) # angles are ebcoming negative which causes wrogn ddirection
             anglegoal = math.atan2(homevect[1],homevect[0])
             angleobj = math.atan2(objvect[1],objvect[0])
-            angle = angleobj-anglegoal
+            angle =  angleobj-anglegoal   
+            #rospy.loginfo("ANGLE - %.2f",angle)
             zheight = z-zobj[objNum]
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
             zangle = math.atan2(zheight,d)
             # deciding the direction of the tangent
-            if angle > 0 or angle == 0:
-                repulsionangle = anglegoal + 100
+            rospy.logwarn("Distance; %.2f",d)
+            if d == 0:
+                d = 0.0001
+            scalings = (1/d**2) *(1/Q[objNum] - 1/d)
+            if scalings == 0:
+                0.00001
             if angle < 0:
+                rospy.logwarn("GO LEFT")
+                repulsionangle = anglegoal + 100
+                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(100) - objvect[1]*math.sin(100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(100) + objvect[1]*math.cos(100))
+            if angle > 0 or angle == 0:
+                rospy.logwarn("GO RIGHT")
                 repulsionangle = anglegoal - 100
-
+                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(-100) - objvect[1]*math.sin(-100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(-100) + objvect[1]*math.cos(-100))
             if zheight >= 0:
+                rospy.loginfo("GO UP")
                 zrepangle = zangle - 100
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.sin(-100)
             if zheight < 0:
+                rospy.loginfo("GO DOWN")
                 zrepangle = zangle + 100
-
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.sin(100)
             #deciding whether the obstacle is in range
             #if D<Q[objNum]:
-                #rospy.loginfo("in influence")
-            repulsionvect = Rep_Change_SF*math.cos(math.radians(angle))*math.cos(math.radians(repulsionangle)),Rep_Change_SF*math.cos(math.radians(angle))*math.sin(math.radians(repulsionangle))
-            repulsionvect = list(repulsionvect)
-            zrep = Rep_Change_SF*math.cos(math.radians(zangle))*math.sin(math.radians(zrepangle))
-            if D > Q[objNum]:
+                #rospy.logwarn("in influence")
+            #rospy.loginfo("repchange: %.2f ")
+            #repulsionvect = Rep_Change_SF*math.cos(math.radians(repulsionangle)),Rep_Change_SF*math.sin(math.radians(repulsionangle))
+            #repulsionvect = list(repulsionvect)
+            #zrep = Rep_Change_SF*math.cos(math.radians(zangle))*math.sin(math.radians(zrepangle))
+            if D > Q[objNum] or abs(angle) >90:
                 repulsionvect = 0,0
                 zrep = 0
             else:
@@ -359,20 +375,23 @@ class ServiceHelper:
         while PathComplete == 0 and not rospy.is_shutdown():
             d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
             diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
-            diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
+            #diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
             diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
             if any(diffrep) != 0:
-                difx = diffrep[0] + diffreptemp[0]  + 0.1*diffatt[0]
-                dify = diffrep[1] + diffreptemp[1]  + 0.1*diffatt[1]
-                difz = diffrep[2] + diffreptemp[2]  + 0.1*diffatt[2]
-                #rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+                difx = diffrep[0]  + 0.25*diffatt[0]
+                dify = diffrep[1]  + 0.25*diffatt[1]
+                difz = diffrep[2]  + 0.25*diffatt[2]
+                #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
+
+
             else:
                 difx = diffatt[0]
                 dify = diffatt[1]
                 difz = diffatt[2]
+                rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-diffatt[0],-diffatt[1],-diffatt[2],d)
                 #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             #rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
-            #rospy.loginfo("TEMP Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffreptemp[0],-diffreptemp[1],-diffreptemp[2],d)
+            rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
             if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
                 PathComplete = 1
             else:
@@ -403,7 +422,7 @@ class ServiceHelper:
                 PathPointsx.append(x)
                 PathPointsy.append(y)
                 PathPointsz.append(z)
-                #rospy.loginfo('Path Points %.2f %.2f  %.2f',PathPointsx[i],PathPointsy[i],PathPointsz[i])
+                rospy.loginfo('Path Points: %.2f %.2f %.2f',PathPointsx[i],PathPointsy[i],PathPointsz[i])
                 i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))

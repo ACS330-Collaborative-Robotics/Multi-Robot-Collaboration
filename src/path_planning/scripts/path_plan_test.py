@@ -20,9 +20,9 @@ def path_plan_test():
     ###############################
     
     # Initial Robot Cartesian Position
-    initial_robot_position_x = 0.2
-    initial_robot_position_y = 0.2
-    initial_robot_position_z = 0.20
+    initial_robot_position_x = 0.3
+    initial_robot_position_y = 0.05
+    initial_robot_position_z = 0.15
 
     # Initial Robot Euler Angle Orientation
     initial_robot_orientation_x = 0*pi/180
@@ -30,9 +30,9 @@ def path_plan_test():
     initial_robot_orientation_z = 0*pi/180
 
     # Final Robot Cartesian Position
-    final_robot_position_x = 0
-    final_robot_position_y = 0
-    final_robot_position_z = 0
+    final_robot_position_x = 0.3
+    final_robot_position_y = 0.05
+    final_robot_position_z = 0.15
 
     # Final Robot Euler Angle Orientation
     final_robot_orientation_x = 0*pi/180
@@ -40,8 +40,8 @@ def path_plan_test():
     final_robot_orientation_z = 0*pi/180
 
     # Block Cartesian Position
-    block_robot_position_x = -0.2
-    block_robot_position_y = -0.2
+    block_robot_position_x = -0.3
+    block_robot_position_y = 0
     block_robot_position_z = 0.05
 
     # Block Euler Angle Orientation
