@@ -68,6 +68,7 @@ def assignment_selector():
     block_length = 0.105
 
     maximum_simulatenous_robots = 1
+    #maximum_simulatenous_robots = len(robot_namespaces)
 
     #############################
     
@@ -102,14 +103,9 @@ def assignment_selector():
     else:
         tower_block_positions = [block_position + manual_block_location_euler_rotation for block_position in manual_block_location_xyz]
 
-    print(tower_block_positions)
-
-    rospy.loginfo("Assignment Selection - Assignment goal list complete. Beginnning publishing.\n")
-
     robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
     robots_busy = [False for x in range(len(robot_namespaces))]
 
-    # Publish assignments
     while len(tower_block_positions) > 0 and len(block_names) > 0 and not rospy.is_shutdown():
         # Check if each robot is busy
         for robot_number_iterator in range(len(robot_namespaces)):
