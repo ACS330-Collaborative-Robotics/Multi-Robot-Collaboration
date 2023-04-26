@@ -14,7 +14,7 @@
 
     <!-- Arguments for apriltag_ros -->
     <arg name="camera_name" default="/usb_cam" />
-    <arg name="image_topic" default="image_rect_color"/>
+    <arg name="image_topic" default="image_rect"/>
     <arg name="queue_size" default="1" />
     <!-- Run apriltag_ros -->
     <include file="$(find apriltag_ros)/launch/continuous_detection.launch" pass_all_args="true"/>
