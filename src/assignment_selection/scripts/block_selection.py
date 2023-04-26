@@ -40,7 +40,7 @@ def choose_block():
     path_client.wait_for_server()
 
     # Define robot namespaces being used - also defines number of robots
-    robot_namespaces = ["mover6_a"]
+    robot_namespaces = ["mover6_a", "mover6_a"]
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
     
     tower_origin_coordinates = [0.1, 0.36, 0]
@@ -94,7 +94,7 @@ def choose_block():
 
         # Setup tower block locations
         n = len(blockNames) #num of blocks
-        layers = math.ceil(n/2) #num of layers
+        layers = math.floor(n/2) #num of layers
         tower_pos = [] #this has to be a 3 column * layers(value) matrix
         h=0 #height of blocks
         #euler rotation comp
