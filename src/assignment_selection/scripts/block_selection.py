@@ -120,7 +120,7 @@ def assignment_selector():
         elif euler_c == -90*(math.pi/180):
             euler_c = 0
 
-    rospy.loginfo("Assignment Selection - Assignment goal list complete. Beginnning publishing.")
+    rospy.loginfo("Assignment Selection - Assignment goal list complete. Beginnning publishing.\n")
 
     robots_cannot_reach_next_block = [False for x in range(len(robot_namespaces))]
     robots_busy = [False for x in range(len(robot_namespaces))]
@@ -146,8 +146,8 @@ def assignment_selector():
                 blockNames.pop(0)
 
         elif all(robots_busy):
-            rospy.logwarn("Assignment Selection - All robots busy, waiting till one is free.")
-            rospy.sleep(0.5)
+            rospy.loginfo("Assignment Selection - All robots busy, waiting till one is free.")
+            rospy.sleep(1)
 
         elif all(robots_cannot_reach_next_block):
             rospy.logerr("Assignment Selection - No robots available for %s. Skipping block.", str(blockNames[0]))
@@ -170,7 +170,7 @@ else:
 
 def allocate_task(block_name, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
     if not is_block_reachable(block_name, robot_name):
-        rospy.logwarn("Assignment Selection - Cannot Allocate %s to %s.", block_name, robot_name)
+        rospy.logwarn("Assignment Selection - %s cannot reach %s.", robot_name, block_name)
         return False
     else:
         rospy.loginfo("Assignment Selection - Allocating %s to %s.", block_name, robot_name)
