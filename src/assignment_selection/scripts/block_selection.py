@@ -73,26 +73,7 @@ def assignment_selector():
     #############################
     
     ## Making array of block names ##
-
-    # Wait for blockData to read in by subscriber
-    while (blockData is None) and not(rospy.is_shutdown()):
-        rospy.loginfo_once("Assignment Selection - Waiting for data.")
-        rospy.sleep(0.2)
-    rospy.loginfo("Assignment Selection - Got block data.")
-
-    # Iterate through blockData and retrieve list of block names
-    blockNames = []
-    for block_num in range(len(blockData.block_data)):
-        block_name = "block" + str(blockData.block_data[block_num].block_number)
-
-        for robot_name in robot_namespaces:
-            if is_block_reachable(block_name, robot_name):
-                blockNames.append(block_name)
-                break
-        else:
-            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable by %s.", block_name, robot_name)
-
-    rospy.loginfo("Assignment Selection - Block list built.\n")
+    blockNames = build_block_list(robot_namespaces)
 
     # Getting distance from each robot to blocks and sellecting the smallest
     roboColect = []
@@ -115,8 +96,9 @@ def assignment_selector():
             if nextBlock[1] == i:
                 goCollect[i].append(nextBlock[0])
 
-    #tower_blocks_positions = [x, y, z, euler_a, euler_b, euler_c]
+    ## Generate tower block positions
     tower_block_positions = generate_tower_block_positions(len(blockNames), block_width, block_height, block_length)
+    #tower_blocks_positions = [x, y, z, euler_a, euler_b, euler_c]
 
     rospy.loginfo("Assignment Selection - Assignment goal list complete. Beginnning publishing.\n")
 
@@ -191,6 +173,29 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
             euler_c = 0
     
     return tower_block_positions
+
+def build_block_list(robot_namespaces):
+    # Wait for blockData to read in by subscriber
+    while (blockData is None) and not(rospy.is_shutdown()):
+        rospy.loginfo_once("Assignment Selection - Waiting for data.")
+        rospy.sleep(0.2)
+    rospy.loginfo("Assignment Selection - Got block data.")
+
+    # Iterate through blockData and retrieve list of block names
+    blockNames = []
+    for block_num in range(len(blockData.block_data)):
+        block_name = "block" + str(blockData.block_data[block_num].block_number)
+
+        for robot_name in robot_namespaces:
+            if is_block_reachable(block_name, robot_name):
+                blockNames.append(block_name)
+                break
+        else:
+            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable by %s.", block_name, robot_name)
+
+    rospy.loginfo("Assignment Selection - Block list built.\n")
+
+    return blockNames
 
 def allocate_task(block_name, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
     if not is_block_reachable(block_name, robot_name):
