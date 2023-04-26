@@ -228,7 +228,7 @@ sudo apt install python3-pip
 pip install ikpy
 pip install numpy --upgrade
 ```
-
+installed rplidar_ros from: https://github.com/Slamtec/rplidar_ros
 ## Clone repository
 
 ```bash
