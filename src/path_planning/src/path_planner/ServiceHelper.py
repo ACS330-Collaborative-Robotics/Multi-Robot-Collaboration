@@ -81,7 +81,7 @@ class ServiceHelper:
         inv_kin_request.precise_orientation = precise_orientation
 
         # Call inverse_kinematics service and log ArmPos
-        return self.inv_kin(inv_kin_request)
+        return self.inv_kin(inv_kin_request).success
     
     def moveGripper(self, state:bool):
         self.gripper_publisher.publish(state)
@@ -120,7 +120,7 @@ class ServiceHelper:
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             try:
-                new_pose = self.tfBuffer.transform(start_pose, target_frame+"/base_link")
+                new_pose = self.tfBuffer.transform(start_pose, target_frame)
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 rospy.logwarn("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
@@ -389,61 +389,60 @@ class ServiceHelper:
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
         PathPointsz = [z]
         i = 0
-        while PathComplete == 0 and not rospy.is_shutdown():
-            d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
-            diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
-            #diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
-            diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
-            if any(diffrep) != 0:
-                difx = diffrep[0]  + 0.25*diffatt[0]
-                dify = diffrep[1]  + 0.25*diffatt[1]
-                difz = diffrep[2]  + 0.25*diffatt[2]
+        d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
+        diffrep = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xobj,yobj,zobj,xgoal,ygoal,zgoal,Q)
+        #diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
+        diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
+        if any(diffrep) != 0:
+            difx = diffrep[0]  + 0.25*diffatt[0]
+            dify = diffrep[1]  + 0.25*diffatt[1]
+            difz = diffrep[2]  + 0.25*diffatt[2]
                 #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
-
-
-            else:
-                difx = diffatt[0]
-                dify = diffatt[1]
-                difz = diffatt[2]
-                rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-diffatt[0],-diffatt[1],-diffatt[2],d)
-                #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
-            #rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
             rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
-            if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
-                PathComplete = 1
-            else:
-                #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
-                nextx = PathPointsx[i] - Step_Size*difx
-                nexty = PathPointsy[i] - Step_Size*dify
-                nextz = PathPointsz[i] - Step_Size*difz
-                x = nextx
-                y = nexty
-                z = nextz
-                if z < -0.15:
-                    z = -0.15
-                if self.is_block_reachable_APF(x,y,z) == False:
-                    tempxobj.append(x)
-                    tempyobj.append(y)
-                    tempzobj.append(z) 
-                    #rospy.loginfo("APF Planner - Point is not reachable by %s, added tempobj at %.2f %.2f %.2f", self.robot_ns, x,y,z)
-                    #problem - if reachablility fucks up and says it can't reach, then it'll place an object on top of the block :(
-                    #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
-                    #another problem - reachability seems to fail when very close to the block on various block positions
-                    #PathPointsx.append(PathPointsx[i])
-                    #PathPointsy.append(PathPointsy[i])
-                    #PathPointsz.append(PathPointsz[i])
-                    objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
-                    #added Q scaling factor so Q is greater than distance to next point
-                    tempQ.append(objdistance)
+
+        else:
+            difx = diffatt[0]
+            dify = diffatt[1]
+            difz = diffatt[2]
+            rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-diffatt[0],-diffatt[1],-diffatt[2],d)
+            #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+            #rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
+        
+        if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
+            PathComplete = 1
+        else:
+            #rospy.loginfo('Iteration: ',i,'x,y: ',PathPointsx,PathPointsy)
+            nextx = PathPointsx[i] - Step_Size*difx
+            nexty = PathPointsy[i] - Step_Size*dify
+            nextz = PathPointsz[i] - Step_Size*difz
+            x = nextx
+            y = nexty
+            z = nextz
+            if z < -0.15:
+                z = -0.15
+            if self.is_block_reachable_APF(x,y,z) == False:
+                tempxobj.append(x)
+                tempyobj.append(y)
+                tempzobj.append(z) 
+                #rospy.loginfo("APF Planner - Point is not reachable by %s, added tempobj at %.2f %.2f %.2f", self.robot_ns, x,y,z)
+                #problem - if reachablility fucks up and says it can't reach, then it'll place an object on top of the block :(
+                #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
+                #another problem - reachability seems to fail when very close to the block on various block positions
+                #PathPointsx.append(PathPointsx[i])
+                #PathPointsy.append(PathPointsy[i])
+                #PathPointsz.append(PathPointsz[i])
+                objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
+                #added Q scaling factor so Q is greater than distance to next point
+                tempQ.append(objdistance)
                 #else:
-                PathPointsx.append(x)
-                PathPointsy.append(y)
-                PathPointsz.append(z)
-                rospy.loginfo('Path Points: %.2f %.2f %.2f',PathPointsx[i],PathPointsy[i],PathPointsz[i])
-                i += 1
+                #PathPointsx.append(x)
+                #PathPointsy.append(y)
+                #PathPointsz.append(z)
+            rospy.loginfo('Path Points: %.2f %.2f %.2f',x,y,z)
+                #i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
-        return PathPointsx,PathPointsy,PathPointsz,tempxobj,tempyobj,tempzobj,tempQ
+        return x,y,z,tempxobj,tempyobj,tempzobj,tempQ
 
     def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy
         x = np.linspace(-50, 50, 100)  # Creating X and Y axis

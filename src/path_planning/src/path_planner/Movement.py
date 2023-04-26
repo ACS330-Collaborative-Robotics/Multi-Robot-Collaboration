@@ -76,15 +76,15 @@ class Movement:
             #Q.append(0.1)
 
             ##X,Y,Z path the End effector will take
-            PathTakenSFx, PathTakenSFy, PathTakenSFz, Objectx, Objecyy, Objectz, ObjectQ = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ)
-            PathTakenx = [x/SF for x in PathTakenSFx] #rescale back to meters
-            PathTakeny = [y/SF for y in PathTakenSFy]
-            PathTakenz = [z/SF for z in PathTakenSFz]
+            X, Y, Z, Objectx, Objecyy, Objectz, ObjectQ = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ)
+            PathTakenx = X/SF #rescale back to meters
+            PathTakeny = Y/SF
+            PathTakenz = Z/SF
 
             arm_pos=Pose() #pose for next coordinate
-            arm_pos.position.x=PathTakenx[1]
-            arm_pos.position.y=PathTakeny[1]
-            arm_pos.position.z=PathTakenz[1]
+            arm_pos.position.x=PathTakenx
+            arm_pos.position.y=PathTakeny
+            arm_pos.position.z=PathTakenz
             arm_pos.orientation.x= pos_robot_base_frame.orientation.x 
             arm_pos.orientation.y= pos_robot_base_frame.orientation.y 
             arm_pos.orientation.z= pos_robot_base_frame.orientation.z 
@@ -103,6 +103,8 @@ class Movement:
             #deltaz =  startz - arm_pos.position.z*SF
             #rospy.loginfo("deltas: %.2f %.2f %.2f",deltax,deltay,deltaz)
             # Move robot to new position, in robot reference frame
+
+            print("\n\n\n I AM MOVING THE ARM \n\n\n")
             status = self.serv_helper.move(arm_pos, final_link_name,precise_angle_flag)
             #TODO: Force wait until robot has reached desired position. Temp fix:
             rospy.sleep(0.1)
