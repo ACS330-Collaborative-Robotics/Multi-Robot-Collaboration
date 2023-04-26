@@ -4,21 +4,22 @@
 # Author: Tom Richards (tomtommrichards@gmail.com), Conor Nichols (cjnichols1@sheffield.ac.uk), Annanthavel Santhanavel Ramesh(asanthanavelramesh1@sheffield.ac.uk)
 
 import rospy
-import numpy as np
-from gazebo_msgs.srv import GetModelState
-from block_controller.msg import Blocks
-from path_planning.srv import PathPlan
-from geometry_msgs.msg import Pose
+import actionlib
 import tf
 import tf2_ros
-from gazebo_msgs.msg import ModelState
-from inv_kinematics.srv import InvKin
-
-import math
-from operator import itemgetter
 import tf_conversions
 
-import actionlib
+
+import numpy as np
+import math
+from operator import itemgetter
+
+from gazebo_msgs.srv import GetModelState
+from block_controller.msg import Blocks
+from geometry_msgs.msg import Pose
+from tf2_geometry_msgs import PoseStamped
+from gazebo_msgs.msg import ModelState
+from inv_kinematics.srv import InvKin
 from path_planning.msg import PathPlanAction, PathPlanGoal
 
 # Global variable to store blockData as it appears from subscriber
@@ -28,7 +29,7 @@ def callback(data):
     global blockData
     blockData = data
 
-def choose_block():
+def assignment_selector():
     # Declare ROS Node name
     rospy.init_node('block_selector')
 
@@ -168,9 +169,8 @@ else:
     rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''  
 
 def allocate_task(block_name, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
-    if not is_block_reachable(block_name, [robot_name]):
+    if not is_block_reachable(block_name, robot_name):
         rospy.logwarn("Assignment Selection - Cannot Allocate %s to %s.", block_name, robot_name)
-        #TODO: Implement is reachable for final position
         return False
     else:
         rospy.loginfo("Assignment Selection - Allocating %s to %s.", block_name, robot_name)
@@ -191,6 +191,10 @@ def allocate_task(block_name, robot_name, robot_number, tower_block_positions, t
         end_pos.orientation.z = quat[2]
         end_pos.orientation.w = quat[3]
 
+        if not is_block_position_reachable(end_pos.position.x, end_pos.position.y, end_pos.position.z, tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5], robot_name):
+            rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
+            return False
+
         goal.end_pos = end_pos
 
         path_clients[robot_number].send_goal(goal)
@@ -210,15 +214,24 @@ def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     return data
 
 def is_block_reachable(block_name, robot_name) -> bool:
+    pose = specific_block_pose(block_name, "world")
+
+    block_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
+    block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
+
+    return is_block_position_reachable(pose.position.x, pose.position.y, pose.position.z, block_orientation_euler[0], block_orientation_euler[1], block_orientation_euler[2], robot_name)
+
+def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
     rospy.wait_for_service('inverse_kinematics_reachability')
     inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
 
     model_state = ModelState()
 
-    model_state.pose = specific_block_pose(block_name, robot_name)
+    model_state.pose.position.x = x
+    model_state.pose.position.y = y
+    model_state.pose.position.z = z
 
-    block_orientation_quaternion = [model_state.pose.orientation.x, model_state.pose.orientation.y, model_state.pose.orientation.z, model_state.pose.orientation.w]
-    block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
+    block_orientation_euler = [euler_x, euler_y, euler_z]
 
     orientation_euler = [0, math.pi, block_orientation_euler[2]]
     orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
@@ -227,6 +240,8 @@ def is_block_reachable(block_name, robot_name) -> bool:
     model_state.pose.orientation.y = orientation_quaternion[1]
     model_state.pose.orientation.z = orientation_quaternion[2]
     model_state.pose.orientation.w = orientation_quaternion[3]
+
+    model_state.pose = frameConverter(robot_name, "world", model_state.pose)
 
     # Test at two heights above the block
     model_state.pose.position.z += 0.10
@@ -259,8 +274,33 @@ def getRobotBaseCoordinates(robot_namespaces):
 
         base_coordinates.append(robot_base_coordinates)
 
+def frameConverter(target_frame:str, reference_frame:str, goal_pose:Pose) -> Pose:
+    # Setup tf2
+    tfBuffer = tf2_ros.Buffer()
+    listener = tf2_ros.TransformListener(tfBuffer)
+
+    # Setup time stamped pose object
+    start_pose = PoseStamped()
+    start_pose.pose = goal_pose
+
+    start_pose.header.frame_id = reference_frame
+    start_pose.header.stamp = rospy.get_rostime()
+
+    # Convert from world frame to robot frame using tf2
+    rate = rospy.Rate(10)
+    while not rospy.is_shutdown():
+        try:
+            new_pose = tfBuffer.transform(start_pose, target_frame+"/base_link")
+            break
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+            rospy.logwarn("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
+            rate.sleep()
+            continue
+    
+    return new_pose.pose
+
 if __name__ == '__main__':
     try:
-        choose_block()
+        assignment_selector()
     except rospy.ROSInterruptException:
         pass
