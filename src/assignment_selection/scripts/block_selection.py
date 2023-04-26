@@ -11,7 +11,6 @@ import tf_conversions
 
 import numpy as np
 import math
-from operator import itemgetter
 
 from gazebo_msgs.srv import GetModelState
 from block_controller.msg import Blocks
@@ -103,6 +102,9 @@ def assignment_selector():
             if task_allocation_success == None:
                 rospy.logfatal("Assignment Selection - Removing %s from selection as no blocks can be picked up by it.", str(robot_namespaces[robot_number]))
                 robot_namespaces.pop(robot_number)
+                if len(robot_namespaces) == 0:
+                    rospy.logfatal("Assignment Selection - No robots remaining. Terminating assignment selection.\n\n\n")
+                    break
 
                 robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
                 robots_busy = [False for x in range(len(robot_namespaces))]
