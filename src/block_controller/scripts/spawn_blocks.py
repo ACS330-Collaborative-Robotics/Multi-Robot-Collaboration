@@ -30,19 +30,19 @@ def spawner():
     robot_namespaces = ["mover6_a", "mover6_b"]
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
     
-    min_range = 0.2
+    min_range = 0.25
     max_range = 0.35
     
     pos = Pose() # Pose object to be filled randomly
-    for block_num in range(20):
+    for block_num in range(10):
         # Select a robot base randomly
         robot_num = randint(0, len(robot_base_coords)-1)
 
         # Using angle + distance to select random location within range
         if robot_num == 0:
-            angle = 1*pi*random() - 1*pi
+            angle = 0.5*pi*random() - 0.75*pi
         elif robot_num == 1:
-            angle = 1*pi*random()
+            angle = 0.5*pi*random() + 0.25*pi
         else:
             angle = 2*pi*random()
 
@@ -64,7 +64,7 @@ def spawner():
         pos.orientation.z = 2*random() - 1 # Flat rotation
         
         #urdf_spawner(model_name, model_xml, model_namespace, Pose initial_pose, reference_frame)
-        print(urdf_spawner("block"  + str(block_num), urdf, "blocks", pos, "world"))
+        rospy.loginfo(urdf_spawner("block"  + str(block_num), urdf, "blocks", pos, "world").status_message)
         
 def getRobotBaseCoordinates(robot_namespaces):
     tfBuffer = tf2_ros.Buffer()
@@ -74,7 +74,7 @@ def getRobotBaseCoordinates(robot_namespaces):
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
         while not tfBuffer.can_transform("world", robot_name+"_base", rospy.Time(0)):
-            print("Cannot find robot base transform - spawn_blocks.py. Retrying now.")
+            rospy.logwarn_once("Cannot find robot base transform - spawn_blocks.py. Retrying now.")
             rospy.sleep(0.1)
         
         transform_response = tfBuffer.lookup_transform("world", robot_name+"_base", rospy.Time(0))

@@ -5,10 +5,12 @@
 
 import rospy
 from gazebo_msgs.srv import SpawnModel
+from block_controller.srv import UpdateBlocks
 from geometry_msgs.msg import Pose
 from pathlib import Path
 from block_controller.msg import Blocks,Block
 import tf2_ros
+import numpy
 
 from random import random, randint
 from math import pi, cos, sin
@@ -18,42 +20,43 @@ blockData = None
 def spawner():
     # Setup Node
     rospy.init_node('block_spawner') 
-
-    rospy.Subscriber('/blocks_pos_cam', Blocks, callback)
     # Setup URDF spawner service
     rospy.wait_for_service('gazebo/spawn_urdf_model')
     urdf_spawner = rospy.ServiceProxy('gazebo/spawn_urdf_model', SpawnModel)
+    rospy.wait_for_service('block_update')
+    block_update = rospy.ServiceProxy('block_update', UpdateBlocks)
 
     # Open URDF
     f = open(str(Path.home()) + '/catkin_ws/src/block_controller/urdf/block.urdf')
     urdf = f.read()
 
-    #wait for data from camera
-    while (blockData is None) and not(rospy.is_shutdown()):
-        rospy.loginfo("Block Spawner - Waiting for camera data.")
-        rospy.sleep(0.1)
-    rospy.loginfo("Block Spawner - Got camera data.")
+    # Spawn blocks in set pattern outside workspace
 
-    print("\n\n\n\n", blockData, "\n\n\n\n")
+    block_x = numpy.ones(10)
+    block_x = [x * 1 for x in block_x] 
 
-    # Spawn blocks in radius around each robot base with a minimum and maximum distance
+    block_y = range(10,65,5)
+    block_y = [y / 100 for y in block_y] 
+
+    block_num = range(10,20)
     
-    pos = Pose() # Pose object to be filled randomly
-    for i in range(len(blockData.block_data)):
-        pos.position.x=blockData.block_data[i].x
-        pos.position.y=blockData.block_data[i].y
-        pos.position.z=blockData.block_data[i].z
-        a=blockData.block_data[i].a
-        b=blockData.block_data[i].b
-        c=blockData.block_data[i].c
+    pos = Pose() 
+    for block_count in range(len(block_x)):
+        # Assign position
+        pos.position.x = block_x[block_count]
+        pos.position.y = block_y[block_count]
+        pos.position.z = 0.01
 
-        orientation = tf_conversions.transformations.quaternion_from_euler(a,b,c)
-        pos.orientation.x = orientation[0]
-        pos.orientation.y = orientation[1]
-        pos.orientation.z = orientation[2]
-        pos.orientation.w = orientation[3]
+        # quaternion roation w x y z
+        pos.orientation.w = 1
+        pos.orientation.x = 0 # a - Roll
+        pos.orientation.y = 0 # Lengthway vertically
+        pos.orientation.z = 0# Flat rotation
+        
+        #urdf_spawner(model_name, model_xml, model_namespace, Pose initial_pose, reference_frame)
+        print(urdf_spawner("block"  + str(block_num[block_count]), urdf, "blocks", pos, "world"))
 
-        print(urdf_spawner("block"  + str(blockData.block_data[i].block_number), urdf, "blocks", pos, "world"))
+    block_update(True)
         
 def callback(data):
     global blockData

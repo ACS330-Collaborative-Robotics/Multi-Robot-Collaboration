@@ -2,18 +2,22 @@
     <!-- Run transform from a to reference fiducial -->
     
     <!-- Run usb_cam -->
-    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node"/> 
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
+      <param name="video_device" value="/dev/video0" />
+      <param name="pixel_format" value="yuyv" />
+    </node> 
+
     <!-- Run image_proc -->
     <node name="image_proc" pkg="image_proc" ns="usb_cam" type="image_proc" output="screen"/>
     <!-- Arguments for apriltag_ros -->
     <arg name="camera_name" default="/usb_cam" />
-    <arg name="image_topic" default="image_rect_color" />
+    <arg name="image_topic" default="image_rect_color"/>
     <arg name="queue_size" default="1" />
     <!-- Run apriltag_ros -->
     <include file="$(find apriltag_ros)/launch/continuous_detection.launch" pass_all_args="true"/>
-    <!-- Run tf2_broadcaster (arg=static transform from tag0/Arm_Bundle to mover6abase)-->
-    <node name="static_tf2_broadcaster" pkg="fiducial_recognition" type="static_tf2_broadcaster.py" args="0.01 0.195 1 0 0 0" output="screen"/>
-    <!-- Run tf2_listener (arg=publish rate)-->
-    <node name="tf2_listener" pkg="fiducial_recognition" type="tf2_listener.py" args="2" output="screen"/>
+    <!-- Run tf2_broadcaster for tag to base -->
+    <node name="static_tag_0_base_tf2_broadcaster" pkg="mover6_gazebo" type="static_tf2_broadcaster.py" args="mover6_a_base tag_0 -0.02 0.2075 0 0 0 1.5708" output="screen"/>
+    <!-- Run block_position_publisher (arg=publish rate)-->
+    <node name="block_position_publisher" pkg="fiducial_recognition" type="block_position_publisher.py" args="2" output="screen"/>
 
 </launch>
