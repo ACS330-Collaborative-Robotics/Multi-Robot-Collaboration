@@ -23,6 +23,4 @@
     <node name="static_tag_0_base_tf2_broadcaster" pkg="mover6_gazebo" type="static_tf2_broadcaster.py" args="mover6_a_base Arm_Bundle -0.02 0.193 0 0 0 1.5708" output="screen"/>
     <!-- Run block_position_publisher (arg=publish rate)-->
     <node name="block_position_publisher" pkg="fiducial_recognition" type="block_position_publisher.py" args="2" output="screen"/>
-
-    <node name="LIDAR_node" pkg="human_zone" type="human_detection.py" output="screen"/>
 </launch>
