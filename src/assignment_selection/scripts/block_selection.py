@@ -208,7 +208,7 @@ def build_block_list(robot_namespaces):
                 block_names.append(block_name)
                 break
         else:
-            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable by %s.", block_name, robot_name)
+            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
 
     rospy.loginfo("Assignment Selection - Block list built.\n")
 
