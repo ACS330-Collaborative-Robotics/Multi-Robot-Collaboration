@@ -41,8 +41,8 @@ class ServiceHelper:
         rospy.wait_for_service('/gazebo/get_model_state')
         self.model_state_service = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
 
-        rospy.wait_for_service('gazebo/get_link_state')
-        self.link_state_service = rospy.ServiceProxy('gazebo/get_link_state', GetLinkState)
+        rospy.wait_for_service('/gazebo/get_link_state')
+        self.link_state_service = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
 
         # Setup tf2
         self.tfBuffer = tf2_ros.Buffer()
@@ -168,7 +168,7 @@ class ServiceHelper:
         Uses gazebo/get_link_state service.
         """
         # TODO: Replace with data from /blocks
-        rospy.wait_for_service('gazebo/get_link_state')
+        rospy.wait_for_service('/gazebo/get_link_state')
         # Extract Pose() object
         specific_link_name=arm_name+"::"+link_name
         data = self.link_state_service(specific_link_name, "world").link_state.pose
@@ -342,8 +342,8 @@ class ServiceHelper:
         return allvectorsx,allvectorsy,allvectorsz
 
     def is_block_reachable_APF(self, X, Y, Z):
-        rospy.wait_for_service('inverse_kinematics_reachability')
-        inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
+        rospy.wait_for_service('/inverse_kinematics_reachability')
+        inv_kin_is_reachable = rospy.ServiceProxy('/inverse_kinematics_reachability', InvKin)
 
         inv_kin_request = InvKinRequest()
     
