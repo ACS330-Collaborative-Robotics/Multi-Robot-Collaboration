@@ -5,7 +5,7 @@ import rospy
 from pathlib import Path
 from geometry_msgs.msg import Pose
 from time import time
-
+import tf_conversions
 #import matplotlib.pyplot as plt
 
 import yaml
@@ -26,7 +26,7 @@ class Movement:
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
         SF = 100 #distance scale factor
-        Q = [30,30,30,30,30,30] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+        Q = [25,25,25,25,25,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = self.serv_helper.APFyamlData["D"]
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -85,14 +85,15 @@ class Movement:
             arm_pos.position.x=PathTakenx
             arm_pos.position.y=PathTakeny
             arm_pos.position.z=PathTakenz
-            arm_pos.orientation.x= pos_robot_base_frame.orientation.x 
-            arm_pos.orientation.y= pos_robot_base_frame.orientation.y 
-            arm_pos.orientation.z= pos_robot_base_frame.orientation.z 
-            arm_pos.orientation.w= pos_robot_base_frame.orientation.w
+            Ax,Ay,Az,Aw= orientation_in_quat = tf_conversions.transformations.quaternion_from_euler(2.3,1.5,0.7)
+            arm_pos.orientation.x=Ax #pos_robot_base_frame.orientation.x 
+            arm_pos.orientation.y=Ay #pos_robot_base_frame.orientation.y 
+            arm_pos.orientation.z=Az #pos_robot_base_frame.orientation.z 
+            arm_pos.orientation.w=Aw #pos_robot_base_frame.orientation.w
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
             d=self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
-            if d <= 3: #when close, use precise orientation
+            if d <= 0.03: #when close, use precise orientation
                 precise_angle_flag=1 #orientation does matter - small tolerance
             else:
                 precise_angle_flag=0 #orientation does not matter - wide tolerance
