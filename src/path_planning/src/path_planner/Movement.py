@@ -81,31 +81,30 @@ class Movement:
             PathTakeny = Y/SF
             PathTakenz = Z/SF
 
-            d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
-            if d <=  0.05: #when close, use precise orientation
-                precise_angle_flag = 1 #orientation does matter - small tolerance
-            else:
-                precise_angle_flag = 0 #orientation does not matter - wide tolerance
-
             arm_pos = Pose() #pose for next coordinate
             arm_pos.position.x = PathTakenx
             arm_pos.position.y = PathTakeny
             arm_pos.position.z = PathTakenz
-            
-            if precise_angle_flag == 0: #if orientaiton doesnt matter then keep gripper inline with arm
-                inline_a,inline_b,inline_c = self.serv_helper.arm_inline_orientation()
+
+            d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
+            if d <=  0.05: #when close, use precise orientation
+                precise_angle_flag = 1 #orientation does matter - small tolerance
+                                
+                arm_pos.orientation.x = pos_robot_base_frame.orientation.x 
+                arm_pos.orientation.y = pos_robot_base_frame.orientation.y 
+                arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
+                arm_pos.orientation.w = pos_robot_base_frame.orientation.w
+            else:
+                precise_angle_flag = 0 #orientation does not matter - wide tolerance
+
+                inline_a,inline_b,inline_c = self.serv_helper.arm_inline_orientation() #if orientaiton doesnt matter then keep gripper inline with arm
                 inline_x,inline_y,inline_z,inline_w = tf_conversions.transformations.quaternion_from_euler(inline_a,inline_b,inline_c)
                 arm_pos.orientation.x = inline_x 
                 arm_pos.orientation.y = inline_y 
                 arm_pos.orientation.z = inline_z 
                 arm_pos.orientation.w = inline_w 
-            else: #use target orientation 
-                arm_pos.orientation.x = pos_robot_base_frame.orientation.x 
-                arm_pos.orientation.y = pos_robot_base_frame.orientation.y 
-                arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
-                arm_pos.orientation.w = pos_robot_base_frame.orientation.w
-            rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
 
+            rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
 
             rospy.loginfo("Potential Fields - Step Calculation Time: %.4f",time()-start_time)
             #deltax =  startx - arm_pos.position.x*SF
