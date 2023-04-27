@@ -19,7 +19,7 @@ from block_controller.msg import Blocks
 from geometry_msgs.msg import Pose
 from tf2_geometry_msgs import PoseStamped
 from gazebo_msgs.msg import ModelState
-from inv_kinematics.srv import InvKin
+from inv_kinematics.srv import InvKin, InvKinRequest
 from path_planning.msg import PathPlanAction, PathPlanGoal
 from block_controller.srv import UpdateBlocks
 
@@ -41,12 +41,12 @@ def assignment_selector():
     robot_namespaces = ["mover6_a", "mover6_b"]
 
     
-    rospy.wait_for_service('block_update')
-    block_update = rospy.ServiceProxy('block_update',UpdateBlocks)
-    try:
-        resp1 = block_update(True)
-    except rospy.ServiceException as exc:
-        rospy.logwarn("Service did not process request: to update blocks")
+    #rospy.wait_for_service('block_update')
+    #block_update = rospy.ServiceProxy('block_update',UpdateBlocks)
+    #try:
+    #    resp1 = block_update(True)
+    #except rospy.ServiceException as exc:
+    #    rospy.logwarn("Service did not process request: to update blocks")
 
     # Setup path_planner action client
     path_clients = []
@@ -258,12 +258,15 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
 
     model_state.pose = frameConverter(robot_name, "world", model_state.pose)
 
+    inv_kin_request.state = model_state
+    inv_kin_request.precise_orientation = True
+
     # Test at two heights above the block
     model_state.pose.position.z += 0.10
-    if inv_kin_is_reachable(model_state).success:
+    if inv_kin_is_reachable(inv_kin_request).success:
 
         model_state.pose.position.z += 0.05
-        if inv_kin_is_reachable(model_state).success:
+        if inv_kin_is_reachable(inv_kin_request).success:
             #rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
             return True
     
