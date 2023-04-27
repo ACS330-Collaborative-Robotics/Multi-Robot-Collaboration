@@ -451,7 +451,7 @@ class ServiceHelper:
     def publish_path_points(self,x,y,z):
         """  publish path points
         INPUT: xyz points   
-        OUTPUT: publishs point to be used by gui
+        OUTPUT: publish point to be used by gui
         """
         point = Point()
         point.x=x
