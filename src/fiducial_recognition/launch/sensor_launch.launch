@@ -24,6 +24,5 @@
     <!-- Run block_position_publisher (arg=publish rate)-->
     <node name="block_position_publisher" pkg="fiducial_recognition" type="block_position_publisher.py" args="2" output="screen"/>
 
-    <node name="LIDAR_controller" pkg="human_zone" type="human_detection.py" output="screen"/>
-
+    <node name="LIDAR_node" pkg="human_zone" type="human_detection.py" output="screen"/>
 </launch>
