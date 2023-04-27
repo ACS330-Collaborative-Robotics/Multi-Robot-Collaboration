@@ -21,9 +21,9 @@ from geometry_msgs.msg import Point
 from custom_msgs.msg import Joints
 from std_msgs.msg import String, Float64
 
-coord_x = None
-coord_y = None
-coord_z = None
+coord_x = 0
+coord_y = 0
+coord_z = 0
 class GUI:
     def __init__(self, master):
         # simulation
@@ -41,9 +41,13 @@ class GUI:
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # potential field plot
-        while(coord_x is None and coord_y is None and coord_z is None) and not rospy.is_shutdown():
-            rospy.loginfo("Waiting for data")
-            rospy.sleep(0.05)
+        #while(coord_x is None and coord_y is None and coord_z is None) and not rospy.is_shutdown():
+        #    rospy.loginfo("Waiting for data")
+        #    rospy.sleep(0.05)
+        # Create a listener for the Potential Field plot
+        rospy.init_node('listener', anonymous=True)
+        rospy.Subscriber('/APF_Point', Point, self.apf_callback)
+
         self.plot_label = tk.Label(master, text="Potential Field Plot: ")
         self.plot_label.grid(row=0, column=3, sticky="w")
         self.plot_canvas = tk.Canvas(master, width=540, height=380)
@@ -51,7 +55,7 @@ class GUI:
         canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
         canvas.draw()
         ax = fig.add_subplot(111, projection="3d")
-        ax.scatter3D(coord_x, coord_y, coord_z, c=coord_z, cmap='Greens')
+        ax.scatter(coord_x, coord_y, coord_z, cmap='Greens')
         canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
 
 
@@ -128,12 +132,9 @@ class GUI:
 
         # Create a listener for the physical camera 
         rospy.Subscriber('/usb_cam/image_raw', ImageMsg, self.camera_callback)
-
-        # Create a listener for the Potential Field plot
-        rospy.init_node('listener', anonymous=True)
-        rospy.Subscriber('/APF_Point', Point, self.apf_callback)
     
     def apf_callback(self, data):
+        print(data)
         global coord_x
         global coord_y
         global coord_z
