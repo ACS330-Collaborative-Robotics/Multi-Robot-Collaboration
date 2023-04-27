@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
 			float accuracy[6] = {0.04,0.04,0.04,0.04,0.08,0.08};
 			
 			// Gains of robots (Speeds) joint 1-6, joint 5 and 6 cant go faster
-			float joint_gains[6] = {0.25, 0.25, 0.25, 0.25, 0.2, 0.1};
+			float joint_gains[6] = {0.25, 0.25, 0.25, 0.25, 0.2, 0.2};
 			for (int i=0;i<6;i++){
 				//ROS_INFO("EStopState %s",emergency_stop? "True":"False");
 				// Moving joints
