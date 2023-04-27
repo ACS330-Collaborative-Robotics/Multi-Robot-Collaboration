@@ -1,36 +1,36 @@
-python3 script.py tag25h9/tag25_09_00000.png SVG25h9/tag25_09_00000.svg
-python3 script.py tag25h9/tag25_09_00001.png SVG25h9/tag25_09_00001.svg
-python3 script.py tag25h9/tag25_09_00002.png SVG25h9/tag25_09_00002.svg
-python3 script.py tag25h9/tag25_09_00003.png SVG25h9/tag25_09_00003.svg
-python3 script.py tag25h9/tag25_09_00004.png SVG25h9/tag25_09_00004.svg
-python3 script.py tag25h9/tag25_09_00005.png SVG25h9/tag25_09_00005.svg
-python3 script.py tag25h9/tag25_09_00006.png SVG25h9/tag25_09_00006.svg
-python3 script.py tag25h9/tag25_09_00007.png SVG25h9/tag25_09_00007.svg
-python3 script.py tag25h9/tag25_09_00008.png SVG25h9/tag25_09_00008.svg
-python3 script.py tag25h9/tag25_09_00009.png SVG25h9/tag25_09_00009.svg
-python3 script.py tag25h9/tag25_09_00010.png SVG25h9/tag25_09_00010.svg
-python3 script.py tag25h9/tag25_09_00011.png SVG25h9/tag25_09_00011.svg
-python3 script.py tag25h9/tag25_09_00012.png SVG25h9/tag25_09_00012.svg
-python3 script.py tag25h9/tag25_09_00013.png SVG25h9/tag25_09_00013.svg
-python3 script.py tag25h9/tag25_09_00014.png SVG25h9/tag25_09_00014.svg
-python3 script.py tag25h9/tag25_09_00015.png SVG25h9/tag25_09_00015.svg
-python3 script.py tag25h9/tag25_09_00016.png SVG25h9/tag25_09_00016.svg
-python3 script.py tag25h9/tag25_09_00017.png SVG25h9/tag25_09_00017.svg
-python3 script.py tag25h9/tag25_09_00018.png SVG25h9/tag25_09_00018.svg
-python3 script.py tag25h9/tag25_09_00019.png SVG25h9/tag25_09_00019.svg
-python3 script.py tag25h9/tag25_09_00020.png SVG25h9/tag25_09_00020.svg
-python3 script.py tag25h9/tag25_09_00021.png SVG25h9/tag25_09_00021.svg
-python3 script.py tag25h9/tag25_09_00022.png SVG25h9/tag25_09_00022.svg
-python3 script.py tag25h9/tag25_09_00023.png SVG25h9/tag25_09_00023.svg
-python3 script.py tag25h9/tag25_09_00024.png SVG25h9/tag25_09_00024.svg
-python3 script.py tag25h9/tag25_09_00025.png SVG25h9/tag25_09_00025.svg
-python3 script.py tag25h9/tag25_09_00026.png SVG25h9/tag25_09_00026.svg
-python3 script.py tag25h9/tag25_09_00027.png SVG25h9/tag25_09_00027.svg
-python3 script.py tag25h9/tag25_09_00028.png SVG25h9/tag25_09_00028.svg
-python3 script.py tag25h9/tag25_09_00029.png SVG25h9/tag25_09_00029.svg
-python3 script.py tag25h9/tag25_09_00030.png SVG25h9/tag25_09_00030.svg
-python3 script.py tag25h9/tag25_09_00031.png SVG25h9/tag25_09_00031.svg
-python3 script.py tag25h9/tag25_09_00032.png SVG25h9/tag25_09_00032.svg
-python3 script.py tag25h9/tag25_09_00033.png SVG25h9/tag25_09_00033.svg
-python3 script.py tag25h9/tag25_09_00034.png SVG25h9/tag25_09_00034.svg
+python3 script.py tag25h9/tag25_09_00000.png SVG25h9/tag25_09_00000.svg --size=50mm
+python3 script.py tag25h9/tag25_09_00001.png SVG25h9/tag25_09_00001.svg --size=50mm
+python3 script.py tag25h9/tag25_09_00002.png SVG25h9/tag25_09_00002.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00003.png SVG25h9/tag25_09_00003.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00004.png SVG25h9/tag25_09_00004.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00005.png SVG25h9/tag25_09_00005.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00006.png SVG25h9/tag25_09_00006.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00007.png SVG25h9/tag25_09_00007.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00008.png SVG25h9/tag25_09_00008.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00009.png SVG25h9/tag25_09_00009.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00010.png SVG25h9/tag25_09_00010.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00011.png SVG25h9/tag25_09_00011.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00012.png SVG25h9/tag25_09_00012.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00013.png SVG25h9/tag25_09_00013.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00014.png SVG25h9/tag25_09_00014.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00015.png SVG25h9/tag25_09_00015.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00016.png SVG25h9/tag25_09_00016.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00017.png SVG25h9/tag25_09_00017.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00018.png SVG25h9/tag25_09_00018.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00019.png SVG25h9/tag25_09_00019.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00020.png SVG25h9/tag25_09_00020.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00021.png SVG25h9/tag25_09_00021.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00022.png SVG25h9/tag25_09_00022.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00023.png SVG25h9/tag25_09_00023.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00024.png SVG25h9/tag25_09_00024.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00025.png SVG25h9/tag25_09_00025.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00026.png SVG25h9/tag25_09_00026.svg --size=35mm 
+python3 script.py tag25h9/tag25_09_00027.png SVG25h9/tag25_09_00027.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00028.png SVG25h9/tag25_09_00028.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00029.png SVG25h9/tag25_09_00029.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00030.png SVG25h9/tag25_09_00030.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00031.png SVG25h9/tag25_09_00031.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00032.png SVG25h9/tag25_09_00032.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00033.png SVG25h9/tag25_09_00033.svg --size=35mm
+python3 script.py tag25h9/tag25_09_00034.png SVG25h9/tag25_09_00034.svg --size=35mm
 
