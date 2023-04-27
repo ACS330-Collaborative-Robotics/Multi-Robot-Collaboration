@@ -39,7 +39,6 @@ class Movement:
         ##Start position relative to world then arm base
         start_pose_world=self.serv_helper.getLinkPos(self.serv_helper.robot_ns,"link6") 
         start_pose = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", start_pose_world)
-        rospy.logerr("start pose %s",start_pose)
         startx = start_pose.position.x*SF #start coords for end effector (now relative)
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF

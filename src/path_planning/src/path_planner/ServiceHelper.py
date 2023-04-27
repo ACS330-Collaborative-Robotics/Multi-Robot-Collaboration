@@ -460,10 +460,5 @@ class ServiceHelper:
         self.point_pub.publish(point)
         return
 
-    def arm_inline_orientation(self):
-        """  give gripper orientation inline with arm to ensure smooth movement
-        INPUT:    
-        OUTPUT: euler inline angles
-        """
-        
+
 
