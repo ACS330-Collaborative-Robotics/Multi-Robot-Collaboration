@@ -78,7 +78,7 @@ class ServiceHelper:
         arm_pos.model_name = self.robot_ns
         arm_pos.reference_frame = final_link_name
         arm_pos.pose = pos
-        rospy.logerr("arm_pos: %s",arm_pos)
+        #rospy.logerr("arm_pos: %s",arm_pos)
         inv_kin_request.state = arm_pos
         inv_kin_request.precise_orientation = precise_orientation
 
@@ -465,6 +465,5 @@ class ServiceHelper:
         INPUT:    
         OUTPUT: euler inline angles
         """
-        inline_L4_pos = self.getLinkPos(self.robot_ns,"link4")
-        self.frameConverter(self.robot_ns+"/base_link", "world", inline_L4_pos)
-        return inline_L4_pos.orientation.x, inline_L4_pos.orientation.y, inline_L4_pos.orientation.z
+        
+
