@@ -12,6 +12,7 @@ from gazebo_msgs.msg import LinkState
 from gazebo_msgs.srv import GetModelState
 from gazebo_msgs.srv import GetLinkState
 from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Point
 from tf2_geometry_msgs import PoseStamped
 from inv_kinematics.srv import InvKin
 from inv_kinematics.srv import InvKinRequest
@@ -55,6 +56,8 @@ class ServiceHelper:
 
         # Setup gripper publisher
         self.gripper_publisher = rospy.Publisher(self.robot_ns + "/gripper_state", Bool, queue_size=10)
+
+        self.point_pub = rospy.Publisher('/APF_Point', Point, queue_size=10)
 
     def move(self, pos:Pose, final_link_name:str, precise_orientation:bool):
         """ Move arm to specified position.
@@ -442,48 +445,17 @@ class ServiceHelper:
                 #i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
+        self.publish_path_points(x,y,z)
         return x,y,z,tempxobj,tempyobj,tempzobj,tempQ
 
-    def Space_Generation(self,startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D): #### needs to ad objx and objy
-        x = np.linspace(-50, 50, 100)  # Creating X and Y axis
-        y = np.linspace(-50, 50, 100)
-        X, Y = np.meshgrid(x, y)  # Creates 2 arrays with respective x any y coordination for each point
-        PotentialEnergy = np.ndarray(shape=(len(x), len(y)))  # this acts as the z axis on graphs. Works better for visualisation
-        for i in range(len(X)):  # gets Z values for the X Y positions
-            for j in range(len(Y)):
-                PotentialEnergy[i, j] = self.PotentialAttraction2d(X[i,j],Y[i,j],xgoal,ygoal,D)+ self.PotentialRepulsion2d(X[i,j],Y[i,j],xobj,yobj,Q)
-                         # PotentialAttraction(X[i,j],Y[i,j],xgoal,ygoal,D) +PotentialRepulsion(X[i, j], Y[i, j], objx, objy,
-        PathTaken = self.PathPlanner(startx, starty,startz, xgoal, ygoal,zgoal, xobj, yobj,zobj,Q, D)  ## you are here ^^^
-        EnergyPathTaken = []
-        xline = PathTaken[0]
-        yline = PathTaken[1]
-        for i in range(len(PathTaken[0])):
+    def publish_path_points(self,x,y,z):
+        """  publish path points
+        INPUT: xyz points   
+        OUTPUT: publishs point to be used by gui
+        """
+        point = Point()
+        point.x=x
+        point.y=y
+        point.z=z
 
-            TotalPotential = self.PotentialAttraction2d(xline[i], yline[i], xgoal, ygoal, D) + self.PotentialRepulsion2d(xline[i], yline[i], xobj, yobj, Q)
-            EnergyPathTaken.append(TotalPotential)
-        rospy.loginfo('Space Generation Complete')
-        return X,Y,xline, yline, PotentialEnergy, EnergyPathTaken, PathTaken
-
-    def plotAPF(self,X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
-    # Making 3d Plot
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        ax.plot_surface(X, Y, PotentialEnergy)
-        ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
-        ax.set_xlabel('X axis')
-        ax.set_ylabel('Y axis')
-        plt.show()
-
-    def plotPath(self,PathTaken):
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        xpoints =[]
-        ypoints = []
-        zpoints = []
-        for point in PathTaken:
-            xpoints.append(point[0])
-            ypoints.append(point[1])
-            zpoints.append(point[2])
-        ax.plot(xpoints,ypoints,zpoints)
-        plt.show()
-        rospy.loginfo('PlotPath Complete')
+        self.point_pub.publish(point)
