@@ -58,7 +58,7 @@ def assignment_selector():
     manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
     manual_block_location_euler_rotation = [0, 0, 0]
 
-    enable_home_between_assignments = False
+    enable_home_between_assignments = True
     home_joint_positions = [90*math.pi/180, 0, 0, 0, 0, 0]
 
     block_width = 0.035
