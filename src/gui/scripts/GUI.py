@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-rospy.init_node('listener_gui_publisher', anonymous=True) # Initialize the ROS node
+rospy.init_node('listener_gui_publisher', anonymous=True) # initialize the ROS node
 import subprocess
 import threading
 import subprocess
@@ -93,19 +93,18 @@ class GUI:
         # /mover6_b_p/physical/joint_angles
         # /mover6_b_p/physical/moving_state
         # /mover6_b/robot_state
-
         self.Pi_light = tk.Label(master,bg="red", width=2, height=1)
         self.Pi_light.grid(row=4, column=1, sticky="w")
         self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected")
         self.Pi_label.grid(row=4, column=2, sticky="w")
 
-        piServices = ' '.join(['/mover6_a_p/JointJog','/mover6_b_p/JointJog'])
+        piServices = ['/mover6_a_p/JointJog', '/mover6_b_p/JointJog']
 
         try:
-            output = subprocess.check_output(['rosservice', 'find', piServices])
+            output = subprocess.check_output(['rosservice', 'find'] + piServices)
             return_code = 0
             # check if service name is found in output
-            if piServices in output.decode('utf-8'):
+            if all(service in output.decode('utf-8') for service in piServices):
                 self.Pi_light.config(bg="green")
             else:
                 self.Pi_light.config(bg="red")
@@ -113,6 +112,7 @@ class GUI:
             output = e.output
             return_code = e.returncode
             self.Pi_light.config(bg="red")
+
         print(f"Output: {output}, return code: {return_code}")
 
        # nodes configured light
