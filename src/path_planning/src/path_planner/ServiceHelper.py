@@ -465,6 +465,6 @@ class ServiceHelper:
         INPUT:    
         OUTPUT: euler inline angles
         """
-        inline_L4_pos=self.getLinkPos(self.robot_ns,"link4")
+        inline_L4_pos = self.getLinkPos(self.robot_ns,"link4")
         self.frameConverter(self.robot_ns+"/base_link", "world", inline_L4_pos)
         return inline_L4_pos.orientation.x, inline_L4_pos.orientation.y, inline_L4_pos.orientation.z
