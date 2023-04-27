@@ -39,6 +39,7 @@ class Movement:
         ##Start position relative to world then arm base
         start_pose_world=self.serv_helper.getLinkPos(self.serv_helper.robot_ns,"link6") 
         start_pose = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", start_pose_world)
+        rospy.logerr("start pose %s",start_pose)
         startx = start_pose.position.x*SF #start coords for end effector (now relative)
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF
@@ -86,23 +87,18 @@ class Movement:
             arm_pos.position.y = PathTakeny
             arm_pos.position.z = PathTakenz
 
+            arm_pos.orientation.x = pos_robot_base_frame.orientation.x 
+            arm_pos.orientation.y = pos_robot_base_frame.orientation.y 
+            arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
+            arm_pos.orientation.w = pos_robot_base_frame.orientation.w
+
             d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             if d <=  0.05: #when close, use precise orientation
                 precise_angle_flag = 1 #orientation does matter - small tolerance
                                 
-                arm_pos.orientation.x = pos_robot_base_frame.orientation.x 
-                arm_pos.orientation.y = pos_robot_base_frame.orientation.y 
-                arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
-                arm_pos.orientation.w = pos_robot_base_frame.orientation.w
             else:
                 precise_angle_flag = 0 #orientation does not matter - wide tolerance
 
-                inline_a,inline_b,inline_c = self.serv_helper.arm_inline_orientation() #if orientaiton doesnt matter then keep gripper inline with arm
-                inline_x,inline_y,inline_z,inline_w = tf_conversions.transformations.quaternion_from_euler(inline_a,inline_b,inline_c)
-                arm_pos.orientation.x = inline_x 
-                arm_pos.orientation.y = inline_y 
-                arm_pos.orientation.z = inline_z 
-                arm_pos.orientation.w = inline_w 
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
 
