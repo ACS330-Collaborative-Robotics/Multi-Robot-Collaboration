@@ -87,7 +87,10 @@ Run each of the following in its own terminal tab, after running `cd ~/catkin_ws
 ### Launching the Lidar
 
 Run in terminal:
-`sudo chmod 666 /dev/ttyUSB0`
+`sudo chmod 666 /dev/ttyUSB0` (worked on laptop)
+OR:
+`sudo chmod 777 /dev/ttyUSB0` (worked on Ubuntu)
+Note: LIDAR does not appear to work through extension cable
 
 Then:
 `roslaunch rplidar_ros rplidar.launch`

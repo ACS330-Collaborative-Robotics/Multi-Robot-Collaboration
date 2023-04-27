@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find rplidar_ros)/launch/rplidar.launch"/>
+    <node name="LIDAR_node" pkg="human_zone" type="human_detection.py" output="screen"/>
+</launch>
