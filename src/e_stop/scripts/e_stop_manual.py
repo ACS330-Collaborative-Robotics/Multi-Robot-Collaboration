@@ -8,7 +8,7 @@ from std_msgs.msg import Bool
 from sys import argv
 
 def main():
-    rospy.init_node('e_stop')
+    rospy.init_node('e_stop', anonymous=True)
 
     #Define the publishers
     E_stop_pub = rospy.Publisher("/emergency_stop_manual", Bool, queue_size=10)
