@@ -16,15 +16,14 @@ from PIL import Image, ImageTk
 from sensor_msgs.msg import Image as ImageMsg
 from cv_bridge import CvBridge
 import cv2
-from mpl_toolkits import mplot3d
 
+from geometry_msgs.msg import Point
 from custom_msgs.msg import Joints
-from std_msgs.msg import String, Float64, Float64MultiArray
-from custom_msgs.msg import apf_coords
+from std_msgs.msg import String, Float64
 
-coords_x = None
-coords_y = None
-coords_z = None
+coord_x = None
+coord_y = None
+coord_z = None
 class GUI:
     def __init__(self, master):
         # simulation
@@ -42,7 +41,7 @@ class GUI:
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # potential field plot
-        while(coords_x is None and coords_y is None and coords_z is None) and not rospy.is_shutdown():
+        while(coord_x is None and coord_y is None and coord_z is None) and not rospy.is_shutdown():
             rospy.loginfo("Waiting for data")
             rospy.sleep(0.05)
         self.plot_label = tk.Label(master, text="Potential Field Plot: ")
@@ -52,7 +51,7 @@ class GUI:
         canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
         canvas.draw()
         ax = fig.add_subplot(111, projection="3d")
-        ax.scatter3D(coords_x, coords_y, coords_z, c=coords_z, cmap='Greens');
+        ax.scatter3D(coord_x, coord_y, coord_z, c=coord_z, cmap='Greens')
         canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
 
 
@@ -132,15 +131,15 @@ class GUI:
 
         # Create a listener for the Potential Field plot
         rospy.init_node('listener', anonymous=True)
-        rospy.Subscriber("apf_plot", apf_coords, self.apf_callback)
+        rospy.Subscriber('/APF_Point', Point, self.apf_callback)
     
     def apf_callback(self, data):
-        global coords_x
-        global coords_y
-        global coords_z
-        coords_x=data.plot_data[0,:]
-        coords_y=data.plot_data[1,:]
-        coords_z=data.plot_data[2,:]
+        global coord_x
+        global coord_y
+        global coord_z
+        coord_x=data.Point[0]
+        coord_y=data.Point[1]
+        coord_z=data.Point[2]
 
 
     
