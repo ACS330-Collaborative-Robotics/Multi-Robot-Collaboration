@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 					chatter_pub.publish(msg_start);
 
 				}
-				else if(abs(joint_demands[i]-jointpos[i])>accuracy) {
+				else if(abs(joint_demands[i]-jointpos[i])>accuracy[i]) {
 
 					//ROS_INFO("Setting message Go to set point point joint %d",i);
 					control_msgs::JointJog msg_start;
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 					moving_state = true;
 				}
 				// Stopping joints
-				else if(abs(joint_demands[i]-jointpos[i])<accuracy) {
+				else if(abs(joint_demands[i]-jointpos[i])<accuracy[i]) {
 					//ROS_INFO("Setting message Stay Still point joint %d",i);
 					control_msgs::JointJog msg_start;
 					std::stringstream ss;
