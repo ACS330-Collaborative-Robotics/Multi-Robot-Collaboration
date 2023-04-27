@@ -181,7 +181,7 @@ class GUI:
         rospy.init_node('gui_publisher', anonymous=True)
         self.gui_pub = rospy.Publisher('/gui', Bool, queue_size=10)
 
-    # update error log
+   # update error log
     def callback_error(self, data, args):
         error_msg, error_light = args
         # get the most recent error message and severity level
@@ -190,15 +190,14 @@ class GUI:
         most_recent_severity = int(data.level)
 
         # update the error message box
-        error_msg.delete(1.0, tk.END)
-        error_msg.insert(tk.END, most_recent_error)
+        self.master.after(0, lambda: error_msg.delete(1.0, tk.END))
+        self.master.after(0, lambda: error_msg.insert(tk.END, most_recent_error))
 
         # update the error status light
         if most_recent_severity > 3:
             error_light.config(bg="red")
         else:
             error_light.config(bg="green")
-
     
     # update video frame
     def error_display(master):
@@ -267,9 +266,32 @@ class GUI:
      #   self.emergency_stop_button.config(text="START", bg="green", fg="black")
 
     def sim_preview_clicked(self):
-        self.sim_preview_button.config(text="STOP PREVIEW", bg="red", fg="black")
+        # this button will use the play pause service
+        # when it is clicked, the physical system will stop but the simulation will continue
+        # after being clicked, the 'pause' string will be passed to the play_pause_demo_service
+        # then the button will change to say "STOP PREVIEW" 
+        # when that is clicked, the 'play' string will be passed to the service and the button will return to say "SIM PREVIEW"
+        import rospy
+        from custom_msgs.srv import PlayPause
 
-   
+        play_pause_proxy = rospy.ServiceProxy('play_pause_demo_service', PlayPause)
+        
+        if self.sim_preview_button['text'] == 'SIM PREVIEW': # determine state of button
+            desired_state = 'pause'
+            self.sim_preview_button.config(text='STOP PREVIEW', bg='red', fg='black')
+        else:
+            desired_state = 'play'
+            self.sim_preview_button.config(text='SIM PREVIEW', bg='yellow', fg='black')
+        
+        try: # call service with desired state
+            response = play_pause_proxy(desired_state)
+            if response.success:
+                rospy.loginfo('Play/Pause service successfully executed')
+            else:
+                rospy.logerr('Play/Pause service failed to execute')
+        except rospy.ServiceException as e:
+            rospy.logerr(f"Service call failed: {e}")
+            
 if __name__ == '__main__':
     root = tk.Tk()
     root.geometry("{}x{}+0+0".format(1200, 800))
