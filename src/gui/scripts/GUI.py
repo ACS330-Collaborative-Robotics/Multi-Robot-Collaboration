@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+rospy.init_node('listener_gui_publisher', anonymous=True) # Initialize the ROS node
 import subprocess
 import threading
 import subprocess
@@ -13,7 +14,8 @@ from cv_bridge import CvBridge
 import cv2
 
 from custom_msgs.msg import Joints
-from std_msgs.msg import String, Float64, Float64MultiArray
+from custom_msgs.srv import PlayPause
+from std_msgs.msg import String, Float64, Float64MultiArray, Bool
 from rosgraph_msgs.msg import Log
         
 
@@ -146,8 +148,7 @@ class GUI:
         frame.grid(row=8, column=0, columnspan=2, rowspan=3, sticky="nesw")
 
         
-        # Create a listener for the clock topic
-        rospy.init_node('listener', anonymous=True)
+       # Create a listener for the clock topic
         rospy.Subscriber('/clock', Float64, self.callback_time)
 
         # Create a listener for the video topic
@@ -174,11 +175,9 @@ class GUI:
         self.error_msg.grid(row=7, column=1, columnspan=2, sticky="w")
 
         # subscribe to rosout 
-        rospy.init_node('listener', anonymous=True)
         rospy.Subscriber('/rosout', Log, self.callback_error, callback_args=(self.error_msg, self.error_light))
 
-    # Initialize the ROS node for the e_stop
-        rospy.init_node('gui_publisher', anonymous=True)
+        # Initialize the ROS publisher for the gui
         self.gui_pub = rospy.Publisher('/gui', Bool, queue_size=10)
 
    # update error log
@@ -271,8 +270,6 @@ class GUI:
         # after being clicked, the 'pause' string will be passed to the play_pause_demo_service
         # then the button will change to say "STOP PREVIEW" 
         # when that is clicked, the 'play' string will be passed to the service and the button will return to say "SIM PREVIEW"
-        import rospy
-        from custom_msgs.srv import PlayPause
 
         play_pause_proxy = rospy.ServiceProxy('play_pause_demo_service', PlayPause)
         
