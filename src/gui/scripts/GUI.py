@@ -110,7 +110,7 @@ class GUI:
         except subprocess.CalledProcessError as e:
             output = e.output
             return_code = e.returncode
-            self.nodes_light.config(bg="red")
+            self.Pi_light.config(bg="red")
         print(f"Output: {output}, return code: {return_code}")
 
        # nodes configured light
