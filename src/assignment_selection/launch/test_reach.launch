@@ -1,0 +1,4 @@
+<launch>
+  <node name="block_talker" pkg="block_controller" type="block_pos_talker" output="screen"/>
+  <node name="block_tester" pkg="assignment_selection" type="test_block_reachability.py" output="screen"/>
+</launch>
