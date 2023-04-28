@@ -35,7 +35,7 @@ def spawner():
     x_lower_limit = -0.3
     x_upper_limit = 0.3
 
-    robot_a_block_coordinates = [[x_lower_limit, -0.1], [x_lower_limit, 0], [x_lower_limit, 0.1], [x_upper_limit, -0.1], [x_upper_limit, 0], [x_upper_limit, 0.1]]
+    robot_a_block_coordinates = [[x_lower_limit, -0.1], [x_lower_limit, 0], [x_lower_limit, 0.05], [x_upper_limit, -0.1], [x_upper_limit, 0], [x_upper_limit, 0.1]]
 
     y_offset = 0.72
 
@@ -52,7 +52,7 @@ def spawner():
         pos.position.y = block_coordinates[block_num][1]
         pos.position.z = 0.01
 
-        quat = tf.transformations.quaternion_from_euler(0, 0, 1.508)
+        quat = tf.transformations.quaternion_from_euler(0, 0, -0.5)
         pos.orientation.x = quat[0]
         pos.orientation.y = quat[1]
         pos.orientation.z = quat[2]
