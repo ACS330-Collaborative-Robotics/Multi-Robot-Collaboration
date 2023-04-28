@@ -389,7 +389,7 @@ class ServiceHelper:
             Step_Size = self.APFyamlData["Step_Size"]
         Final_Att= self.APFyamlData["Final_Att"]
         Final_Distance = self.APFyamlData["Final_Distance"]
-        PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
+        PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of potential)
         PathPointsx = [x] #First X and Y points
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
         PathPointsz = [z]
@@ -425,10 +425,10 @@ class ServiceHelper:
             z = nextz
             if z < -0.2:
                 z = -0.2
-            if self.is_block_reachable_APF(x,y,z) == False:
-                tempxobj.append(x)
-                tempyobj.append(y)
-                tempzobj.append(z) 
+            #if self.is_block_reachable_APF(x,y,z) == False:
+                #tempxobj.append(x)
+                #tempyobj.append(y)
+                #tempzobj.append(z) 
                 #rospy.loginfo("APF Planner - Point is not reachable by %s, added tempobj at %.2f %.2f %.2f", self.robot_ns, x,y,z)
                 #problem - if reachablility fucks up and says it can't reach, then it'll place an object on top of the block :(
                 #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
@@ -436,19 +436,19 @@ class ServiceHelper:
                 #PathPointsx.append(PathPointsx[i])
                 #PathPointsy.append(PathPointsy[i])
                 #PathPointsz.append(PathPointsz[i])
-                objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
+                #objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
                 #added Q scaling factor so Q is greater than distance to next point
-                tempQ.append(objdistance)
+                #tempQ.append(objdistance)
                 #else:
                 #PathPointsx.append(x)
                 #PathPointsy.append(y)
                 #PathPointsz.append(z)
-            #rospy.loginfo('Path Points: %.2f %.2f %.2f',x,y,z)
+                #rospy.loginfo('Path Points: %.2f %.2f %.2f',x,y,z)
                 #i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
         self.publish_path_points(x,y,z)
-        return x,y,z,tempxobj,tempyobj,tempzobj,tempQ
+        return x, y, z
 
     def publish_path_points(self,x,y,z):
         """  publish path points
@@ -468,12 +468,21 @@ class ServiceHelper:
         INPUT: xyz points   
         OUTPUT: publishes point to be used by gui
         """
-        obs_in_zone_flag=0
-        forcefield_area=12
-        pos_own_world=self.getLinkPos(self.robot_ns,"link6") #own arm joint positions relative to world
+        obs_in_zone_flag = 0
+        forcefield_dist = 0.12
+        pos_own_world = self.getLinkPos(self.robot_ns,"link6") #own arm joint positions relative to world
+        d_own_to_goal = self.EuclidianDistance2d(pos_own_world.position.x, pos_own_world.position.y, xgoal, ygoal)
+
         for obstacle_arm_ns in robot_namespaces:
-            pos_obs_world=self.getLinkPos(obstacle_arm_ns,"link6") #obstacle arm joint positions relative to world
-            d_obs_to_goal=self.EuclidianDistance2d(pos_obs_world.position.x,pos_obs_world.position.y,xgoal,ygoal)
+            pos_obs_world = self.getLinkPos(obstacle_arm_ns,"link6") #obstacle arm joint positions relative to world
+            d_obs_to_goal = self.EuclidianDistance2d(pos_obs_world.position.x, pos_obs_world.position.y, xgoal, ygoal) #distance of other arm to zone
+
+            if d_obs_to_goal <= forcefield_dist:
+                obs_in_zone_flag=1
+                if d_own_to_goal <= forcefield_dist:
+                    rospy.logerr("Path Planner - Both arms in forcefield area")
+
+        return obs_in_zone_flag
 
 
 

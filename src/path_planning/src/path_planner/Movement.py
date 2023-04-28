@@ -27,7 +27,6 @@ class Movement:
         """
         precise_angle_flag=0
         SF = 100 #distance scale factor
-        Q = [10,25,25,25,25,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = self.serv_helper.APFyamlData["D"]
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -52,6 +51,7 @@ class Movement:
             xobj=[0, 0, 0, 0, 0, 0]
             yobj=[0, 0, 0, 0, 0, 0]
             zobj=[0, 10, 20, 30, 40, 50]
+            Q = [10,25,25,25,25,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
             tempxobj = []
             tempyobj = []
             tempzobj = []
@@ -71,28 +71,30 @@ class Movement:
 
                     pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
                     pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
-                    xobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
-                    yobj.append(pos_obstacle.position.y *SF)
-                    zobj.append(pos_obstacle.position.z *SF)
+
+                    tempxobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
+                    tempyobj.append(pos_obstacle.position.y *SF)
+                    tempzobj.append(pos_obstacle.position.z *SF)
                     tempQ.append(10)
-                #print(len(xobj),len(yobj),len(zobj))
+
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
-                tempxobj_linked,temp_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
+                tempxobj_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
+
                 #append into xobjs here
-                xobj.append(tempxobj)
-                yobj.append(tempyobj)
-                zobj.append(tempzobj)
-                Q.append(tempQ)
+                xobj = xobj + tempxobj_linked
+                yobj = yobj + tempyobj_linked
+                zobj = zobj + tempzobj_linked
+                Q = Q + tempQ_linked
 
-
-                obs_in_zone_flag=self.serv_helper.is_obsarm_in_zone(robot_namespaces,pos.position.x,pos.position.y) #working in world frame
-            #xobj.append(0) #own base as an object 
-            #yobj.append(0)
-            #zobj.append(0)
-            #Q.append(0.1)
+            if self.serv_helper.is_obsarm_in_zone(robot_namespaces ,pos.position.x,pos.position.y): #working in world frame
+                xobj.append([xgoal, xgoal, xgoal, xgoal, xgoal, xgoal])
+                yobj.append([ygoal, ygoal, ygoal, ygoal, ygoal, ygoal])
+                zobj.append([0, 10, 20, 30, 40, 50])
+                Q.append([15,15,15,15,15,15])
+                rospy.loginfo("Path Planner - Forcefield activated to repel %s",self.serv_helper.robot_ns)
 
             ##X,Y,Z path the End effector will take
-            X, Y, Z, Objectx, Objecyy, Objectz, ObjectQ = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag)
+            X, Y, Z, = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag)
             PathTakenx = X/SF #rescale back to meters
             PathTakeny = Y/SF
             PathTakenz = Z/SF
