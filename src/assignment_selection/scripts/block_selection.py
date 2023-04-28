@@ -52,7 +52,7 @@ def assignment_selector():
     #############################
 
     # tower_origin_coordinates = [x, y, z]
-    tower_origin_coordinates = [0, 0.36, 0.02]
+    tower_origin_coordinates = [-0.10, 0.36, 0.02]
 
     use_manual_block_locations = False
     manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
@@ -167,7 +167,7 @@ def update_block_positions():
 
 def generate_tower_block_positions(number_of_blocks, block_width, block_height, block_length):
     # Setup tower block locations
-    number_layers = math.floor(number_of_blocks/2) #num of layers
+    number_layers = math.floor(number_of_blocks/4) #num of layers
     tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
     height = 0 #height of blocks
 
@@ -177,7 +177,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
         width = 0 #width of blocks
         home_pos = [width, 0, height, 0, 0, euler_c]
 
-        for j in range(2):
+        for j in range(4):
             home_pos = [width, 0, height, 0, 0, euler_c]
             tower_block_positions.append(home_pos)
             width = width + 2*block_width
