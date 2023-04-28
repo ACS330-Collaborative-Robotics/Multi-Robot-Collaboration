@@ -63,7 +63,7 @@ def update(data):
                 block_mover(model) #move block
                 remainingTags.remove(blocknumber) #remove from list
 
-        if(count < 20): #debug logging 
+        if(count < 5): #debug logging 
             if len(remainingTags) == 0:
                 rospy.loginfo("Block Updater - All blocks updated")
             else:
