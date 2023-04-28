@@ -204,7 +204,7 @@ def build_block_list(robot_namespaces):
         block_name = "block" + str(blockData.block_data[block_num].block_number)
 
         for robot_name in robot_namespaces:
-            if is_block_reachable(block_name, robot_name):
+            if is_block_reachable(block_name, robot_name, [0.1, 0.15]):
                 block_names.append(block_name)
                 rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, robot_name)
                 break
@@ -235,7 +235,7 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
     goal.end_pos = end_pos
 
     # Ensure end position is reachable
-    if not is_block_position_reachable(end_pos.position.x, end_pos.position.y, end_pos.position.z, tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5], robot_name):
+    if not is_block_position_reachable(end_pos.position.x, end_pos.position.y, end_pos.position.z, tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5], robot_name, [0.1, 0.2]):
         rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
         return False
     
@@ -246,7 +246,7 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
     robot_base_coordinates = getRobotBaseCoordinates([robot_name])[0]
 
     for block_name in block_names:
-        if is_block_reachable(block_name, robot_name):
+        if is_block_reachable(block_name, robot_name, [0.1, 0.15]):
             available_block_names.append(block_name)
 
             block_pose = specific_block_pose(block_name, "world")
@@ -277,15 +277,15 @@ def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Return ModelState object with position relative to world 
     return data
 
-def is_block_reachable(block_name, robot_name) -> bool:
+def is_block_reachable(block_name, robot_name, z_offsets) -> bool:
     pose = specific_block_pose(block_name, "world")
 
     block_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
     block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
 
-    return is_block_position_reachable(pose.position.x, pose.position.y, pose.position.z, block_orientation_euler[0], block_orientation_euler[1], block_orientation_euler[2], robot_name)
+    return is_block_position_reachable(pose.position.x, pose.position.y, pose.position.z, block_orientation_euler[0], block_orientation_euler[1], block_orientation_euler[2], robot_name, z_offsets)
 
-def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
+def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name, z_offsets):
     rospy.wait_for_service('inverse_kinematics_reachability')
     inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
 
@@ -308,11 +308,13 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
 
         model_state.pose = frameConverter(robot_name, "world", model_state.pose)
 
+        converted_z_height = model_state.pose.position.z
+
         # Test at two heights above the block
-        model_state.pose.position.z += 0.10
+        model_state.pose.position.z = converted_z_height + z_offsets[0]
         if inv_kin_is_reachable(model_state).success:
 
-            model_state.pose.position.z += 0.05
+            model_state.pose.position.z = converted_z_height + z_offsets[1]
             if inv_kin_is_reachable(model_state).success:
                 if angle_offset != 0:
                     rospy.loginfo("Angle Offset - %.0f", angle_offset*180/math.pi)
