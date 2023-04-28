@@ -21,13 +21,15 @@ class PathPlannerServer:
 
     def path_plan(self, goal):
         # Initialise PathPlanner object
-        rospy.loginfo("Path planner recieved instruction:\t%s\t%s\t\t%.2f\t%.2f\t%.2f", goal.robot_name, goal.block_name,  goal.end_pos.position.x,  goal.end_pos.position.y,  goal.end_pos.position.z)
+        rospy.loginfo("Path Planner - %s - Recieved - %s\t%.2f\t%.2f\t%.2f", goal.robot_name, goal.block_name,  goal.end_pos.position.x,  goal.end_pos.position.y,  goal.end_pos.position.z)
 
         pathPlanner = PathPlanner.PathPlanner(goal.robot_name, goal.block_name, goal.end_pos)
 
         temp = PathPlanResult()
         path_planner_status = pathPlanner.pathPlan()
         temp.success = path_planner_status
+
+        rospy.loginfo("Path Planner - %s - Completed - %s\n", goal.robot_name, goal.block_name)
 
         if path_planner_status:
             self.server.set_succeeded(temp)

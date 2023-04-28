@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 			float jointpos[6] = {joint1, joint2, joint3, joint4, joint5, joint6}; 
 
 			// Accuracy of angles in radians
-			float accuracy = 0.04;
+			float accuracy[6] = {0.04,0.04,0.04,0.04,0.05,0.05};
 			
 			// Gains of robots (Speeds) joint 1-6, joint 5 and 6 cant go faster
 			float joint_gains[6] = {0.25, 0.25, 0.25, 0.25, 0.2, 0.1};
@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 					chatter_pub.publish(msg_start);
 
 				}
-				else if(abs(joint_demands[i]-jointpos[i])>accuracy) {
+				else if(abs(joint_demands[i]-jointpos[i])>accuracy[i]) {
 
 					//ROS_INFO("Setting message Go to set point point joint %d",i);
 					control_msgs::JointJog msg_start;
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 					moving_state = true;
 				}
 				// Stopping joints
-				else if(abs(joint_demands[i]-jointpos[i])<accuracy) {
+				else if(abs(joint_demands[i]-jointpos[i])<accuracy[i]) {
 					//ROS_INFO("Setting message Stay Still point joint %d",i);
 					control_msgs::JointJog msg_start;
 					std::stringstream ss;

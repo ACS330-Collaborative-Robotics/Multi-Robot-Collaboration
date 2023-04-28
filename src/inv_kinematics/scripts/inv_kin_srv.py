@@ -3,19 +3,13 @@
 import rospy
 import tf_conversions
 
-import ikpy.chain
 from trac_ik_python.trac_ik import IK
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
-disable_fk = False
-try:
-    import kinpy as kp
-except ModuleNotFoundError:
-    rospy.logwarn("Inverse Kinematics - kinpy not found, forward kinematics diagnostics disabled.")
-    disable_fk = True
+debug_mode = False
 
 from time import time
 from math import pi
@@ -25,39 +19,6 @@ from pathlib import Path
 from inv_kinematics.srv import InvKin
 from custom_msgs.msg import Joints
 from geometry_msgs.msg import Pose
-
-def forward_kinematics(joint_values):
-    chain = kp.build_chain_from_urdf(open(Path.home().as_posix() + "/catkin_ws/src/inv_kinematics/urdf/CPRMover6.urdf.xacro").read())
-
-    link_names = chain.get_joint_parameter_names()
-    
-    joints = {}
-    for joint_num in range(len(joint_values)):
-        joints[link_names[joint_num]] = joint_values[joint_num]
-
-    cartesian_coords = chain.forward_kinematics(joints)
-
-    return cartesian_coords["link6"]
-
-def ikpy_inverse_kinematics(pose: Pose):
-    chain = ikpy.chain.Chain.from_urdf_file(Path.home().as_posix() + "/catkin_ws/src/mover6_description/urdf/CPRMover6.urdf.xacro", active_links_mask=[False, True, True, True, True, True, True])
-
-    # x y z Co-ordinates
-    target_position = [pose.position.x, pose.position.y, pose.position.z]
-
-    # Convert from quaternions to 3x3 transformation matrix
-    target_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
-
-    target_orientation = tf_conversions.transformations.quaternion_matrix(target_orientation_quaternion)
-    
-    # Cut 4x4 to 3x3
-    target_orientation = target_orientation[0:3, 0:3]
-
-    # Inverse Kinematics
-    joints = chain.inverse_kinematics(target_position, target_orientation, orientation_mode="all")
-    joints = list(joints[1:])
-
-    return joints
 
 def trac_ik_inverse_kinematics(pose: Pose, precise_orientation, final_link_name="link6"):
     try:
@@ -76,13 +37,15 @@ def trac_ik_inverse_kinematics(pose: Pose, precise_orientation, final_link_name=
     multiplier = 90
     if not precise_orientation:
         angle_tolerance = angle_tolerance*multiplier
-
-    joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
+    
+    for attempt_number in range(3):
+        joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
+        if joints != None:
+            #rospy.logdebug("Inverse Kinematics - Computed sucessfully on attempt %d", attempt_number+1)
+            return list(joints)
         
-    if joints is None:
-        return None
-    else:
-        return list(joints)
+    #rospy.logerr("Inverse Kinematics - Failed after attempt %d", attempt_number+1)
+    return None
 
 def inverse_kinematics_service(req):
     #rospy.loginfo("Inverse Kinematics - Service call recieved.")
@@ -101,34 +64,12 @@ def inverse_kinematics_service(req):
         return False
     else:
         joints_display = " ".join([str(round(joint*180/pi, 2)) for joint in joints])
-        #rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.4f", joints_display, time()-start_time)
-
-        if disable_fk != True:
-            # Understanding IK accuracy 
-            target_position = [req.state.pose.position.x, req.state.pose.position.y, req.state.pose.position.z]
-            target_orientation = [req.state.pose.orientation.w, req.state.pose.orientation.x, req.state.pose.orientation.y, req.state.pose.orientation.z]
-            target = target_position + target_orientation
-
-            end_effector_position = forward_kinematics(joints)
-            final_position = list(end_effector_position.pos)
-            final_orientation = list(end_effector_position.rot)
-            final = final_position + final_orientation
-
-            rospy.logdebug("Type\tx\ty\tz\trx\try\trz\t\trw")
-
-            target_values_display = "\t".join([str(round(value, 3)) for value in target])
-            rospy.logdebug("Goal\t%s", target_values_display)
-
-            final_values_display = "\t".join([str(round(value, 3)) for value in final])
-            rospy.logdebug("Final\t%s", final_values_display)
-
-            diff_values_display = "\t".join([str(round(target[value_pos] - final[value_pos] ,3)) for value_pos in range(len(final))])
-            rospy.logdebug("Diff\t%s", diff_values_display)
+        ##rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.4f", joints_display, time()-start_time)
 
         # Publish joint positions
         pub.publish(joints)
 
-        #rospy.loginfo("Inverse Kinematics - Joint positions published.\n")
+        ##rospy.loginfo("Inverse Kinematics - Joint positions published.\n")
 
         return True
     
@@ -201,7 +142,7 @@ def inverse_kinematics_reachability_service(req):
         return True
 
 def main():
-    if not disable_fk:
+    if debug_mode:
         rospy.init_node('inverse_kinematics_server', log_level=rospy.DEBUG)
     else:
         rospy.init_node('inverse_kinematics_server')
