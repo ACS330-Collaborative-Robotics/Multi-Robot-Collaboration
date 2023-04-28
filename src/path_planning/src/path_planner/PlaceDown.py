@@ -43,7 +43,7 @@ class PlaceDown(PickUp.PickUp):
             return False
         
         # Open Gripper
-        rospy.loginfo("Path Planner - Place Down - Opening Gripper.")
+        rospy.logwarn("Path Planner - Place Down - Opening Gripper.")
         self.serv_helper.moveGripper(1)
         rospy.sleep(2)
 

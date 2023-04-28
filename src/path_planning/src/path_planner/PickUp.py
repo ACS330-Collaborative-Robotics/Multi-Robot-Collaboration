@@ -53,7 +53,7 @@ class PickUp(Movement.Movement):
             return False
         
         # Close Gripper
-        rospy.loginfo("Path Planner - Pick Up - Closing Gripper.")
+        rospy.logwarn("Path Planner - Pick Up - Closing Gripper.")
         self.serv_helper.moveGripper(0)
         rospy.sleep(2)
 
