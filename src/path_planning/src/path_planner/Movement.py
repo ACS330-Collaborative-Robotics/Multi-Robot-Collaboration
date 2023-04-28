@@ -92,7 +92,7 @@ class Movement:
             arm_pos.orientation.w = pos_robot_base_frame.orientation.w
 
             d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
-            if d <=  0.05: #when close, use precise orientation
+            if d <=  5: #when close, use precise orientation
                 precise_angle_flag = 1 #orientation does matter - small tolerance
                                 
             else:
@@ -101,7 +101,7 @@ class Movement:
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
 
-            rospy.loginfo("Potential Fields - Step Calculation Time: %.4f",time()-start_time)
+            #rospy.loginfo("Potential Fields - Step Calculation Time: %.4f",time()-start_time)
             #deltax =  startx - arm_pos.position.x*SF
             #deltay =  starty - arm_pos.position.y*SF
             #deltaz =  startz - arm_pos.position.z*SF
@@ -116,13 +116,13 @@ class Movement:
                 #rospy.logerr("Path Planner - Error, Target position unreachable.")
                 pass
             else: #check if movement ran
-                if d <= 0.05:
+                if d <= 1:
                     PathComplete = 1
                 else:
                     startx = arm_pos.position.x*SF #start coords for end effector (now next step)
                     starty = arm_pos.position.y*SF 
                     startz = arm_pos.position.z*SF
-            rospy.loginfo('New Position - %.3f %.3f %.3f',startx,starty,startz)
+            #rospy.loginfo('New Position - %.3f %.3f %.3f',startx,starty,startz)
         return status #TODO: Implement zone checks
 
 

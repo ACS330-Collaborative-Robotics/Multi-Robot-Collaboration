@@ -132,7 +132,7 @@ class ServiceHelper:
         orientation_in_quaternion = [new_pose.pose.orientation.x, new_pose.pose.orientation.y, new_pose.pose.orientation.z, new_pose.pose.orientation.w]
         orientation_in_euler = tf_conversions.transformations.euler_from_quaternion(orientation_in_quaternion)
         
-        rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
+        #rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
 
         return new_pose.pose
     
@@ -300,26 +300,26 @@ class ServiceHelper:
             D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
             zangle = math.atan2(zheight,d)
             # deciding the direction of the tangent
-            rospy.logwarn("Distance; %.2f",d)
+            ##rospy.logwarn("Distance; %.2f",d)
             if d == 0:
                 d = 0.0001
             scalings = (1/d**2) *(1/Q[objNum] - 1/d)
             if scalings == 0:
                 0.00001
             if angle < 0:
-                rospy.logwarn("GO LEFT")
+                #rospy.logwarn("GO LEFT")
                 repulsionangle = anglegoal + 100
                 repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(100) - objvect[1]*math.sin(100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(100) + objvect[1]*math.cos(100))
             if angle > 0 or angle == 0:
-                rospy.logwarn("GO RIGHT")
+                #rospy.logwarn("GO RIGHT")
                 repulsionangle = anglegoal - 100
                 repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(-100) - objvect[1]*math.sin(-100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(-100) + objvect[1]*math.cos(-100))
             if zheight >= 0:
-                rospy.loginfo("GO UP")
+                #rospy.loginfo("GO UP")
                 zrepangle = zangle - 100
                 zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.sin(-100)
             if zheight < 0:
-                rospy.loginfo("GO DOWN")
+                #rospy.loginfo("GO DOWN")
                 zrepangle = zangle + 100
                 zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.sin(100)
             #deciding whether the obstacle is in range
@@ -406,7 +406,7 @@ class ServiceHelper:
             difx = diffatt[0]
             dify = diffatt[1]
             difz = diffatt[2]
-            rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-diffatt[0],-diffatt[1],-diffatt[2],d)
+            #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-diffatt[0],-diffatt[1],-diffatt[2],d)
             #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             #rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
         
@@ -440,7 +440,7 @@ class ServiceHelper:
                 #PathPointsx.append(x)
                 #PathPointsy.append(y)
                 #PathPointsz.append(z)
-            rospy.loginfo('Path Points: %.2f %.2f %.2f',x,y,z)
+            #rospy.loginfo('Path Points: %.2f %.2f %.2f',x,y,z)
                 #i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
