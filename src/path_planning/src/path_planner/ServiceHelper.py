@@ -425,10 +425,10 @@ class ServiceHelper:
             z = nextz
             if z < -0.2:
                 z = -0.2
-            if self.is_block_reachable_APF(x,y,z) == False:
-                tempxobj.append(x)
-                tempyobj.append(y)
-                tempzobj.append(z) 
+            #if self.is_block_reachable_APF(x,y,z) == False:
+                #tempxobj.append(x)
+                #tempyobj.append(y)
+                #tempzobj.append(z) 
                 #rospy.loginfo("APF Planner - Point is not reachable by %s, added tempobj at %.2f %.2f %.2f", self.robot_ns, x,y,z)
                 #problem - if reachablility fucks up and says it can't reach, then it'll place an object on top of the block :(
                 #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
@@ -436,19 +436,19 @@ class ServiceHelper:
                 #PathPointsx.append(PathPointsx[i])
                 #PathPointsy.append(PathPointsy[i])
                 #PathPointsz.append(PathPointsz[i])
-                objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
+                #objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
                 #added Q scaling factor so Q is greater than distance to next point
-                tempQ.append(objdistance)
+                #tempQ.append(objdistance)
                 #else:
                 #PathPointsx.append(x)
                 #PathPointsy.append(y)
                 #PathPointsz.append(z)
-            #rospy.loginfo('Path Points: %.2f %.2f %.2f',x,y,z)
+                #rospy.loginfo('Path Points: %.2f %.2f %.2f',x,y,z)
                 #i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
         self.publish_path_points(x,y,z)
-        return x,y,z,tempxobj,tempyobj,tempzobj,tempQ
+        return x, y, z
 
     def publish_path_points(self,x,y,z):
         """  publish path points
