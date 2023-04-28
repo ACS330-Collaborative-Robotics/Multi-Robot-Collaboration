@@ -171,7 +171,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
     tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
     height = 0 #height of blocks
 
-    euler_c = 0
+    euler_c =  -90*(math.pi/180)
     # Generate coordinates
     for i in range(number_layers):
         width = 0 #width of blocks
