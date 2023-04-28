@@ -52,7 +52,7 @@ class ServiceHelper:
         file_name = str(Path.home()) + '/catkin_ws/src/path_planning/config/settings.yaml'
         with open(file_name) as yamlfile: # add right path
             self.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
-        print(self.APFyamlData)
+        #print(self.APFyamlData)
 
         # Setup gripper publisher
         self.gripper_publisher = rospy.Publisher(self.robot_ns + "/gripper_state", Bool, queue_size=10)
@@ -160,7 +160,7 @@ class ServiceHelper:
             #rospy.loginfo("Position of %s is %f, %f, %f in reference to %s",linkID, joint_pos.position.x,joint_pos.position.y,joint_pos.position.z,ref_arm_name)
             
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException): 
-            rospy.logerr("GetJointPos: Error Transformation not found between %s to %s",BaseID,linkID)
+            rospy.logerr("GetJointPos: Error Transformation not found between %s to %s",BaseID ,linkID)
         return joint_pos
 
     def getLinkPos(self, arm_name:str,link_name:str) -> Pose:
@@ -403,14 +403,14 @@ class ServiceHelper:
             dify = diffrep[1]  + 0.25*diffatt[1]
             difz = diffrep[2]  + 0.25*diffatt[2]
                 #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
-            rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
+            #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
 
         else:
             difx = diffatt[0]
             dify = diffatt[1]
             difz = diffatt[2]
             #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-diffatt[0],-diffatt[1],-diffatt[2],d)
-            rospy.logwarn("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+            #rospy.logwarn("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             #rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
         
         if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#

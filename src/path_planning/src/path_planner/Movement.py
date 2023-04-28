@@ -18,7 +18,7 @@ class Movement:
         
         with open(config_file_name) as yamlfile: # add right path
             self.serv_helper.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
-        print(self.serv_helper.APFyamlData)
+        #print(self.serv_helper.APFyamlData)
     
     def move(self, pos:Pose, allow_imprecise_orientation:bool, final_link_name=""):
         """ Safely move to desired position using IK, checking robot will stay within zone
@@ -110,7 +110,7 @@ class Movement:
             arm_pos.orientation.w = pos_robot_base_frame.orientation.w
 
             d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
-            rospy.logwarn('Distance: %.2f',d)
+            rospy.loginfo('Distance: %.2f', d)
             if allow_imprecise_orientation and d > 8:
                 precise_angle_flag = 0
                 if arm_pos.position.z < 0.05:
