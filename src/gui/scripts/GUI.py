@@ -202,13 +202,10 @@ class GUI:
     # emergency stop button clicked
     def emergency_stop_clicked(self):
         if self.emergency_stop_button['text'] == 'EMERGENCY STOP': # determine state of button
-            gui_msg = Bool()
-            gui_msg.data = True
-            self.gui_pub.publish(gui_msg) # publish the message to the /gui topic
+            self.gui_pub.publish(True) # publish the message to the /gui topic
             self.emergency_stop_button.config(text='START', bg='red', fg='black')
         else:
-            gui_msg.data = False
-            self.gui_pub.publish(gui_msg) # publish the message to the /gui topic
+            self.gui_pub.publish(False) # publish the message to the /gui topic
             self.emergency_stop_button.config(text='EMERGENCY STOP', bg='green', fg='black')
     # SIM PREVIEW button clicked
     def sim_preview_clicked(self):
