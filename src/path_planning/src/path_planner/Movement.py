@@ -85,7 +85,7 @@ class Movement:
                 Q.append(tempQ)
 
 
-                obs_in_zone_flag=self.serv_helper.is_obsarm_in_zone(robot_namespaces,pos.position.x,pos.position.y) #working in world frame
+                obs_in_zone_flag=self.serv_helper.is_obsarm_in_zone(robot_namespaces ,pos.position.x,pos.position.y) #working in world frame
             #xobj.append(0) #own base as an object 
             #yobj.append(0)
             #zobj.append(0)
