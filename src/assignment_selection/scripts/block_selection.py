@@ -282,7 +282,7 @@ def getRobotBaseCoordinates(robot_namespaces):
     for robot_name in robot_namespaces:
         robot_base_coordinates = []
         while not tfBuffer.can_transform("world", robot_name+"/base_link", rospy.Time(0)) and not rospy.is_shutdown():
-            rospy.logwarn("Cannot find robot base transform - block_selection.py. Retrying now.")
+            rospy.logwarn("Cannot find robot base transform: world - %s/base_link - block_selection.py. Retrying now.", robot_name)
             rospy.sleep(0.1)
         
         transform_response = tfBuffer.lookup_transform("world", robot_name+"/base_link", rospy.Time(0))

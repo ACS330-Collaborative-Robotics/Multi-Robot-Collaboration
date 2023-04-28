@@ -73,7 +73,7 @@ def trac_ik_inverse_kinematics(pose: Pose, precise_orientation, final_link_name=
     coordinate_tolerance = 1e-3 # Start with 1mm tolerance
     angle_tolerance = pi/180 # Start with 1 degree tolerance
 
-    multiplier = 10
+    multiplier = 90
     if not precise_orientation:
         angle_tolerance = angle_tolerance*multiplier
 

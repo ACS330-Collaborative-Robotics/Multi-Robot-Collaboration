@@ -26,7 +26,7 @@ class Movement:
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
         SF = 100 #distance scale factor
-        Q = [25,25,25,25,25,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+        Q = [25,25,25,25,25,25,10,10,10,10,10,10,10] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = self.serv_helper.APFyamlData["D"]
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -36,7 +36,7 @@ class Movement:
         xgoal = pos_robot_base_frame.position.x*SF 
         ygoal = pos_robot_base_frame.position.y*SF
         zgoal = pos_robot_base_frame.position.z*SF 
-        ##Start position relative to world then arm
+        ##Start position relative to world then arm base
         start_pose_world=self.serv_helper.getLinkPos(self.serv_helper.robot_ns,"link6") 
         start_pose = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", start_pose_world)
         startx = start_pose.position.x*SF #start coords for end effector (now relative)
@@ -64,9 +64,9 @@ class Movement:
 
                     pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
                     pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
-                    #xobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
-                    #yobj.append(pos_obstacle.position.y *SF)
-                    #zobj.append(pos_obstacle.position.z *SF)
+                    xobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
+                    yobj.append(pos_obstacle.position.y *SF)
+                    zobj.append(pos_obstacle.position.z *SF)
                 #print(len(xobj),len(yobj),len(zobj))
 
             #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
@@ -81,22 +81,25 @@ class Movement:
             PathTakeny = Y/SF
             PathTakenz = Z/SF
 
-            arm_pos=Pose() #pose for next coordinate
-            arm_pos.position.x=PathTakenx
-            arm_pos.position.y=PathTakeny
-            arm_pos.position.z=PathTakenz
-            Ax,Ay,Az,Aw= orientation_in_quat = tf_conversions.transformations.quaternion_from_euler(2.3,1.5,0.7)
-            arm_pos.orientation.x=Ax #pos_robot_base_frame.orientation.x 
-            arm_pos.orientation.y=Ay #pos_robot_base_frame.orientation.y 
-            arm_pos.orientation.z=Az #pos_robot_base_frame.orientation.z 
-            arm_pos.orientation.w=Aw #pos_robot_base_frame.orientation.w
+            arm_pos = Pose() #pose for next coordinate
+            arm_pos.position.x = PathTakenx
+            arm_pos.position.y = PathTakeny
+            arm_pos.position.z = PathTakenz
+
+            arm_pos.orientation.x = pos_robot_base_frame.orientation.x 
+            arm_pos.orientation.y = pos_robot_base_frame.orientation.y 
+            arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
+            arm_pos.orientation.w = pos_robot_base_frame.orientation.w
+
+            d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
+            if d <=  0.05: #when close, use precise orientation
+                precise_angle_flag = 1 #orientation does matter - small tolerance
+                                
+            else:
+                precise_angle_flag = 0 #orientation does not matter - wide tolerance
+
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
-            d=self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
-            if d <= 0.03: #when close, use precise orientation
-                precise_angle_flag=1 #orientation does matter - small tolerance
-            else:
-                precise_angle_flag=0 #orientation does not matter - wide tolerance
 
             rospy.loginfo("Potential Fields - Step Calculation Time: %.4f",time()-start_time)
             #deltax =  startx - arm_pos.position.x*SF
@@ -105,7 +108,7 @@ class Movement:
             #rospy.loginfo("deltas: %.2f %.2f %.2f",deltax,deltay,deltaz)
             # Move robot to new position, in robot reference frame
 
-            print("\n\n\n I AM MOVING THE ARM \n\n\n")
+            #print("\n\n\n I AM MOVING THE ARM \n\n\n")
             status = self.serv_helper.move(arm_pos, final_link_name,precise_angle_flag)
             #TODO: Force wait until robot has reached desired position. Temp fix:
             rospy.sleep(0.1)

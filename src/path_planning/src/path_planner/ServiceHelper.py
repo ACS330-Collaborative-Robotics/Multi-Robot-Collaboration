@@ -77,9 +77,8 @@ class ServiceHelper:
         arm_pos = ModelState()
         arm_pos.model_name = self.robot_ns
         arm_pos.reference_frame = final_link_name
-
         arm_pos.pose = pos
-
+        #rospy.logerr("arm_pos: %s",arm_pos)
         inv_kin_request.state = arm_pos
         inv_kin_request.precise_orientation = precise_orientation
 
@@ -96,7 +95,7 @@ class ServiceHelper:
         INPUT: string specific_model_name
         OUTPUT: gazebo_msgs Pose() - Orientation in Euler angles not quaternions
 
-        Uses gazebo/get_model_state service.
+        Uses gazebo/get_model_state service. REDUNDANT
         """
         # TODO: Replace with data from /blocks
 
@@ -165,7 +164,7 @@ class ServiceHelper:
         return joint_pos
 
     def getLinkPos(self, arm_name:str,link_name:str) -> Pose:
-        """ Get Joint position relative to current robot arm
+        """ Get Joint position relative to world?
         INPUT: string arm_name string link_name
         OUTPUT: gazebo_msgs Pose() - Orientation in Euler angles not quaternions
         Uses gazebo/get_link_state service.
@@ -451,7 +450,7 @@ class ServiceHelper:
     def publish_path_points(self,x,y,z):
         """  publish path points
         INPUT: xyz points   
-        OUTPUT: publishs point to be used by gui
+        OUTPUT: publishes point to be used by gui
         """
         point = Point()
         point.x=x
@@ -459,3 +458,7 @@ class ServiceHelper:
         point.z=z
 
         self.point_pub.publish(point)
+        return
+
+
+
