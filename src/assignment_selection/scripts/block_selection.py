@@ -78,8 +78,8 @@ def assignment_selector():
             if is_block_reachable(block_name, robot_name):
                 blockNames.append(block_name)
                 break
-        else:
-            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable by %s.", block_name, robot_name)
+        #else:
+            #rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable by %s.", block_name, robot_name)
 
     rospy.loginfo("Assignment Selection - Block list built.\n")
 
