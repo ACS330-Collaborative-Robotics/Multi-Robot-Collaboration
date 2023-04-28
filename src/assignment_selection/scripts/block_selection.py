@@ -206,7 +206,7 @@ def build_block_list(robot_namespaces):
         for robot_name in robot_namespaces:
             if is_block_reachable(block_name, robot_name):
                 block_names.append(block_name)
-                rospy.logwarn("Assignment Selection - Adding %s as it is reachable.", block_name)
+                rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, robot_name)
                 break
         else:
             rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
@@ -297,26 +297,27 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
 
     block_orientation_euler = [euler_x, euler_y, euler_z]
 
-    orientation_euler = [0, math.pi, block_orientation_euler[2]]
-    orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
-    
-    model_state.pose.orientation.x = orientation_quaternion[0]
-    model_state.pose.orientation.y = orientation_quaternion[1]
-    model_state.pose.orientation.z = orientation_quaternion[2]
-    model_state.pose.orientation.w = orientation_quaternion[3]
+    for angle_offset in [0, -180*math.pi/180, 180*math.pi/180]:
+        orientation_euler = [0, math.pi, block_orientation_euler[2]+angle_offset]
+        orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
+        
+        model_state.pose.orientation.x = orientation_quaternion[0]
+        model_state.pose.orientation.y = orientation_quaternion[1]
+        model_state.pose.orientation.z = orientation_quaternion[2]
+        model_state.pose.orientation.w = orientation_quaternion[3]
 
-    model_state.pose = frameConverter(robot_name, "world", model_state.pose)
+        model_state.pose = frameConverter(robot_name, "world", model_state.pose)
 
-    # Test at two heights above the block
-    model_state.pose.position.z += 0.10
-    if inv_kin_is_reachable(model_state).success:
-
-        model_state.pose.position.z += 0.05
+        # Test at two heights above the block
+        model_state.pose.position.z += 0.10
         if inv_kin_is_reachable(model_state).success:
-            #rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
-            return True
+
+            model_state.pose.position.z += 0.05
+            if inv_kin_is_reachable(model_state).success:
+                rospy.logwarn("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
+                return True
     
-    #rospy.loginfo("Assignment Selection - %s cannot reach %s", robot_name, block_name)
+    rospy.loginfo("Assignment Selection - %s cannot reach %s", robot_name, block_name)
     return False
     
 
@@ -349,6 +350,11 @@ def frameConverter(target_frame:str, reference_frame:str, goal_pose:Pose) -> Pos
     start_pose = PoseStamped()
     start_pose.pose = goal_pose
 
+    orientation_in_quaternion = [start_pose.pose.orientation.x, start_pose.pose.orientation.y, start_pose.pose.orientation.z, start_pose.pose.orientation.w]
+    orientation_in_euler = tf_conversions.transformations.euler_from_quaternion(orientation_in_quaternion)
+
+    #rospy.loginfo("Frame Converter - Start pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", start_pose.pose.position.x, start_pose.pose.position.y, start_pose.pose.position.z, orientation_in_euler[0]*180/math.pi, orientation_in_euler[1]*180/math.pi, orientation_in_euler[2]*180/math.pi)
+
     start_pose.header.frame_id = reference_frame
     start_pose.header.stamp = rospy.get_rostime()
 
@@ -359,10 +365,15 @@ def frameConverter(target_frame:str, reference_frame:str, goal_pose:Pose) -> Pos
             new_pose = tfBuffer.transform(start_pose, target_frame+"/base_link")
             break
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-            rospy.loginfo("Error - Frame converter in Assignment Selection block_selection.py failed. Retrying now.")
+            rospy.loginfo("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
             rate.sleep()
             continue
     
+    orientation_in_quaternion = [new_pose.pose.orientation.x, new_pose.pose.orientation.y, new_pose.pose.orientation.z, new_pose.pose.orientation.w]
+    orientation_in_euler = tf_conversions.transformations.euler_from_quaternion(orientation_in_quaternion)
+    
+    #rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z, orientation_in_euler[0]*180/math.pi, orientation_in_euler[1]*180/math.pi, orientation_in_euler[2]*180/math.pi)
+
     return new_pose.pose
 
 if __name__ == '__main__':

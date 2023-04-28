@@ -86,8 +86,6 @@ def is_block_reachable(block_name, robot_name) -> bool:
     block_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
     block_orientation_euler = list(tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion))
 
-    rospy.logwarn("%.0f", block_orientation_euler[2]*180/(np.pi))
-
     return is_block_position_reachable(pose.position.x, pose.position.y, pose.position.z, block_orientation_euler[0], block_orientation_euler[1], block_orientation_euler[2], robot_name)
 
 
@@ -98,20 +96,18 @@ def build_block_list(robot_namespaces):
         rospy.sleep(0.2)
     rospy.loginfo("Assignment Selection - Got block data.")
 
-    #print(blockData)
-
     # Iterate through blockData and retrieve list of block names
     block_names = []
     for block_num in range(len(blockData.block_data)):
         block_name = "block" + str(blockData.block_data[block_num].block_number)
-        
+
         for robot_name in robot_namespaces:
             if is_block_reachable(block_name, robot_name):
                 block_names.append(block_name)
-                rospy.loginfo("Assignment Selection - Adding %s as it is reachable. by robot %s", block_name,robot_name)
+                rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, robot_name)
                 break
         else:
-            rospy.loginfo("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
+            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
 
     rospy.loginfo("Assignment Selection - Block list built.\n")
 
@@ -155,10 +151,7 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
 
             model_state.pose.position.z += 0.05
             if inv_kin_is_reachable(model_state).success:
-                #rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s", block_name, robot_name)
                 return True
-    
-    #rospy.loginfo("Assignment Selection - %s cannot reach %s", robot_name, block_name)
     return False
     
 def frameConverter(target_frame:str, reference_frame:str, goal_pose:Pose) -> Pose:
