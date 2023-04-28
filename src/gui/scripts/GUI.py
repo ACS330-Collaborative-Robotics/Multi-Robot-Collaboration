@@ -135,7 +135,7 @@ class GUI:
     # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
     # green if it is 1, 2 or 3
     # red if it is 4 or 5
-        
+           
     # create error status light
         self.error_light = tk.Label(self.master, bg="yellow", width=2, height=1)
         self.error_light.grid(row=6, column=1, sticky="w")
@@ -147,22 +147,6 @@ class GUI:
         rospy.Subscriber('/rosout', Log, self.callback_error, callback_args=(self.error_msg, self.error_light))
         # Initialize the ROS publisher for the gui
         self.gui_pub = rospy.Publisher('/gui', Bool, queue_size=10)
-
-   # update error log
-    def callback_error(self, data, args):
-        error_msg, error_light = args
-        # get the most recent error message and severity level
-        self.error_msgs = data.msg.split("\n")
-        most_recent_error = self.error_msgs[0]
-        most_recent_severity = int(data.level)
-        # update the error message box
-        self.master.after(0, lambda: error_msg.delete(1.0, tk.END))
-        self.master.after(0, lambda: error_msg.insert(tk.END, most_recent_error))
-        # update the error status light
-        if most_recent_severity > 3:
-            error_light.config(bg="red")
-        else:
-            error_light.config(bg="green")
     
     # update video frame
     def error_display(master):
@@ -173,7 +157,21 @@ class GUI:
         error_label.grid(row=0, column=1, sticky="w")
         error_msg = tk.Text(master, height=5, width=50)    # error message box
         error_msg.grid(row=1, column=0, columnspan=2)
-        sub = rospy.Subscriber("/rosout", Log, lambda data: callback(data, error_msg, error_light)) # subscribe to the rosout topic
+        
+    # update error log
+    def callback_error(self, data):
+        # get the most recent error message and severity level
+        self.error_msgs = data.msg.split("\n")
+        most_recent_error = self.error_msgs[0]
+        most_recent_severity = int(data.level)
+        # update the error message box
+        self.master.after(0, lambda: self.error_msg.delete(1.0, tk.END))
+        self.master.after(0, lambda: self.error_msg.insert(tk.END, most_recent_error))
+        # update the error status light
+        if most_recent_severity > 3:
+            self.error_light.config(bg="red")
+        else:
+            self.error_light.config(bg="green")
     
     # physical camera display data
     def camera_callback(self, msg):
