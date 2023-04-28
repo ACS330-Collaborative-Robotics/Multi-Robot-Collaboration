@@ -360,7 +360,10 @@ class ServiceHelper:
 
         #pose_object.position.z += 0.15 #not 100% sure this should be in as constant z additions are added at higher levels
 
-        orientation_in_euler = [0, math.pi, 0]
+        block_orientation_quaternion = [pose_object.orientation.x, pose_object.orientation.y, pose_object.orientation.z, pose_object.orientation.w]
+        block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
+
+        orientation_in_euler = [0, math.pi, block_orientation_euler[2]]
         orientation = tf.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
         
         pose_object.orientation.x = orientation[0]

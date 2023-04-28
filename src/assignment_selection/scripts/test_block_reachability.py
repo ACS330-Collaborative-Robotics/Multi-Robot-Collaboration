@@ -17,7 +17,7 @@ from block_controller.msg import Blocks
 from geometry_msgs.msg import Pose
 from tf2_geometry_msgs import PoseStamped
 from gazebo_msgs.msg import ModelState
-from inv_kinematics.srv import InvKin
+from inv_kinematics.srv import InvKin, InvKinRequest
 from path_planning.msg import PathPlanAction, PathPlanGoal
 from block_controller.srv import UpdateBlocks
 from custom_msgs.msg import Joints
@@ -86,7 +86,7 @@ def is_block_reachable(block_name, robot_name) -> bool:
     block_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
     block_orientation_euler = list(tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion))
 
-    return is_block_position_reachable(pose.position.x, pose.position.y, pose.position.z, block_orientation_euler[0], block_orientation_euler[1], block_orientation_euler[2], robot_name)
+    return is_block_position_reachable(pose.position.x, pose.position.y, pose.position.z, block_orientation_euler[0], block_orientation_euler[1], block_orientation_euler[2], robot_name, [0.09, 0.15])
 
 
 def build_block_list(robot_namespaces):
@@ -122,10 +122,11 @@ def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Return ModelState object with position relative to world 
     return data
 
-def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
+def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name, z_offsets):
     rospy.wait_for_service('inverse_kinematics_reachability')
     inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
-
+    
+    inv_kin_request = InvKinRequest()
     model_state = ModelState()
 
     model_state.pose.position.x = x
@@ -134,7 +135,7 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
 
     block_orientation_euler = [euler_x, euler_y, euler_z]
 
-    for angle_offset in [0]:#, -180*math.pi/180, 180*math.pi/180]:
+    for angle_offset in [0]:#, -math.pi, math.pi]:
         orientation_euler = [0, math.pi, block_orientation_euler[2]+angle_offset]
         orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
         
@@ -145,13 +146,22 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
 
         model_state.pose = frameConverter(robot_name, "world", model_state.pose)
 
-        # Test at two heights above the block
-        model_state.pose.position.z += 0.10
-        if inv_kin_is_reachable(model_state).success:
+    inv_kin_request.state = model_state
+    inv_kin_request.precise_orientation = True
 
-            model_state.pose.position.z += 0.05
-            if inv_kin_is_reachable(model_state).success:
-                return True
+    converted_z_height = inv_kin_request.state.pose.position.z
+
+    # Test at two heights above the block
+    inv_kin_request.state.pose.position.z = converted_z_height + z_offsets[0]
+    if inv_kin_is_reachable(inv_kin_request).success:
+
+        inv_kin_request.state.pose.position.z = converted_z_height + z_offsets[0]
+        if inv_kin_is_reachable(inv_kin_request).success:
+            if angle_offset != 0:
+                rospy.loginfo("Angle Offset - %.0f", angle_offset*180/math.pi)
+            return True
+        converted_z_height = model_state.pose.position.z
+        
     return False
     
 def frameConverter(target_frame:str, reference_frame:str, goal_pose:Pose) -> Pose:
