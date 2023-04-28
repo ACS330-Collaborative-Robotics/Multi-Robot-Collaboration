@@ -67,7 +67,7 @@ class PickUp(Movement.Movement):
         # Move down onto block
         rospy.loginfo("Path Planner - %s - Pick Up - Lowering onto %s.", self.serv_helper.robot_ns, block_name)
         pose.position.z -= 0.06
-        if not self.move(pose):
+        if not self.move(pose, False):
             return False
         
         # Close Gripper
@@ -78,7 +78,7 @@ class PickUp(Movement.Movement):
         # Move down onto block
         rospy.loginfo("Path Planner - %s - Pick Up - Lifting up %s.", self.serv_helper.robot_ns, block_name)
         pose.position.z += 0.15
-        if not self.move(pose):
+        if not self.move(pose, False):
             return False
         
         
