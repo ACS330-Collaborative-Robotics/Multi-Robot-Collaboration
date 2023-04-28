@@ -27,7 +27,7 @@ class GUI:
         # simulation
         self.sim_label = tk.Label(master, text="Simulation: ")
         self.sim_label.grid(row=0, column=0, sticky="w")
-        self.sim_canvas = tk.Canvas(master, width=600, height=480)
+        self.sim_canvas = tk.Canvas(master, width=900, height=675)
         self.sim_canvas.grid(row=1, column=0, sticky="nsew")
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
@@ -35,7 +35,7 @@ class GUI:
         # physical camera feed
         self.cam_label = tk.Label(master, text="Physical camera feed: ")
         self.cam_label.grid(row=0, column=2, sticky="w")
-        self.cam_canvas = tk.Canvas(master, width=600, height=480)
+        self.cam_canvas = tk.Canvas(master, width=900, height=675)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # blank space
@@ -119,14 +119,15 @@ class GUI:
         frame = ttk.Frame(master, relief="sunken", padding=10)
         frame.grid(row=8, column=0, columnspan=2, rowspan=3, sticky="nesw")
         
-        rospy.Subscriber('/clock', Float64, self.callback_time) # clock listener
+        # clock listener
+        rospy.Subscriber('/clock', Float64, self.callback_time)
         
-        self.bridge = CvBridge() # video listener
+        # video listener
+        self.bridge = CvBridge() 
         rospy.Subscriber('/camera1/image_raw', ImageMsg, self.callback_video)
 
-        sub = rospy.Subscriber("/rosout", Log, self.callback_error) # subscribe to the rosout topic
-
-        self.thread = threading.Thread(target=rospy.spin) # ROS spin loop
+        # ROS spin loop
+        self.thread = threading.Thread(target=rospy.spin) 
         self.thread.start()
 
     # error status light
@@ -175,7 +176,7 @@ class GUI:
     # physical camera display data
     def camera_callback(self, msg):
         img = self.bridge.imgmsg_to_cv2(msg, 'bgr8') # convert ROS message to OpenCV image
-        img = cv2.resize(img, (640, 480)) # resize image to fit window
+        img = cv2.resize(img, (900, 675)) # resize image to fit window
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # convert the OpenCV image to a PIL Image
         img = Image.fromarray(img)
         img_tk = ImageTk.PhotoImage(img) # convert the PIL Image to a Tkinter PhotoImage and display it in the canvas
@@ -185,7 +186,7 @@ class GUI:
      # simulation display data
     def callback_video(self, data):
         cv_image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # ROS to cv2
-        cv_image = cv2.resize(cv_image, (640, 480)) 
+        cv_image = cv2.resize(cv_image, (900, 675)) 
         pil_image = Image.fromarray(cv_image) # cv2 to PIL
         tk_image = ImageTk.PhotoImage(image=pil_image) # PIL to Tkinter-compatible
         self.sim_canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
@@ -230,6 +231,6 @@ class GUI:
             
 if __name__ == '__main__':
     root = tk.Tk()
-    root.geometry("{}x{}+0+0".format(1200, 800))
+    root.geometry("{}x{}+0+0".format(1920, 1080))
     gui = GUI(root)
     root.mainloop()
