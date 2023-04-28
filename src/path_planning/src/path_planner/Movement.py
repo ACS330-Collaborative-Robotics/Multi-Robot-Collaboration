@@ -48,6 +48,7 @@ class Movement:
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
+
             xobj=[0, 0, 0, 0, 0, 0]
             yobj=[0, 0, 0, 0, 0, 0]
             zobj=[0, 10, 20, 30, 40, 50]
@@ -59,6 +60,7 @@ class Movement:
             tempyobj_linked = []
             tempzobj_linked = []
             tempQ_linked = []
+
             robot_namespaces.remove(self.serv_helper.robot_ns) #remove own name from list of arms to avoid
             for obstacle_arm_ns in robot_namespaces:
                 for obs in range(0,7):
@@ -83,7 +85,7 @@ class Movement:
                 Q.append(tempQ)
 
 
-
+                obs_in_zone_flag=self.serv_helper.is_obsarm_in_zone(robot_namespaces,pos.position.x,pos.position.y) #working in world frame
             #xobj.append(0) #own base as an object 
             #yobj.append(0)
             #zobj.append(0)
