@@ -25,8 +25,9 @@ class Movement:
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
+        precise_angle_flag=0
         SF = 100 #distance scale factor
-        Q = [10,25,25,25,25,25,10,10,10,10,10,10,10] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+        Q = [10,25,25,25,25,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = self.serv_helper.APFyamlData["D"]
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -54,6 +55,10 @@ class Movement:
             tempyobj = []
             tempzobj = []
             tempQ = []
+            tempxobj_linked = []
+            tempyobj_linked = []
+            tempzobj_linked = []
+            tempQ_linked = []
             robot_namespaces.remove(self.serv_helper.robot_ns) #remove own name from list of arms to avoid
             for obstacle_arm_ns in robot_namespaces:
                 for obs in range(0,7):
@@ -67,16 +72,25 @@ class Movement:
                     xobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
                     yobj.append(pos_obstacle.position.y *SF)
                     zobj.append(pos_obstacle.position.z *SF)
+                    tempQ.append(10)
                 #print(len(xobj),len(yobj),len(zobj))
+                #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
+                tempxobj_linked,temp_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
+                #append into xobjs here
+                xobj.append(tempxobj)
+                yobj.append(tempyobj)
+                zobj.append(tempzobj)
+                Q.append(tempQ)
 
-            #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
+
+
             #xobj.append(0) #own base as an object 
             #yobj.append(0)
             #zobj.append(0)
             #Q.append(0.1)
 
             ##X,Y,Z path the End effector will take
-            X, Y, Z, Objectx, Objecyy, Objectz, ObjectQ = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ)
+            X, Y, Z, Objectx, Objecyy, Objectz, ObjectQ = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag)
             PathTakenx = X/SF #rescale back to meters
             PathTakeny = Y/SF
             PathTakenz = Z/SF
@@ -91,9 +105,12 @@ class Movement:
             arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
             arm_pos.orientation.w = pos_robot_base_frame.orientation.w
 
-            d = self.serv_helper.EuclidianDistance2d(arm_pos.position.x*SF,arm_pos.position.y*SF,xgoal,ygoal)
-            if allow_imprecise_orientation and d > 0.05:
+            d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
+            rospy.logwarn('Distance: %.2f',d)
+            if allow_imprecise_orientation and d > 8:
                 precise_angle_flag = 0
+                if arm_pos.position.z < 0.05:
+                    arm_pos.position.z = 0.05
             else:
                 precise_angle_flag = 1
 
@@ -110,10 +127,11 @@ class Movement:
             status = self.serv_helper.move(arm_pos, final_link_name,precise_angle_flag)
             #TODO: Force wait until robot has reached desired position. Temp fix:
             rospy.sleep(0.1)
-            if allow_imprecise_orientation:
-                CloseEnough = 1
+
+            if precise_angle_flag:
+                CloseEnough = 0.5
             else:
-                CloseEnough = 0.2
+                CloseEnough =5
             if not(status):
                 #rospy.logerr("Path Planner - Error, Target position unreachable.")
                 pass

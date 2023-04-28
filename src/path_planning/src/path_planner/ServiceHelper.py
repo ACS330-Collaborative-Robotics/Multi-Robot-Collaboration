@@ -377,15 +377,18 @@ class ServiceHelper:
             #rospy.loginfo("APF Planner - Point is not reachable by %s", self.robot_ns)
             return False
         
-    def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D,tempxobj,tempyobj,tempzobj,tempQ): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
+    def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
         """   ## make temp inside of move)()
         returned as an array of points
         INPUT: start position and goal position XYs, xobj and yobj (array of obstacle x/y points)   
         OUTPUT: PathPoints (an array of the via points ((x1,y1),(x2,y2),(x3,y3)....))
         """
-        Step_Size= self.APFyamlData["Step_Size"]
+        if precise_angle_flag:
+            Step_Size = self.APFyamlData["Step_Size_Precise"]
+        else:
+            Step_Size = self.APFyamlData["Step_Size"]
         Final_Att= self.APFyamlData["Final_Att"]
-        Final_Distance= self.APFyamlData["Final_Distance"]
+        Final_Distance = self.APFyamlData["Final_Distance"]
         PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
         PathPointsx = [x] #First X and Y points
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
@@ -407,7 +410,7 @@ class ServiceHelper:
             dify = diffatt[1]
             difz = diffatt[2]
             #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-diffatt[0],-diffatt[1],-diffatt[2],d)
-            #rospy.loginfo("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
+            rospy.logwarn("Potential Fields - Attraction strength: %.2f,%.2f,%.2f dist: %.2f",-difx,-dify,-difz,d)
             #rospy.loginfo("Temporary Objects: %.2f",len(tempxobj))
         
         if abs(difx) <Final_Att and abs(dify) <Final_Att and abs(difz) <Final_Att and d < Final_Distance:#
