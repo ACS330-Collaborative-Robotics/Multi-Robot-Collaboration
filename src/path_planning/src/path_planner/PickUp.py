@@ -60,7 +60,7 @@ class PickUp(Movement.Movement):
         # Lift up block
         rospy.loginfo("Path Planner - Pick Up - Lifting up %s.", block_name)
         pose.position.z += 0.07
-        if not self.move(pose, False):
+        if not self.move(pose, True):
             return False
         
         

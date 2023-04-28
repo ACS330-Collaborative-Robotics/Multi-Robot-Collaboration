@@ -111,7 +111,7 @@ class Movement:
 
             d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             rospy.loginfo('Distance: %.2f', d)
-            if allow_imprecise_orientation and d > 8:
+            if allow_imprecise_orientation and d > 5:
                 precise_angle_flag = 0
                 if arm_pos.position.z < 0.05:
                     arm_pos.position.z = 0.05

@@ -50,7 +50,7 @@ class PlaceDown(PickUp.PickUp):
         # Move down onto block
         rospy.loginfo("Path Planner - Place Down - Lifting up.")
         end_pose.position.z += 0.07
-        if not self.move(end_pose, False):
+        if not self.move(end_pose, True):
             return False
         
         # Close Gripper
