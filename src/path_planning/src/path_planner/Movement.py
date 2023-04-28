@@ -113,7 +113,7 @@ class Movement:
                 #rospy.logerr("Path Planner - Error, Target position unreachable.")
                 pass
             else: #check if movement ran
-                if d <= 2:
+                if d <= 0.05:
                     PathComplete = 1
                 else:
                     startx = arm_pos.position.x*SF #start coords for end effector (now next step)

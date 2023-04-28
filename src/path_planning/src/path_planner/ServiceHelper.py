@@ -421,8 +421,8 @@ class ServiceHelper:
             x = nextx
             y = nexty
             z = nextz
-            if z < -0.15:
-                z = -0.15
+            if z < -0.2:
+                z = -0.2
             if self.is_block_reachable_APF(x,y,z) == False:
                 tempxobj.append(x)
                 tempyobj.append(y)
