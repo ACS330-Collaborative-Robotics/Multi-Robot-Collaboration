@@ -258,7 +258,7 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
         return None
 
     block_name_index = available_block_distances.index(min(available_block_distances))
-    goal.block_name = block_names[block_name_index]
+    goal.block_name = available_block_names[block_name_index]
 
     path_clients[robot_number].send_goal(goal)
     tower_block_positions.pop(0)
@@ -318,7 +318,6 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
     
     return False
     
-
 def getRobotBaseCoordinates(robot_namespaces):
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
