@@ -460,5 +460,6 @@ class ServiceHelper:
         self.point_pub.publish(point)
         return
 
-
+    def is_obsarm_in_zone:
+        
 
