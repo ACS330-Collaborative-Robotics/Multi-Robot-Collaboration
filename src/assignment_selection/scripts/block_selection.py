@@ -204,7 +204,7 @@ def build_block_list(robot_namespaces):
         block_name = "block" + str(blockData.block_data[block_num].block_number)
 
         for robot_name in robot_namespaces:
-            if is_block_reachable(block_name, robot_name, [0.1, 0.15]):
+            if is_block_reachable(block_name, robot_name, [0.09, 0.15]):
                 block_names.append(block_name)
                 rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, robot_name)
                 break
@@ -246,7 +246,7 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
     robot_base_coordinates = getRobotBaseCoordinates([robot_name])[0]
 
     for block_name in block_names:
-        if is_block_reachable(block_name, robot_name, [0.1, 0.15]):
+        if is_block_reachable(block_name, robot_name, [0.09, 0.15]):
             available_block_names.append(block_name)
 
             block_pose = specific_block_pose(block_name, "world")

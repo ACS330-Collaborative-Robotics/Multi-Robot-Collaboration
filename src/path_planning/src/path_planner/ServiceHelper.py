@@ -132,10 +132,10 @@ class ServiceHelper:
             model_state.pose = self.frameConverter(self.robot_ns, "world", model_state.pose)
 
             # Test at two heights above the block
-            model_state.pose.position.z += 0.10
+            model_state.pose.position.z += 0.15
             if self.inv_kin_reachable(model_state).success:
 
-                model_state.pose.position.z += 0.05
+                model_state.pose.position.z -= 0.06
                 if self.inv_kin_reachable(model_state).success:
                     return angle_offset
         
