@@ -52,7 +52,7 @@ def spawner():
         pos.position.y = block_coordinates[block_num][1]
         pos.position.z = 0.01
 
-        quat = tf.transformations.quaternion_from_euler(0, 0, 4*pi*random()-2*pi)
+        quat = tf.transformations.quaternion_from_euler(0, 0, block_num*pi/4)
         pos.orientation.x = quat[0]
         pos.orientation.y = quat[1]
         pos.orientation.z = quat[2]
