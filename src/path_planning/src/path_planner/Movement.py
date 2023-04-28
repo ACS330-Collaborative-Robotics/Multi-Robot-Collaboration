@@ -20,7 +20,7 @@ class Movement:
             self.serv_helper.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         print(self.serv_helper.APFyamlData)
     
-    def move(self, pos:Pose, final_link_name=""):
+    def move(self, pos:Pose, allow_imprecise_orientation:bool, final_link_name=""):
         """ Safely move to desired position using IK, checking robot will stay within zone
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
@@ -92,12 +92,10 @@ class Movement:
             arm_pos.orientation.w = pos_robot_base_frame.orientation.w
 
             d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
-            if d <=  0.05: #when close, use precise orientation
-                precise_angle_flag = 1 #orientation does matter - small tolerance
-                                
+            if allow_imprecise_orientation and d > 0.05:
+                precise_angle_flag = 0
             else:
-                precise_angle_flag = 0 #orientation does not matter - wide tolerance
-
+                precise_angle_flag = 1
 
             rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
 
