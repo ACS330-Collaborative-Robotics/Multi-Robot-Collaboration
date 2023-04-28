@@ -71,18 +71,20 @@ class Movement:
 
                     pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
                     pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
-                    xobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
-                    yobj.append(pos_obstacle.position.y *SF)
-                    zobj.append(pos_obstacle.position.z *SF)
+
+                    tempxobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
+                    tempyobj.append(pos_obstacle.position.y *SF)
+                    tempzobj.append(pos_obstacle.position.z *SF)
                     tempQ.append(10)
-                #print(len(xobj),len(yobj),len(zobj))
+
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
                 tempxobj_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
+
                 #append into xobjs here
-                xobj.append(tempxobj_linked)
-                yobj.append(tempyobj_linked)
-                zobj.append(tempzobj_linked)
-                Q.append(tempQ_linked)
+                xobj = xobj + tempxobj_linked
+                yobj = yobj + tempyobj_linked
+                zobj = zobj + tempzobj_linked
+                Q = Q + tempQ_linked
 
             if self.serv_helper.is_obsarm_in_zone(robot_namespaces ,pos.position.x,pos.position.y): #working in world frame
                 xobj.append([xgoal, xgoal, xgoal, xgoal, xgoal, xgoal])
