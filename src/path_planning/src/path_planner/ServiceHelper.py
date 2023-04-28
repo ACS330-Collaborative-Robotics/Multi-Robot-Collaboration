@@ -469,7 +469,7 @@ class ServiceHelper:
         OUTPUT: publishes point to be used by gui
         """
         obs_in_zone_flag = 0
-        forcefield_dist = 0.12
+        forcefield_dist = 0.16
         pos_own_world = self.getLinkPos(self.robot_ns,"link6") #own arm joint positions relative to world
         d_own_to_goal = self.EuclidianDistance2d(pos_own_world.position.x, pos_own_world.position.y, xgoal, ygoal)
 

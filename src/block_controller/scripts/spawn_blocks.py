@@ -35,7 +35,7 @@ def spawner():
     x_lower_limit = -0.3
     x_upper_limit = 0.3
 
-    robot_a_block_coordinates = [[x_lower_limit, -0.1], [x_lower_limit, 0], [x_lower_limit, 0.1], [x_upper_limit, -0.1], [x_upper_limit, 0], [x_upper_limit, 0.1]]
+    robot_a_block_coordinates = [[x_lower_limit, -0.1], [x_lower_limit, 0], [x_lower_limit, 0.05], [x_upper_limit, -0.1], [x_upper_limit, 0], [x_upper_limit, 0.1]]
 
     y_offset = 0.72
 
