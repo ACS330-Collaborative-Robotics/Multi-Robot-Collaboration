@@ -184,7 +184,7 @@ else:
 
 def allocate_task(block_name, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
     if not is_block_reachable(block_name, robot_name):
-        rospy.logwarn("Assignment Selection - %s cannot reach %s.", robot_name, block_name)
+        #rospy.logwarn("Assignment Selection - %s cannot reach %s.", robot_name, block_name)
         return False
     else:
         rospy.loginfo("Assignment Selection - Allocating %s to %s.", block_name, robot_name)
@@ -206,7 +206,7 @@ def allocate_task(block_name, robot_name, robot_number, tower_block_positions, t
         end_pos.orientation.w = quat[3]
 
         if not is_block_position_reachable(end_pos.position.x, end_pos.position.y, end_pos.position.z, tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5], robot_name):
-            rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
+            #rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
             return False
 
         goal.end_pos = end_pos
