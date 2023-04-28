@@ -4,14 +4,16 @@
 # Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
 
 import rospy
+import numpy as np
 from gazebo_msgs.srv import SpawnModel
 from geometry_msgs.msg import Pose
 from pathlib import Path
 
 import tf2_ros
+import tf
 
 from random import random, randint
-from math import pi, cos, sin
+from math import pi, cos, sin, floor
 
 def spawner():
     # Setup Node
@@ -29,39 +31,32 @@ def spawner():
 
     robot_namespaces = ["mover6_a", "mover6_b"]
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
-    
-    min_range = 0.25
-    max_range = 0.35
+
+    x_lower_limit = -0.3
+    x_upper_limit = 0.3
+
+    robot_a_block_coordinates = [[x_lower_limit, -0.1], [x_lower_limit, 0], [x_lower_limit, 0.1], [x_upper_limit, -0.1], [x_upper_limit, 0], [x_upper_limit, 0.1]]
+
+    y_offset = 0.72
+
+    robot_b_block_coordinates = []
+    for block_coordinates in robot_a_block_coordinates:
+        robot_b_block_coordinates.append([block_coordinates[0], block_coordinates[1] + y_offset])
+
+    block_coordinates = robot_a_block_coordinates + robot_b_block_coordinates
     
     pos = Pose() # Pose object to be filled randomly
-    for block_num in range(10):
-        # Select a robot base randomly
-        robot_num = randint(0, len(robot_base_coords)-1)
-
-        # Using angle + distance to select random location within range
-        if robot_num == 0:
-            angle = 0.5*pi*random() - 0.75*pi
-        elif robot_num == 1:
-            angle = 0.5*pi*random() + 0.25*pi
-        else:
-            angle = 2*pi*random()
-
-        distance = (max_range-min_range)*random() + min_range
-
-        # Standard 2x2 rotation matrix transformation
-        x = cos(angle) * distance + sin(angle) * 0
-        y = -sin(angle) * distance + cos(angle) * 0
-
+    for block_num in range(len(block_coordinates)):
         # Assign position, offset by robot base coordinates
-        pos.position.x = x + robot_base_coords[robot_num][0]
-        pos.position.y = y + robot_base_coords[robot_num][1]
+        pos.position.x = block_coordinates[block_num][0]
+        pos.position.y = block_coordinates[block_num][1]
         pos.position.z = 0.01
 
-        # quaternion roation w x y z
-        pos.orientation.w = 2*random() - 1
-        pos.orientation.x = 0 # a - Roll
-        pos.orientation.y = 0 # Lengthway vertically
-        pos.orientation.z = 2*random() - 1 # Flat rotation
+        quat = tf.transformations.quaternion_from_euler(0, 0, 0)
+        pos.orientation.x = quat[0]
+        pos.orientation.y = quat[1]
+        pos.orientation.z = quat[2]
+        pos.orientation.w = quat[3]
         
         #urdf_spawner(model_name, model_xml, model_namespace, Pose initial_pose, reference_frame)
         rospy.loginfo(urdf_spawner("block"  + str(block_num), urdf, "blocks", pos, "world").status_message)
