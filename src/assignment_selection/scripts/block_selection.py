@@ -52,13 +52,13 @@ def assignment_selector():
     #############################
 
     # tower_origin_coordinates = [x, y, z]
-    tower_origin_coordinates = [0.1, 0.36, 0]
+    tower_origin_coordinates = [0.1, 0.36, 0.02]
 
     use_manual_block_locations = False
     manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
     manual_block_location_euler_rotation = [0, 0, 0]
 
-    enable_home_between_assignments = False
+    enable_home_between_assignments = True
     home_joint_positions = [90*math.pi/180, 0, 0, 0, 0, 0]
 
     block_width = 0.035
@@ -206,9 +206,10 @@ def build_block_list(robot_namespaces):
         for robot_name in robot_namespaces:
             if is_block_reachable(block_name, robot_name):
                 block_names.append(block_name)
+                rospy.logwarn("Assignment Selection - Adding %s as it is reachable.", block_name)
                 break
         else:
-            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable by %s.", block_name, robot_name)
+            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
 
     rospy.loginfo("Assignment Selection - Block list built.\n")
 
