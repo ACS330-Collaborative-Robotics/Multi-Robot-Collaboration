@@ -387,6 +387,7 @@ class ServiceHelper:
             Step_Size = self.APFyamlData["Step_Size_Precise"]
         else:
             Step_Size = self.APFyamlData["Step_Size"]
+            
         Final_Att= self.APFyamlData["Final_Att"]
         Final_Distance = self.APFyamlData["Final_Distance"]
         PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of potential)
