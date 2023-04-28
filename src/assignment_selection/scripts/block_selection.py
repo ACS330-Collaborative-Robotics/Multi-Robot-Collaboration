@@ -314,6 +314,8 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
 
             model_state.pose.position.z += 0.05
             if inv_kin_is_reachable(model_state).success:
+                if angle_offset != 0:
+                    rospy.loginfo("Angle Offset - %.0f", angle_offset*180/math.pi)
                 return True
     
     return False

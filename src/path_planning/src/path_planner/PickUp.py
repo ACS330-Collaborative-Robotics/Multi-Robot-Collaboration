@@ -33,7 +33,7 @@ class PickUp(Movement.Movement):
 
         angle_offset = self.serv_helper.fix_block_pose_orientation(pose)
         if angle_offset == None:
-            rospy.logfatal("Path Planner - %s - Pick Up - Fix block pose failed.", self.serv_helper.robot_ns)
+            rospy.logfatal("Path Planner - %s - Pick Up - Fix block pose failed. Block is unreachable.", self.serv_helper.robot_ns)
             return False
         
         if angle_offset != 0:
