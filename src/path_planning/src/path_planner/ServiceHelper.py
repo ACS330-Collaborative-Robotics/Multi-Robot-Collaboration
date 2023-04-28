@@ -463,5 +463,20 @@ class ServiceHelper:
         self.point_pub.publish(point)
         return
 
+    def is_obsarm_in_zone(self,robot_namespaces,xgoal,ygoal):
+        """  tell arm if other arms are in dropoff zone
+        INPUT: xyz points   
+        OUTPUT: publishes point to be used by gui
+        """
+        obs_in_zone_flag=0
+        forcefield_area=12
+        pos_own_world=self.getLinkPos(self.robot_ns,"link6") #own arm joint positions relative to world
+        for obstacle_arm_ns in robot_namespaces:
+            pos_obs_world=self.getLinkPos(obstacle_arm_ns,"link6") #obstacle arm joint positions relative to world
+            d_obs_to_goal=self.EuclidianDistance2d(pos_obs_world.position.x,pos_obs_world.position.y,xgoal,ygoal)
+
+
+
+
         
 
