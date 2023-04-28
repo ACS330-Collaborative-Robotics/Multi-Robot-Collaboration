@@ -52,7 +52,7 @@ def assignment_selector():
     #############################
 
     # tower_origin_coordinates = [x, y, z]
-    tower_origin_coordinates = [0.05, 0.36, 0.02]
+    tower_origin_coordinates = [0, 0.36, 0.02]
 
     use_manual_block_locations = False
     manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
@@ -249,7 +249,7 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
         if is_block_reachable(block_name, robot_name, [0.09, 0.15]):
             available_block_names.append(block_name)
 
-            block_pose = specific_block_pose(block_name, "world")
+            block_pose = specific_block_pose(block_name, "world") # TODO: Test with using link6 instead of base
             block_coordinates = [block_pose.position.x, block_pose.position.y]
             available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
 
