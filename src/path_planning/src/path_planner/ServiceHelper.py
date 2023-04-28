@@ -349,39 +349,32 @@ class ServiceHelper:
     def is_block_reachable_APF(self, X, Y, Z):
         rospy.wait_for_service('/inverse_kinematics_reachability')
         inv_kin_is_reachable = rospy.ServiceProxy('/inverse_kinematics_reachability', InvKin)
-
+        
         inv_kin_request = InvKinRequest()
-    
-         # Create Initial Pose object
-        pose_object = Pose()
-        pose_object.position.x = X/100
-        pose_object.position.y = Y/100
-        pose_object.position.z = Z/100
+        model_state = ModelState()
 
-        #pose_object.position.z += 0.15 #not 100% sure this should be in as constant z additions are added at higher levels
+        model_state.pose.position.x = X/100
+        model_state.pose.position.y = Y/100
+        model_state.pose.position.z = Z/100
 
-        block_orientation_quaternion = [pose_object.orientation.x, pose_object.orientation.y, pose_object.orientation.z, pose_object.orientation.w]
+        block_orientation_quaternion = [model_state.pose.orientation.x, model_state.pose.orientation.y, model_state.pose.orientation.z, model_state.pose.orientation.w]
         block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
 
-        orientation_in_euler = [0, math.pi, block_orientation_euler[2]]
-        orientation = tf.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+        orientation_euler = [0, math.pi, block_orientation_euler[2]]
+        orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
         
-        pose_object.orientation.x = orientation[0]
-        pose_object.orientation.y = orientation[1]
-        pose_object.orientation.z = orientation[2]
-        pose_object.orientation.w = orientation[3]
+        model_state.pose.orientation.x = orientation_quaternion[0]
+        model_state.pose.orientation.y = orientation_quaternion[1]
+        model_state.pose.orientation.z = orientation_quaternion[2]
+        model_state.pose.orientation.w = orientation_quaternion[3]
 
-        inv_kin_request.state.model_name=self.robot_ns
-        
-        inv_kin_request.state.pose = pose_object
-        inv_kin_request.precise_orientation = False
-        #return True #config thing to turn this function off
+        inv_kin_request.state = model_state
+        inv_kin_request.precise_orientation = True
+
         if inv_kin_is_reachable(inv_kin_request).success:
-            #rospy.loginfo("APF Planner - Point is reachable by %s", self.robot_ns)
             return True
-        else:
-            #rospy.loginfo("APF Planner - Point is not reachable by %s", self.robot_ns)
-            return False
+            
+        return False
         
     def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
         """   ## make temp inside of move)()
@@ -491,12 +484,6 @@ class ServiceHelper:
 
         return obs_in_zone_flag
 
-
-
-
-        
-
-
     def fix_block_pose_orientation(self, pose):
         model_state = ModelState()
         model_state.pose = pose
@@ -514,7 +501,7 @@ class ServiceHelper:
             model_state.pose.orientation.z = orientation_quaternion[2]
             model_state.pose.orientation.w = orientation_quaternion[3]
 
-            model_state.pose = self.frameConverter(self.robot_ns, "world", model_state.pose)
+            model_state.pose = self.frameConverter(self.robot_ns+"/base_link", "world", model_state.pose)
 
             # Test at two heights above the block
             model_state.pose.position.z += 0.15
