@@ -31,6 +31,12 @@ class PickUp(Movement.Movement):
         pose.orientation.z = orientation[2]
         pose.orientation.w = orientation[3]
 
+        angle_offset = self.serv_helper.fix_block_pose_orientation(pose)
+        print(angle_offset)
+        if angle_offset == False:
+            rospy.logerr("Path Planner - %s - Pick Up - Fix block pose failed.", self.serv_helper.robot_ns)
+            return False
+
         # Open Gripper
         rospy.loginfo("Path Planner - %s - Pick Up - Opening Gripper.", self.serv_helper.robot_ns)
         self.serv_helper.moveGripper(1)
