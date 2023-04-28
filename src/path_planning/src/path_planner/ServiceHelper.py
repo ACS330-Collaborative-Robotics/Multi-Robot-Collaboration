@@ -389,7 +389,7 @@ class ServiceHelper:
             Step_Size = self.APFyamlData["Step_Size"]
         Final_Att= self.APFyamlData["Final_Att"]
         Final_Distance = self.APFyamlData["Final_Distance"]
-        PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of pootential)
+        PathComplete = 0 #This turns to 1 and ends the function once end effector has reached target position (minimum of potential)
         PathPointsx = [x] #First X and Y points
         PathPointsy = [y] #These are in different arrays cos tuples suck. The 'zip' function at the end turns them into a tuple
         PathPointsz = [z]
