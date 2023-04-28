@@ -10,11 +10,13 @@ class EStopController:
         # Initialize publishers and subscribers
         self.human_detection_sub = rospy.Subscriber('/human_detection', Bool, self.human_detection_callback)
         self.gui_sub = rospy.Subscriber('/gui', Bool, self.gui_callback)
+        self.manual_sub = rospy.Subscriber('/emergency_stop_manual', Bool, self.manual_callback)
         self.emergency_stop_pub = rospy.Publisher('/emergency_stop', Bool, queue_size=10)
 
         # Initialize state variables
         self.human_detected = False
         self.gui_pressed = False
+        self.manual_pressed = False
 
         # Run the node
         rospy.spin()
@@ -33,17 +35,26 @@ class EStopController:
         # Check if an emergency stop is required
         self.check_emergency_stop()
 
+    def manual_callback(self, msg):
+        # Update the manual state
+        self.manual_pressed = msg.data
+
+        # Check if an emergency stop is required
+        self.check_emergency_stop()
+
     def check_emergency_stop(self):
         # Check if a human has been detected or the GUI has been pressed
-        if self.human_detected or self.gui_pressed:
+        if self.human_detected or self.gui_pressed or self.manual_pressed:
             # Publish an emergency stop signal
             self.emergency_stop_pub.publish(True)
             
             # Print a message indicating why the emergency stop was triggered
             if self.human_detected:
                 rospy.logerr('Stopping arms as human is detected within 2.2m')
-            if self.gui_pressed:
+            elif self.gui_pressed:
                 rospy.logerr('Stopping arms as stop button in GUI is pressed')
+            elif self.manual_pressed:
+                rospy.logerr('Stopping arms as manual estop triggered.')
         else:
             # Publish a resume signal
             self.emergency_stop_pub.publish(False)

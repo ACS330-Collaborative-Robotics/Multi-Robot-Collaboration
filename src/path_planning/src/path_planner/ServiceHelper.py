@@ -22,6 +22,9 @@ class ServiceHelper:
         rospy.wait_for_service('/inverse_kinematics')
         self.inv_kin = rospy.ServiceProxy('/inverse_kinematics', InvKin)
 
+        rospy.wait_for_service('/inverse_kinematics_reachability')
+        self.inv_kin_reachable = rospy.ServiceProxy('/inverse_kinematics_reachability', InvKin)
+
         # Setup get_model_state service
         rospy.wait_for_service('/gazebo/get_model_state')
         self.model_state_service = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
@@ -31,7 +34,7 @@ class ServiceHelper:
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
 
         # Setup gripper publisher
-        self.gripper_publisher = rospy.Publisher(self.robot_ns + "/gripper_state", Bool, queue_size=10)
+        self.gripper_publisher = rospy.Publisher("gripper_state", Bool, queue_size=10)
 
     def move(self, pos:Pose, final_link_name):
         """ Move arm to specified position.
@@ -97,7 +100,7 @@ class ServiceHelper:
                 new_pose = self.tfBuffer.transform(start_pose, target_frame+"/base_link")
                 break
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                rospy.logwarn("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
+                rospy.loginfo("Error - Frame converter in Path Planner ServiceHelper.py failed. Retrying now.")
                 rate.sleep()
                 continue
         
@@ -107,3 +110,33 @@ class ServiceHelper:
         #rospy.loginfo("Frame Converter - New pose:\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", new_pose.pose.position.x, new_pose.pose.position.y, new_pose.pose.position.z, orientation_in_euler[0]*180/pi, orientation_in_euler[1]*180/pi, orientation_in_euler[2]*180/pi)
 
         return new_pose.pose
+    
+
+    def fix_block_pose_orientation(self, pose):
+        model_state = ModelState()
+        model_state.pose = pose
+
+        block_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
+        block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
+
+        for angle_offset in [0]:#, -pi, pi]:
+            #print(angle_offset)
+            orientation_euler = [0, pi, block_orientation_euler[2]+angle_offset]
+            orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
+            
+            model_state.pose.orientation.x = orientation_quaternion[0]
+            model_state.pose.orientation.y = orientation_quaternion[1]
+            model_state.pose.orientation.z = orientation_quaternion[2]
+            model_state.pose.orientation.w = orientation_quaternion[3]
+
+            model_state.pose = self.frameConverter(self.robot_ns, "world", model_state.pose)
+
+            # Test at two heights above the block
+            model_state.pose.position.z += 0.10
+            if self.inv_kin_reachable(model_state).success:
+
+                model_state.pose.position.z += 0.05
+                if self.inv_kin_reachable(model_state).success:
+                    return angle_offset
+        
+        return None

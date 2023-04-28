@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
-disable_fk = False
+disable_fk = True
 try:
     import kinpy as kp
 except ModuleNotFoundError:
@@ -81,7 +81,7 @@ def trac_ik_inverse_kinematics(pose: Pose, final_link_name="link6"):
         return list(joints)
 
 def inverse_kinematics_service(req):
-    rospy.loginfo("Inverse Kinematics - Service call recieved.")
+    #rospy.loginfo("Inverse Kinematics - Service call recieved.")
 
     pub = rospy.Publisher(req.state.model_name + "/joint_angles", Joints, queue_size=10)
 
@@ -97,7 +97,7 @@ def inverse_kinematics_service(req):
         return False
     else:
         joints_display = " ".join([str(round(joint*180/pi, 2)) for joint in joints])
-        rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.4f", joints_display, time()-start_time)
+        ##rospy.loginfo("Inverse Kinematics - Trac IK: %s\tComputed in: %.4f", joints_display, time()-start_time)
 
         if disable_fk != True:
             # Understanding IK accuracy 
@@ -124,7 +124,7 @@ def inverse_kinematics_service(req):
         # Publish joint positions
         pub.publish(joints)
 
-        rospy.loginfo("Inverse Kinematics - Joint positions published.\n")
+        ##rospy.loginfo("Inverse Kinematics - Joint positions published.\n")
 
         return True
     

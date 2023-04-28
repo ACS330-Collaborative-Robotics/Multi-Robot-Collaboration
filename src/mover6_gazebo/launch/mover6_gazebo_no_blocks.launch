@@ -22,11 +22,11 @@
     <include file="$(find mover6_control)/launch/mover6_control.launch"/>
 
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_a" type="static_tf2_broadcaster.py" args="mover6_a_base world 0 0 0.02 0 0 1.5708" output="screen"/>
-    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_b" type="static_tf2_broadcaster.py" args="mover6_b_base world 0 0.72 0.02 0 0 -1.5708" output="screen"/>
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="mover6_b" type="static_tf2_broadcaster.py" args="mover6_b_base world 0 0.73 0.02 0 0 -1.5708" output="screen"/>
 
     <!-- Connect transforms in tree -->
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_a" type="static_tf2_broadcaster.py" args="mover6_a/world world 0 0 0.02 0 0 1.5708" output="screen"/>
-    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_b" type="static_tf2_broadcaster.py" args="mover6_b/world world 0 0.72 0.02 0 0 -1.5708" output="screen"/>
+    <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_b" type="static_tf2_broadcaster.py" args="mover6_b/world world 0 0.73 0.02 0 0 -1.5708" output="screen"/>
     <node name="gui" pkg="gui" type="GUI.py" output="screen"/>
     
     <!-- The Phical robot controller -->

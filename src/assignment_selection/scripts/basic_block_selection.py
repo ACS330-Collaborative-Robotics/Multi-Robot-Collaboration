@@ -25,6 +25,8 @@ def choose_block():
     # Setup block_pos listener
     rospy.Subscriber('/blocks_pos', Blocks, callback)
 
+    #TODO: Build into test which alternates between robots
+
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
     
