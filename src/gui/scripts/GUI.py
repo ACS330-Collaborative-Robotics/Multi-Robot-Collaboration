@@ -2,7 +2,7 @@
 import rospy
 rospy.init_node('listener_gui_publisher', anonymous=True) # initialize the ROS node
 import subprocess
-import threading
+import threading # new thread for running tkinter while main thread runs ROS and Gazebo
 import subprocess
 
 import tkinter as tk
@@ -159,19 +159,20 @@ class GUI:
         error_msg.grid(row=1, column=0, columnspan=2)
         
     # update error log
-    def callback_error(self, data):
+    def callback_error(self, data, args):
+        error_msg, error_light = args
         # get the most recent error message and severity level
         self.error_msgs = data.msg.split("\n")
         most_recent_error = self.error_msgs[0]
         most_recent_severity = int(data.level)
         # update the error message box
-        self.master.after(0, lambda: self.error_msg.delete(1.0, tk.END))
-        self.master.after(0, lambda: self.error_msg.insert(tk.END, most_recent_error))
+        self.master.after(0, lambda: error_msg.delete(1.0, tk.END))
+        self.master.after(0, lambda: error_msg.insert(tk.END, most_recent_error))
         # update the error status light
         if most_recent_severity > 3:
-            self.error_light.config(bg="red")
+            error_light.config(bg="red")
         else:
-            self.error_light.config(bg="green")
+            error_light.config(bg="green")
     
     # physical camera display data
     def camera_callback(self, msg):
