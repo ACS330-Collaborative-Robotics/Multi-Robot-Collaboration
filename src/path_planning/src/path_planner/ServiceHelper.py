@@ -119,7 +119,7 @@ class ServiceHelper:
         block_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
         block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
 
-        for angle_offset in [0, -pi, pi]:
+        for angle_offset in [0]:#, -pi, pi]:
             #print(angle_offset)
             orientation_euler = [0, pi, block_orientation_euler[2]+angle_offset]
             orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])

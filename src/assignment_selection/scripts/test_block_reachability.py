@@ -134,7 +134,7 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name):
 
     block_orientation_euler = [euler_x, euler_y, euler_z]
 
-    for angle_offset in [0, -180*math.pi/180, 180*math.pi/180]:
+    for angle_offset in [0]:#, -180*math.pi/180, 180*math.pi/180]:
         orientation_euler = [0, math.pi, block_orientation_euler[2]+angle_offset]
         orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
         
