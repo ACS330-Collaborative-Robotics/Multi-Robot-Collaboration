@@ -52,7 +52,7 @@ def assignment_selector():
     #############################
 
     # tower_origin_coordinates = [x, y, z]
-    tower_origin_coordinates = [0.1, 0.36, 0.02]
+    tower_origin_coordinates = [0, 0.36, 0.02]
 
     use_manual_block_locations = False
     manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]

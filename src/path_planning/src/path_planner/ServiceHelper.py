@@ -134,11 +134,9 @@ class ServiceHelper:
             # Test at two heights above the block
             model_state.pose.position.z += 0.10
             if self.inv_kin_reachable(model_state).success:
-                print(angle_offset)
 
                 model_state.pose.position.z += 0.05
                 if self.inv_kin_reachable(model_state).success:
-                    print(angle_offset)
                     return angle_offset
         
-        return False
+        return None
