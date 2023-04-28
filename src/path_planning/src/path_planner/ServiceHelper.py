@@ -317,11 +317,11 @@ class ServiceHelper:
             if zheight >= 0:
                 #rospy.loginfo("GO UP")
                 zrepangle = zangle - 100
-                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.sin(-100)
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.cos(100)
             if zheight < 0:
                 #rospy.loginfo("GO DOWN")
                 zrepangle = zangle + 100
-                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.sin(100)
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.cos(-100)
             #deciding whether the obstacle is in range
             #if D<Q[objNum]:
                 #rospy.logwarn("in influence")
@@ -400,7 +400,7 @@ class ServiceHelper:
             dify = diffrep[1]  + 0.25*diffatt[1]
             difz = diffrep[2]  + 0.25*diffatt[2]
                 #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
-            rospy.loginfo("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
+            rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
 
         else:
             difx = diffatt[0]

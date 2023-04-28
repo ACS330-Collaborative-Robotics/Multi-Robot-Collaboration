@@ -26,7 +26,7 @@ class Movement:
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
         SF = 100 #distance scale factor
-        Q = [25,25,25,25,25,25,10,10,10,10,10,10,10] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+        Q = [10,25,25,25,25,25,10,10,10,10,10,10,10] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
         D = self.serv_helper.APFyamlData["D"]
         PathComplete=0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -91,7 +91,7 @@ class Movement:
             arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
             arm_pos.orientation.w = pos_robot_base_frame.orientation.w
 
-            d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
+            d = self.serv_helper.EuclidianDistance2d(arm_pos.position.x*SF,arm_pos.position.y*SF,xgoal,ygoal)
             if allow_imprecise_orientation and d > 0.05:
                 precise_angle_flag = 0
             else:
@@ -110,11 +110,15 @@ class Movement:
             status = self.serv_helper.move(arm_pos, final_link_name,precise_angle_flag)
             #TODO: Force wait until robot has reached desired position. Temp fix:
             rospy.sleep(0.1)
+            if allow_imprecise_orientation:
+                CloseEnough = 1
+            else:
+                CloseEnough = 0.2
             if not(status):
                 #rospy.logerr("Path Planner - Error, Target position unreachable.")
                 pass
             else: #check if movement ran
-                if d <= 1:
+                if d <= CloseEnough:
                     PathComplete = 1
                 else:
                     startx = arm_pos.position.x*SF #start coords for end effector (now next step)

@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 #calculates potential change from point to goal
 #Inputs current position and goal position XYs. Output is a tuple of the change in potential along x and y axis (deltaX,deltaY)
 def PotentialAttractionChange(x,y,xgoal,ygoal,D): 
-    SF = 0.2 #scaling factor
+    SF = 0.8 #scaling factor
     d= EuclidianDistance(x,y,xgoal,ygoal)
     if d <= D:
         PotentialChange = (SF*x-SF*xgoal,SF*y-SF*ygoal)
