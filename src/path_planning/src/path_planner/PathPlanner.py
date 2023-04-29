@@ -23,7 +23,7 @@ class PathPlanner:
         # Setup PickUp/PlaceDown Objects with Service Helper
         self.pickUp = PickUp.PickUp(self.serv_helper)
         self.placeDown = PlaceDown.PlaceDown(self.serv_helper)
-        rospy.loginfo("Path Planner started for %s",self.robot_ns)
+        #rospy.loginfo("Path Planner started for %s",self.robot_ns)
 
     def pathPlan(self) -> bool:
         """ Plan and excute a complete block movement.

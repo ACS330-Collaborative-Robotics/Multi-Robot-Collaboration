@@ -21,7 +21,7 @@ class PathPlannerServer:
 
     def path_plan(self, goal):
         # Initialise PathPlanner object
-        rospy.loginfo("Path Planner - %s - Recieved - %s\t%.2f\t%.2f\t%.2f", goal.robot_name, goal.block_name,  goal.end_pos.position.x,  goal.end_pos.position.y,  goal.end_pos.position.z)
+        rospy.loginfo("Path Planner - %s move %s to target: %.2f %.2f %.2f", goal.robot_name, goal.block_name,  goal.end_pos.position.x,  goal.end_pos.position.y,  goal.end_pos.position.z)
 
         pathPlanner = PathPlanner.PathPlanner(goal.robot_name, goal.block_name, goal.end_pos)
 

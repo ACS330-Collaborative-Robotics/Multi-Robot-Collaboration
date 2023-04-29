@@ -65,7 +65,7 @@ def assignment_selector():
     block_height = 0.035
     block_length = 0.105
 
-    maximum_simulatenous_robots = 1
+    maximum_simulatenous_robots = 1 #Configurable constant
     #maximum_simulatenous_robots = len(robot_namespaces)
 
     #############################
@@ -127,14 +127,14 @@ def assignment_selector():
 
         elif number_robots_busy >= maximum_simulatenous_robots:
             rospy.loginfo_throttle(30, "Assignment Selection - All robots busy, waiting till one is free.")
-            rospy.sleep(1)
+            rospy.sleep(0.5)
 
         elif all(robots_cannot_place_next_block):
             rospy.logerr("Assignment Selection - No robots available for next assignment. Skipping block.")
             tower_block_positions.pop(0)
             robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
             
-        rospy.sleep(0.1)
+        rospy.sleep(0.05)
 
 '''while (path_clients[robot_number].get_state() == 1) and not rospy.is_shutdown():
     rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
@@ -195,7 +195,7 @@ def build_block_list(robot_namespaces):
     # Wait for blockData to read in by subscriber
     while (blockData is None) and not(rospy.is_shutdown()):
         rospy.loginfo_once("Assignment Selection - Waiting for data.")
-        rospy.sleep(0.2)
+        rospy.sleep(0.05)
     rospy.loginfo("Assignment Selection - Got block data.")
 
     # Iterate through blockData and retrieve list of block names
@@ -225,8 +225,8 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
     end_pos.position.y = tower_block_positions[0][1] + tower_origin_coordinates[1]
     end_pos.position.z = tower_block_positions[0][2] + tower_origin_coordinates[2]
 
-    quat = tf.transformations.quaternion_from_euler(
-            tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5])
+    quat = tf.transformations.quaternion_from_euler(tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5])
+    
     end_pos.orientation.x = quat[0]
     end_pos.orientation.y = quat[1]
     end_pos.orientation.z = quat[2]
@@ -336,7 +336,7 @@ def getRobotBaseCoordinates(robot_namespaces):
         robot_base_coordinates = []
         while not tfBuffer.can_transform("world", robot_name+"/base_link", rospy.Time(0)) and not rospy.is_shutdown():
             rospy.loginfo("Cannot find robot base transform - block_selection.py. Retrying now.")
-            rospy.sleep(0.1)
+            rospy.sleep(0.05)
         
         transform_response = tfBuffer.lookup_transform("world", robot_name+"/base_link", rospy.Time(0))
 
