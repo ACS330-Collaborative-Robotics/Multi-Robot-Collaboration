@@ -218,9 +218,9 @@ class ServiceHelper:
         Att_Change_SF = self.APFyamlData["Att_Change_SF"] #scaling factor
         d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
-            PotentialChange = [Att_Change_SF * x-Att_Change_SF * xgoal,Att_Change_SF * y-Att_Change_SF * ygoal,Att_Change_SF * z-Att_Change_SF * zgoal]
+            PotentialChange = [Att_Change_SF*x-Att_Change_SF*xgoal,Att_Change_SF*y-Att_Change_SF*ygoal,Att_Change_SF*z-Att_Change_SF*zgoal]
         if d > D:
-            PotentialChange = [(Att_Change_SF * x-Att_Change_SF * xgoal)/d,(Att_Change_SF * y-Att_Change_SF * ygoal)/d, (Att_Change_SF * z-Att_Change_SF * zgoal)/d]
+            PotentialChange = [(Att_Change_SF*x-Att_Change_SF*xgoal)/d,(Att_Change_SF*y-Att_Change_SF*ygoal)/d, (Att_Change_SF*z-Att_Change_SF*zgoal)/d]
         #rospy.loginfo('attraction change:',PotentialChange)
         return PotentialChange
 
@@ -232,18 +232,18 @@ class ServiceHelper:
         Att_SF = self.APFyamlData["Att_SF"] #scaling factor
         d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
-            PotentialAtt = 0.5 * Att_SF * (d**2)
+            PotentialAtt = 0.5*Att_SF*(d**2)
         else:
-            PotentialAtt = D * Att_SF * d - 0.5 * Att_SF * D
+            PotentialAtt = D*Att_SF*d-0.5*Att_SF*D
         return PotentialAtt
 
     def PotentialAttraction2d(self,x,y,xgoal,ygoal,D):
         Att_SF = self.APFyamlData["Att_SF"] #scaling factor
         d = self.EuclidianDistance2d(self,x,y,xgoal,ygoal)
         if d <= D:
-            PotentialAtt = 0.5 * Att_SF * (d**2)
+            PotentialAtt = 0.5*Att_SF*(d**2)
         else:
-            PotentialAtt = D * Att_SF * d - 0.5 * Att_SF * D
+            PotentialAtt = D*Att_SF*d-0.5*Att_SF*D
         return PotentialAtt
     
     def PotentialRepulsion(self,x,y,z,xobj,yobj,zobj,Q): #Repulsive field as a whole (used to display)
@@ -292,11 +292,11 @@ class ServiceHelper:
         zrep = 0
         for objNum in range(len(xobj)):
             #generate the vectors and angles
-            homevect = [xgoal - x ,ygoal - y ,zgoal - z]
-            objvect = (xobj[objNum] - x ,yobj[objNum] - y ,zobj[objNum] - z) # angles are ebcoming negative which causes wrogn ddirection
+            homevect = [xgoal-x,ygoal-y,zgoal-z]
+            objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z) # angles are ebcoming negative which causes wrogn ddirection
             anglegoal = math.atan2(homevect[1] ,homevect[0])
             angleobj = math.atan2(objvect[1] ,objvect[0])
-            angle =  anglegoal-angleobj   
+            angle =  anglegoal-angleobj   #IS THIS THE RIGHT WAY ROUND????
             #rospy.loginfo("ANGLE - %.2f",angle)
             zheight = z-zobj[objNum]
             d = self.EuclidianDistance2d(x ,y ,xobj[objNum] ,yobj[objNum])
@@ -306,25 +306,25 @@ class ServiceHelper:
             ##rospy.logwarn("Distance; %.2f",d)
             if d == 0:
                 d = 0.0001
-            scalings = (1 / d**2) *(1 / Q[objNum] - 1/d)
+            scalings = (1/d**2)*(1/Q[objNum]-1/d)
             if scalings == 0:
                 0.00001
             if angle < 0:
                 #rospy.logwarn("GO LEFT")
-                repulsionangle = anglegoal + 100
-                repulsionvect = -Rep_Change_SF * scalings * (objvect[0] * math.cos(100) - objvect[1] * math.sin(100)),- Rep_Change_SF * scalings * (objvect[0] * math.sin(100) + objvect[1] * math.cos(100))
+                repulsionangle =anglegoal+100
+                repulsionvect =-Rep_Change_SF*scalings*(objvect[0]*math.cos(100)-objvect[1]*math.sin(100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(100)+objvect[1]*math.cos(100))
             if angle > 0 or angle == 0:
                 #rospy.logwarn("GO RIGHT")
-                repulsionangle = anglegoal - 100
-                repulsionvect = - Rep_Change_SF * scalings * (objvect[0]*math.cos(-100) - objvect[1]*math.sin(-100)),-Rep_Change_SF * scalings * (objvect[0]*math.sin(-100) + objvect[1] * math.cos(-100))
+                repulsionangle = anglegoal-100
+                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(-100)-objvect[1]*math.sin(-100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(-100)+objvect[1]*math.cos(-100))
             if zheight >= 0:
                 #rospy.loginfo("GO UP")
                 zrepangle = zangle - 100
-                zrep = - Rep_Change_SF * (1/D**2) * (1/Q[objNum] -1/D) * zrep * math.cos(100)
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum]-1/D)*zrep*math.cos(100)
             if zheight < 0:
                 #rospy.loginfo("GO DOWN")
-                zrepangle = zangle + 100
-                zrep = -Rep_Change_SF * (1/D**2) * (1/Q[objNum] -1/D) * zrep * math.cos(-100)
+                zrepangle = zangle+100
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum]-1/D)*zrep*math.cos(-100)
             #deciding whether the obstacle is in range
             #if D<Q[objNum]:
                 #rospy.logwarn("in influence")
