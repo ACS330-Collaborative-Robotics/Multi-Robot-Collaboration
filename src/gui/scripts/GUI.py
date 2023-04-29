@@ -44,8 +44,8 @@ class GUI:
 
         # buttons
         # emergency stop
-        self.emergency_stop_button = tk.Button(master, text="EMERGENCY STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
-        self.emergency_stop_button.grid(row=4, column=0, sticky="w")
+        self.emergency_stop_button = tk.Button(master, text="Emergency Stop", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked, width=15, height=2)
+        self.emergency_stop_button.grid(row=4, column=0)
         self.emergency_stop_info = tk.Label(master, text="Emergency stop physical and simulated robots.")
         self.emergency_stop_info.grid(row=4, column=0, sticky="e")
         self.emergency_stop_info.grid_remove()  # hide the label initially
@@ -57,8 +57,8 @@ class GUI:
         self.emergency_stop_button.bind("<Leave>", hide_emergencyinfo)
         
         # sim preview
-        self.sim_preview_button = tk.Button(master, text="SIM PREVIEW", bg="yellow", fg="black", font=("Calibri", 10, "bold"), command=self.sim_preview_clicked)
-        self.sim_preview_button.grid(row=6, column=0, sticky="w")
+        self.sim_preview_button = tk.Button(master, text="Sim Preview", bg="yellow", fg="black", font=("Calibri", 10, "bold"), command=self.sim_preview_clicked, width=15, height=2)
+        self.sim_preview_button.grid(row=6, column=0)
         self.sim_preview_info = tk.Label(master, text="Pause physical robot and continue simulation.")
         self.sim_preview_info.grid(row=6, column=0, sticky="e")
         self.sim_preview_info.grid_remove()  # hide the label initially
@@ -192,12 +192,12 @@ class GUI:
 
     # emergency stop button clicked
     def emergency_stop_clicked(self):
-        if self.emergency_stop_button['text'] == 'EMERGENCY STOP': # determine state of button
-            self.emergency_stop_button.config(text='START', bg='green', fg='black')
+        if self.emergency_stop_button['text'] == 'Emergency Stop': # determine state of button
+            self.emergency_stop_button.config(text='Start', bg='green', fg='black')
             self.gui_pub.publish(True) # publish the message to the /gui topic
             self.emergency_stop_info.config(text="Start physical and simulated robots.")
         else:
-            self.emergency_stop_button.config(text='EMERGENCY STOP', bg='red', fg='black')
+            self.emergency_stop_button.config(text='Emergency Stop', bg='red', fg='black')
             self.gui_pub.publish(False) # publish the message to the /gui topic
             self.emergency_stop_info.config(text="Emergency stop physical and simulated robots.")
 
@@ -209,12 +209,13 @@ class GUI:
         # then the button will change to say "STOP PREVIEW" 
         # when that is clicked, the 'play' string will be passed to the service and the button will return to say "SIM PREVIEW"
         play_pause_proxy = rospy.ServiceProxy('play_pause_demo_service', PlayPause)
-        if self.sim_preview_button['text'] == 'SIM PREVIEW': # determine state of button
+        if self.sim_preview_button['text'] == 'Sim Preview': # determine state of button
             desired_state = 'pause'
-            self.sim_preview_button.config(text='STOP PREVIEW', bg='red', fg='black')
+            self.sim_preview_button.config(text='Stop Preview', bg='red', fg='black')
+            self.sim_preview_info.config(text="Resume physical system.")
         else:
             desired_state = 'play'
-            self.sim_preview_button.config(text='SIM PREVIEW', bg='yellow', fg='black')
+            self.sim_preview_button.config(text='Sim Preview', bg='yellow', fg='black')
         try: # call service with desired state
             response = play_pause_proxy(desired_state)
             if response.success:
