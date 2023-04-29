@@ -2,7 +2,7 @@
 import rospy
 rospy.init_node('listener_gui_publisher', anonymous=True) # initialize the ROS node
 import subprocess
-import threading # new thread for running tkinter while main thread runs ROS and Gazebo
+import threading 
 import subprocess
 
 import tkinter as tk
@@ -122,7 +122,7 @@ class GUI:
         # clock listener
         rospy.Subscriber('/clock', Float64, self.callback_time)
         
-        # video listener
+        # sim listener
         self.bridge = CvBridge() 
         rospy.Subscriber('/camera1/image_raw', ImageMsg, self.callback_video)
 
@@ -148,7 +148,7 @@ class GUI:
         # Initialize the ROS publisher for the gui
         self.gui_pub = rospy.Publisher('/gui', Bool, queue_size=10)
     
-    # update video frame
+    # error display
     def error_display(master):
         master.title("Error Display")
         error_light = tk.Label(master, bg="yellow", width=2, height=1)
@@ -174,7 +174,7 @@ class GUI:
         else:
             error_light.config(bg="green")
     
-    # physical camera display data
+    # update physical camera data
     def camera_callback(self, msg):
         img = self.bridge.imgmsg_to_cv2(msg, 'bgr8') # convert ROS message to OpenCV image
         img = cv2.resize(img, (900, 675)) # resize image to fit window
@@ -184,7 +184,7 @@ class GUI:
         self.cam_canvas.create_image(0, 2, anchor=tk.NW, image=img_tk)
         self.cam_canvas.image = img_tk
    
-     # simulation display data
+     # update simulation display data
     def callback_video(self, data):
         cv_image = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8') # ROS to cv2
         cv_image = cv2.resize(cv_image, (900, 675)) 
@@ -204,7 +204,7 @@ class GUI:
     def emergency_stop_clicked(self):
         if self.emergency_stop_button['text'] == 'EMERGENCY STOP': # determine state of button
             self.gui_pub.publish(True) # publish the message to the /gui topic
-            self.emergency_stop_button.config(text='START', bg='red', fg='black')
+            self.emergency_stop_button.config(text='START', bg='green', fg='black')
         else:
             self.gui_pub.publish(False) # publish the message to the /gui topic
             self.emergency_stop_button.config(text='EMERGENCY STOP', bg='green', fg='black')
