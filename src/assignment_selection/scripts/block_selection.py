@@ -76,7 +76,8 @@ def assignment_selector():
             joint_pubs.append(rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10))
     
     ## Making array of block names
-    block_names = build_block_list(robot_namespaces)
+    block_names = build_block_list(robot_namespaces, True)
+    print()
 
     ## Generate tower block positions
     if not use_manual_block_locations:
@@ -136,18 +137,6 @@ def assignment_selector():
             
         rospy.sleep(0.05)
 
-'''while (path_clients[robot_number].get_state() == 1) and not rospy.is_shutdown():
-    rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
-    rospy.sleep(0.01)
-
-status = path_clients[robot_number].get_result()
-if status == None:
-    rospy.logfatal("\n\nAssignment Selection - Path Client returned None. Investigate Source.\n\n")
-elif status.success:
-    rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
-else:
-    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''  
-
 def drive_joints(robot_name, joint_positions):
     pub = rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10)  
     pub.publish(joint_positions)
@@ -191,12 +180,12 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
     
     return tower_block_positions
 
-def build_block_list(robot_namespaces):
+def build_block_list(robot_namespaces, debug=False):
     # Wait for blockData to read in by subscriber
     while (blockData is None) and not(rospy.is_shutdown()):
         rospy.loginfo_once("Assignment Selection - Waiting for data.")
         rospy.sleep(0.2)
-    rospy.loginfo("Assignment Selection - Got block data.")
+    #rospy.loginfo("Assignment Selection - Got block data.")
 
     # Iterate through blockData and retrieve list of block names
     block_names = []
@@ -205,16 +194,15 @@ def build_block_list(robot_namespaces):
 
         robots_can_reach = []
         for robot_name in robot_namespaces:
-            if is_block_reachable(block_name, robot_name):
+            if is_block_reachable(block_name, robot_name, [0.09, 0.15]):
                 block_names.append(block_name)
                 robots_can_reach.append(robot_name)
 
-        if len(robots_can_reach) == 0:
-            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
-        else:
-            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, ', '.join(robots_can_reach))
-            
-    rospy.loginfo("Assignment Selection - Block list built.\n")
+        if debug:
+            if len(robots_can_reach) == 0:
+                rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
+            else:
+                rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, ', '.join(robots_can_reach))
 
     return block_names
 
@@ -248,13 +236,12 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
 
     robot_base_coordinates = getRobotBaseCoordinates([robot_name])[0]
 
-    for block_name in block_names:
-        if is_block_reachable(block_name, robot_name, [0.09, 0.15]):
-            available_block_names.append(block_name)
+    for block_name in build_block_list([robot_name]):
+        available_block_names.append(block_name)
 
-            block_pose = specific_block_pose(block_name, "world") # TODO: Test with using link6 instead of base
-            block_coordinates = [block_pose.position.x, block_pose.position.y]
-            available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
+        block_pose = specific_block_pose(block_name, "world") # TODO: Test with using link6 instead of base
+        block_coordinates = [block_pose.position.x, block_pose.position.y]
+        available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
 
     if len(available_block_names) == 0:
         rospy.logwarn("Assignment Selection - Cannot reach a block to place with %s.", robot_name)
