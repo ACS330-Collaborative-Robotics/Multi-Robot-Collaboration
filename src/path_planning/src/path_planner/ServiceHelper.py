@@ -296,7 +296,7 @@ class ServiceHelper:
             objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z) # angles are ebcoming negative which causes wrogn ddirection
             anglegoal = math.atan2(homevect[1],homevect[0])
             angleobj = math.atan2(objvect[1],objvect[0])
-            angle =  anglegoal-angleobj   
+            angle =  angleobj-anglegoal   
             #rospy.loginfo("ANGLE - %.2f",angle)
             zheight = z-zobj[objNum]
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
@@ -504,7 +504,7 @@ class ServiceHelper:
         block_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
         block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
 
-        for angle_offset in [0]:#, -pi, pi]:
+        for angle_offset in [0, -pi, pi]:#, -pi, pi]:
             #print(angle_offset)
             orientation_euler = [0, pi, block_orientation_euler[2]+angle_offset]
             orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
@@ -519,7 +519,7 @@ class ServiceHelper:
             # Test at two heights above the block
             model_state.pose.position.z += 0.15
             if self.inv_kin_reachable(model_state).success:
-
+ 
                 model_state.pose.position.z -= 0.06
                 if self.inv_kin_reachable(model_state).success:
                     return angle_offset
