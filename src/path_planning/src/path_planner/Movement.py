@@ -27,14 +27,17 @@ class Movement:
         precise_angle_flag = 0
         SF = 100 #distance scale factor
         D = self.serv_helper.APFyamlData["D"]
+        CloseEnough = 0.5
         PathComplete = 0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
         # Get block coordinates relative to robot instead of world
+        
         pos_robot_base_frame = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos)
         ##Goal position
         xgoal = pos_robot_base_frame.position.x*SF 
         ygoal = pos_robot_base_frame.position.y*SF
         zgoal = pos_robot_base_frame.position.z*SF 
+        
         ##Start position relative to world then arm base
         start_pose_world=self.serv_helper.getLinkPos(self.serv_helper.robot_ns,"link6") 
         start_pose = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", start_pose_world)
@@ -43,14 +46,16 @@ class Movement:
         startz = start_pose.position.z*SF
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         while PathComplete == 0 and not rospy.is_shutdown():
+            rospy.logerr("Target World: %.2f %.2f %.2f, Target base: %.1f %.1f %.1f",pos.position.x, pos.position.y, pos.position.z, xgoal,ygoal,zgoal)
+            rospy.logerr("Arm World: %.2f %.2f %.2f, Arm base: %.1f %.1f %.1f",start_pose_world.position.x, start_pose_world.position.y, start_pose_world.position.z, startx,starty,startz)
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
 
-            xobj = [0, 0, 0, 0, 0, 0]
-            yobj = [0, 0, 0, 0, 0, 0]
-            zobj = [0, 10, 20, 30, 40, 50]
-            Q = [10,25,25,25,25,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+            xobj = [0, 0, 0, 0, 0, 0, 0, 0]
+            yobj = [0, 0, 0, 0, 0, 0, 0, 0]
+            zobj = [0, 10, 20, 30, 40, 50, 60, 70]
+            Q = [10, 22, 22, 22, 22, 22, 22, 22] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
             tempxobj = []
             tempyobj = []
             tempzobj = []
@@ -86,28 +91,26 @@ class Movement:
                 Q = Q + tempQ_linked
 
             if self.serv_helper.is_obsarm_in_zone(robot_namespaces ,pos.position.x,pos.position.y): #working in world frame
-                xobj = xobj + [xgoal, xgoal, xgoal, xgoal, xgoal, xgoal]
-                yobj = yobj + [ygoal, ygoal, ygoal, ygoal, ygoal, ygoal]
-                zobj = zobj + [0, 10, 20, 30, 40, 50]
-                Q= Q + ([15,15,15,15,15,15])
+                xobj = xobj + [xgoal, xgoal, xgoal, xgoal, xgoal, xgoal, xgoal, xgoal]
+                yobj = yobj + [ygoal, ygoal, ygoal, ygoal, ygoal, ygoal, ygoal, ygoal]
+                zobj = zobj + [0, 10, 20, 30, 40, 50, 60, 70]
+                Q = Q + ([15, 15, 15, 15, 15, 15, 15, 15])
                 rospy.logwarn("Path Planner - Forcefield activated to repel %s",self.serv_helper.robot_ns)
 
             ##X,Y,Z path the End effector will take
             X, Y, Z, = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag)
-            PathTakenx = X/SF #rescale back to meters
-            PathTakeny = Y/SF
-            PathTakenz = Z/SF
+              #rescale back to meters
 
             arm_pos = Pose() #pose for next coordinate
-            arm_pos.position.x = PathTakenx
-            arm_pos.position.y = PathTakeny
-            arm_pos.position.z = PathTakenz
+            arm_pos.position.x = X/SF
+            arm_pos.position.y = Y/SF
+            arm_pos.position.z = Z/SF
 
             arm_pos.orientation.x = pos_robot_base_frame.orientation.x 
             arm_pos.orientation.y = pos_robot_base_frame.orientation.y 
             arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
             arm_pos.orientation.w = pos_robot_base_frame.orientation.w
-
+            rospy.loginfo('Current: %.2f, %.2f, %.2f, Goal: %.2f, %.2f, %.2f,',arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             rospy.loginfo('Distance: %.2f', d)
             if allow_imprecise_orientation and d > 5:
@@ -132,10 +135,10 @@ class Movement:
             #TODO: Force wait until robot has reached desired position. Temp fix:
             rospy.sleep(0.1)
 
-            if precise_angle_flag:
-                CloseEnough = 0.5
-            else:
-                CloseEnough = 5
+            #if precise_angle_flag:
+            #    CloseEnough = 0.5
+            #else:
+            #    CloseEnough = 5
             if not(status):
                 #rospy.logerr("Path Planner - Error, Target position unreachable.")
                 pass
