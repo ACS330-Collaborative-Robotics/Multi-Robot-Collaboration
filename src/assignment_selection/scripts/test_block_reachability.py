@@ -132,10 +132,8 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name, 
         if not inv_kin_is_reachable(inv_kin_request).success:
             break
     else:
-        print()
         return True
 
-    print()
     return False
     
 def frameConverter(target_frame:str, reference_frame:str, goal_pose:Pose) -> Pose:
