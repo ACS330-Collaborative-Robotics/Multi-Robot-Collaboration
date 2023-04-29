@@ -138,7 +138,7 @@ def inverse_kinematics_reachability_service(req):
         #rospy.logwarn("Inverse Kinematics Reachability - Failed")
         return False
     else:
-        #rospy.loginfo("Inverse Kinematics Reachability - True")
+        #rospy.logwarn("Inverse Kinematics Reachability - True")
         return True
 
 def main():
