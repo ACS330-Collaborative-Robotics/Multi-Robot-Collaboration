@@ -37,6 +37,12 @@ class PathPlannerServer:
             self.server.set_aborted(temp)
 
 if __name__ == "__main__":
-    rospy.init_node('path_planner_server')
+    debug_mode = False
+    if debug_mode:
+        rospy.init_node('path_planner_server', log_level=rospy.DEBUG)
+    else:
+        rospy.init_node('path_planner_server')
+
     server = PathPlannerServer()
     rospy.spin()
+    
