@@ -52,10 +52,10 @@ class Movement:
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
 
-            xobj = [0, 0, 0, 0, 0, 0, 0, 0]
-            yobj = [0, 0, 0, 0, 0, 0, 0, 0]
-            zobj = [0, 10, 20, 30, 40, 50, 60, 70]
-            Q = [10, 22, 22, 22, 22, 22, 22, 22] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+            xobj = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            yobj = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            zobj = [-10, 0, 10, 20, 30, 40, 50, 60, 70]
+            Q = [10, 22, 22, 22, 22, 22, 22, 22, 10] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
             tempxobj = []
             tempyobj = []
             tempzobj = []
@@ -118,8 +118,8 @@ class Movement:
             else:
                 precise_angle_flag = 1
 
-            if arm_pos.position.z < 0.05:
-                arm_pos.position.z = 0.05
+            if arm_pos.position.z < -0.03:
+                arm_pos.position.z = -0.03
                 
             rospy.loginfo("Path Planner - Moving %s for %s to X: %.2f Y: %.2f Z: %.2f x: %.1f y: %.1fz: %.1f w: %.1f Precision: %s", self.serv_helper.robot_ns,self.serv_helper.target_block, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w,bool(precise_angle_flag))
 
