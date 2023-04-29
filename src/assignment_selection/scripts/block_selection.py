@@ -52,14 +52,14 @@ def assignment_selector():
     #############################
 
     # tower_origin_coordinates = [x, y, z]
-    tower_origin_coordinates = [-0.10, 0.36, 0.02]
+    tower_origin_coordinates = [-0.10, 0.365, 0.02]
 
     use_manual_block_locations = False
     manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
     manual_block_location_euler_rotation = [0, 0, 0]
 
-    enable_home_between_assignments = True
-    home_joint_positions = [90*math.pi/180, 0, 0, 0, 0, 0]
+    enable_home_between_assignments = False
+    home_joint_positions = [90*math.pi/180, 0, 0, 0, 0, 0] #these are wrong as it makes them go to opposite sides
 
     block_width = 0.035
     block_height = 0.035
@@ -320,9 +320,8 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name, 
 
             inv_kin_request.state.pose.position.z = converted_z_height + z_offsets[0]
             if inv_kin_is_reachable(inv_kin_request).success:
-                if angle_offset != 0:
-                    rospy.loginfo("Assignment Selector - is_block_reachable - Angle Offset - %.0f", angle_offset*180/math.pi)
-                    
+                #if angle_offset != 0:
+                    #rospy.loginfo("Assignment Selector - is_block_reachable - Angle Offset - %.0f", angle_offset*180/math.pi)
                 return True
             converted_z_height = model_state.pose.position.z
         
