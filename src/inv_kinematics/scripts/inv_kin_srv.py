@@ -48,7 +48,7 @@ def trac_ik_inverse_kinematics(pose: Pose, precise_orientation, final_link_name=
 
         joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, ang_x, ang_y, ang_z, ang_w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
         if joints != None:
-            rospy.loginfo("Inverse Kinematics - Computed sucessfully with %.0f offset",180*c_angle_offset/pi)
+            #rospy.loginfo("Inverse Kinematics - Computed sucessfully with %.0f offset",180*c_angle_offset/pi)
             return list(joints)
         
     #rospy.logerr("Inverse Kinematics - Failed after attempt %d", attempt_number+1)
