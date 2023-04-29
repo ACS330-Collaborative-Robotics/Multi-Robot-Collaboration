@@ -119,9 +119,6 @@ class GUI:
         frame = ttk.Frame(master, relief="sunken", padding=10)
         frame.grid(row=8, column=0, columnspan=2, rowspan=3, sticky="nesw")
         
-        # clock listener
-        rospy.Subscriber('/clock', Float64, self.callback_time)
-        
         # sim listener
         self.bridge = CvBridge() 
         rospy.Subscriber('/camera1/image_raw', ImageMsg, self.callback_video)
@@ -192,13 +189,6 @@ class GUI:
         tk_image = ImageTk.PhotoImage(image=pil_image) # PIL to Tkinter-compatible
         self.sim_canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
         self.sim_canvas.image = tk_image
-    
-    # update simulation time 
-    def callback_time(self, data):
-        time_secs = data.clock.secs + data.clock.nsecs / 1e9
-        time_str = "{:.1f}".format(time_secs)
-        self.time_label.configure(text="Simulation run-time (s): " + time_str)
-        self.time_label.after(100, lambda: self.callback_time(data)) # update the simulation time label again after 100 milliseconds
 
     # emergency stop button clicked
     def emergency_stop_clicked(self):
@@ -210,7 +200,6 @@ class GUI:
             self.emergency_stop_button.config(text='EMERGENCY STOP', bg='red', fg='black')
             self.gui_pub.publish(False) # publish the message to the /gui topic
             self.emergency_stop_info.config(text="Emergency stop physical and simulated robots.")
-
 
     # SIM PREVIEW button clicked
     def sim_preview_clicked(self):
