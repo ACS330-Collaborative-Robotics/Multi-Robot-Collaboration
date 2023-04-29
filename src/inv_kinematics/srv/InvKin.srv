@@ -1,3 +1,4 @@
 gazebo_msgs/ModelState state
+bool precise_orientation
 ---
 bool success

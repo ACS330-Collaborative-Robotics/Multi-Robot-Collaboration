@@ -1,5 +1,5 @@
 # Name: Pick Up Class Definition
-# Author: Conor Nichols (cjnichols1@sheffield.ac.uk)
+# Authors: Conor Nichols (cjnichols1@sheffield.ac.uk) Joseph Fields (jfields1@sheffield.ac.uk)
 
 from path_planner import Movement
 
@@ -11,7 +11,11 @@ class PickUp(Movement.Movement):
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
     
-    def pick(self, block_name):
+
+    def moveGripper(self, state):
+        pass
+
+    def pick(self, block_name): 
         """ Pick up specified block
 
         INPUT: block_name
@@ -56,14 +60,14 @@ class PickUp(Movement.Movement):
         # Move above block
         rospy.loginfo("Path Planner - %s - Pick Up - Moving above %s.", self.serv_helper.robot_ns, block_name)
         pose.position.z += 0.15
-        if not self.move(pose):
+        if not self.move(pose, True):
             return False
         rospy.sleep(10)
         
         # Move down onto block
         rospy.loginfo("Path Planner - %s - Pick Up - Lowering onto %s.", self.serv_helper.robot_ns, block_name)
         pose.position.z -= 0.06
-        if not self.move(pose):
+        if not self.move(pose, False):
             return False
         
         # Close Gripper
@@ -74,8 +78,9 @@ class PickUp(Movement.Movement):
         # Move down onto block
         rospy.loginfo("Path Planner - %s - Pick Up - Lifting up %s.", self.serv_helper.robot_ns, block_name)
         pose.position.z += 0.15
-        if not self.move(pose):
+        if not self.move(pose, False):
             return False
+        
         
         return True
     

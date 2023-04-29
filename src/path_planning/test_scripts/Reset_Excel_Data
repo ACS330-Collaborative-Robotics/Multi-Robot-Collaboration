@@ -1,0 +1,12 @@
+from openpyxl import Workbook, load_workbook
+wb = load_workbook('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/BotRoute.xlsx')
+wobj = wb['Objects']
+wroute = wb['Route']
+wobj.delete_cols(1)
+wroute.delete_cols(1)
+wobj.delete_cols(2)
+wroute.delete_cols(2)
+wobj.delete_cols(3)
+wroute.delete_cols(3)
+
+wb.save('/home/stevencraig147/catkin_ws/src/path_planning/test_scripts/BotRoute.xlsx')

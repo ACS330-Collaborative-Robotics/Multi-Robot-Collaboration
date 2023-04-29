@@ -20,7 +20,7 @@ from inv_kinematics.srv import InvKin
 from custom_msgs.msg import Joints
 from geometry_msgs.msg import Pose
 
-def trac_ik_inverse_kinematics(pose: Pose, final_link_name="link6"):
+def trac_ik_inverse_kinematics(pose: Pose, precise_orientation, final_link_name="link6"):
     try:
         urdf_str = rospy.get_param('/robot_description')
     except KeyError:
@@ -31,13 +31,24 @@ def trac_ik_inverse_kinematics(pose: Pose, final_link_name="link6"):
 
     seed_state = [0.0]*ik_solver.number_of_joints #TODO: Update seed state to use current joint positions
 
-    coordinate_tolerance = 1e-3
-    angle_tolerance = 2*pi/180
+    coordinate_tolerance = 1e-3 # Start with 1mm tolerance
+    angle_tolerance = pi/180 # Start with 1 degree tolerance
+
+    multiplier = 90
+    if not precise_orientation:
+        angle_tolerance = angle_tolerance*multiplier
     
-    for attempt_number in range(3):
-        joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
+    for c_angle_offset in [0, -pi, pi]: #convert to euler, +-pi rotation and convert to quaternion to test #could just be -pi? rounding?
+
+        euler_arm_angle = tf_conversions.transformations.euler_from_quaternion([pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w])
+        rect_euler = list(euler_arm_angle)
+        rect_euler[2] = rect_euler[2]+c_angle_offset
+
+        ang_x, ang_y, ang_z, ang_w = tf_conversions.transformations.quaternion_from_euler(rect_euler[0], rect_euler[1], rect_euler[2])
+
+        joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, ang_x, ang_y, ang_z, ang_w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
         if joints != None:
-            #rospy.logdebug("Inverse Kinematics - Computed sucessfully on attempt %d", attempt_number+1)
+            #rospy.loginfo("Inverse Kinematics - Computed sucessfully with %.0f offset",180*c_angle_offset/pi)
             return list(joints)
         
     #rospy.logerr("Inverse Kinematics - Failed after attempt %d", attempt_number+1)
@@ -50,13 +61,13 @@ def inverse_kinematics_service(req):
 
     start_time = time()
     if req.state.reference_frame == "":
-        joints = trac_ik_inverse_kinematics(req.state.pose)
+        joints = trac_ik_inverse_kinematics(req.state.pose, req.precise_orientation)
     else:
         rospy.loginfo("Inverse Kinematics - Moving %s instead of end-effector.", req.state.reference_frame)
-        joints = trac_ik_inverse_kinematics(req.state.pose, req.state.reference_frame)
+        joints = trac_ik_inverse_kinematics(req.state.pose, req.precise_orientation, req.state.reference_frame)
 
     if joints is None:
-        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f\n", time()-start_time)
+        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f for %s", time()-start_time, req.state.model_name)
         return False
     else:
         joints_display = " ".join([str(round(joint*180/pi, 2)) for joint in joints])
@@ -104,7 +115,7 @@ def analyse_robot_workspace():
                 pose_object.position.y = y
                 pose_object.position.z = z
 
-                status = trac_ik_inverse_kinematics(pose_object)
+                status = trac_ik_inverse_kinematics(pose_object, True)
                 if status:
                     ax.scatter(x, y, z, c='k')
 
@@ -126,11 +137,15 @@ def analyse_robot_workspace():
     plt.show()
 
 def inverse_kinematics_reachability_service(req):
-    joints = trac_ik_inverse_kinematics(req.state.pose)
+    #rospy.loginfo("Inverse Kinematics Reachability - %.3f\t%.3f\t%.3f", req.state.pose.position.x, req.state.pose.position.y, req.state.pose.position.z)
+
+    joints = trac_ik_inverse_kinematics(req.state.pose, True)
 
     if joints is None:
+        #rospy.logwarn("Inverse Kinematics Reachability - Failed")
         return False
     else:
+        #rospy.logwarn("Inverse Kinematics Reachability - True")
         return True
 
 def main():
@@ -139,7 +154,7 @@ def main():
     else:
         rospy.init_node('inverse_kinematics_server')
 
-    #analyse_robot_workspace()
+    # analyse_robot_workspace()
 
     s1 = rospy.Service('inverse_kinematics', InvKin, inverse_kinematics_service)
     s2 = rospy.Service('inverse_kinematics_reachability', InvKin, inverse_kinematics_reachability_service)
