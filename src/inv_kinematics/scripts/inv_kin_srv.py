@@ -60,7 +60,7 @@ def inverse_kinematics_service(req):
         joints = trac_ik_inverse_kinematics(req.state.pose, req.precise_orientation, req.state.reference_frame)
 
     if joints is None:
-        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f\n for %s", time()-start_time, req.state.model_name)
+        rospy.logerr("Inverse Kinematics - Failed to find a solution in %.4f for %s", time()-start_time, req.state.model_name)
         return False
     else:
         joints_display = " ".join([str(round(joint*180/pi, 2)) for joint in joints])
