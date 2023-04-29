@@ -65,7 +65,7 @@ def assignment_selector():
     block_height = 0.035
     block_length = 0.105
 
-    maximum_simulatenous_robots = 1 #Configurable constant
+    maximum_simulatenous_robots = 2 #Configurable constant
     #maximum_simulatenous_robots = len(robot_namespaces)
 
     #############################
@@ -171,7 +171,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
     tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
     height = 0 #height of blocks
 
-    euler_c =  -90*(math.pi/180)
+    euler_c =  +90*(math.pi/180) #causes issues!!
     # Generate coordinates
     for i in range(number_layers):
         width = 0 #width of blocks
@@ -184,7 +184,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
 
         height = height + block_height
 
-        if euler_c == 0:
+        if euler_c == 0: #what does this do?
             euler_c = -90*(math.pi/180)
         elif euler_c == -90*(math.pi/180):
             euler_c = 0
@@ -298,7 +298,7 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name, 
 
     block_orientation_euler = [euler_x, euler_y, euler_z]
 
-    for angle_offset in [0]:#, -math.pi, math.pi]:
+    for angle_offset in [0, -math.pi, math.pi]: #could just be -pi? rounding?
         orientation_euler = [0, math.pi, block_orientation_euler[2]+angle_offset]
         orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
         
@@ -309,21 +309,22 @@ def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name, 
 
         model_state.pose = frameConverter(robot_name, "world", model_state.pose)
 
-    inv_kin_request.state = model_state
-    inv_kin_request.precise_orientation = True
+        inv_kin_request.state = model_state
+        inv_kin_request.precise_orientation = True
 
-    converted_z_height = inv_kin_request.state.pose.position.z
+        converted_z_height = inv_kin_request.state.pose.position.z
 
-    # Test at two heights above the block
-    inv_kin_request.state.pose.position.z = converted_z_height + z_offsets[0]
-    if inv_kin_is_reachable(inv_kin_request).success:
-
+        # Test at two heights above the block
         inv_kin_request.state.pose.position.z = converted_z_height + z_offsets[0]
         if inv_kin_is_reachable(inv_kin_request).success:
-            if angle_offset != 0:
-                rospy.loginfo("Angle Offset - %.0f", angle_offset*180/math.pi)
-            return True
-        converted_z_height = model_state.pose.position.z
+
+            inv_kin_request.state.pose.position.z = converted_z_height + z_offsets[0]
+            if inv_kin_is_reachable(inv_kin_request).success:
+                if angle_offset != 0:
+                    rospy.loginfo("Assignment Selector - is_block_reachable - Angle Offset - %.0f", angle_offset*180/math.pi)
+                    
+                return True
+            converted_z_height = model_state.pose.position.z
         
     return False
     

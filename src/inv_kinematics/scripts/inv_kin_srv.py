@@ -38,10 +38,17 @@ def trac_ik_inverse_kinematics(pose: Pose, precise_orientation, final_link_name=
     if not precise_orientation:
         angle_tolerance = angle_tolerance*multiplier
     
-    for attempt_number in range(3):
-        joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
+    for c_angle_offset in [0, -pi, pi]: #convert to euler, +-pi rotation and convert to quaternion to test #could just be -pi? rounding?
+
+        euler_arm_angle = tf_conversions.transformations.euler_from_quaternion([pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w])
+        rect_euler = list(euler_arm_angle)
+        rect_euler[2] = rect_euler[2]+c_angle_offset
+
+        ang_x, ang_y, ang_z, ang_w = tf_conversions.transformations.quaternion_from_euler(rect_euler[0], rect_euler[1], rect_euler[2])
+
+        joints = ik_solver.get_ik(seed_state, pose.position.x, pose.position.y, pose.position.z, ang_x, ang_y, ang_z, ang_w, coordinate_tolerance, coordinate_tolerance, coordinate_tolerance, angle_tolerance, angle_tolerance, angle_tolerance)
         if joints != None:
-            #rospy.logdebug("Inverse Kinematics - Computed sucessfully on attempt %d", attempt_number+1)
+            rospy.loginfo("Inverse Kinematics - Computed sucessfully with %.0f offset",180*c_angle_offset/pi)
             return list(joints)
         
     #rospy.logerr("Inverse Kinematics - Failed after attempt %d", attempt_number+1)
