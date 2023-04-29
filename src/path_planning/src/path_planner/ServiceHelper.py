@@ -485,6 +485,7 @@ class ServiceHelper:
         return obs_in_zone_flag
 
     def fix_block_pose_orientation(self, pose):
+        rospy.logerr("running fix block pose thing")
         model_state = ModelState()
         model_state.pose = pose
 
@@ -505,10 +506,11 @@ class ServiceHelper:
 
             # Test at two heights above the block
             model_state.pose.position.z += 0.15
-            if self.inv_kin_reachable(model_state).success:
+
+            if self.inv_kin_reachable(model_state,1).success:
 
                 model_state.pose.position.z -= 0.06
-                if self.inv_kin_reachable(model_state).success:
+                if self.inv_kin_reachable(model_state,1).success:
                     return angle_offset
         
         return None
