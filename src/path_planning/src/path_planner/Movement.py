@@ -6,7 +6,6 @@ from pathlib import Path
 from geometry_msgs.msg import Pose
 from time import time
 import tf_conversions
-#import matplotlib.pyplot as plt
 
 import yaml
 from yaml.loader import SafeLoader
@@ -25,10 +24,10 @@ class Movement:
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
-        precise_angle_flag=0
+        precise_angle_flag = 0
         SF = 100 #distance scale factor
         D = self.serv_helper.APFyamlData["D"]
-        PathComplete=0
+        PathComplete = 0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
         # Get block coordinates relative to robot instead of world
         pos_robot_base_frame = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos)
@@ -43,14 +42,14 @@ class Movement:
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
-        while PathComplete==0 and not rospy.is_shutdown():
+        while PathComplete == 0 and not rospy.is_shutdown():
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
 
-            xobj=[0, 0, 0, 0, 0, 0]
-            yobj=[0, 0, 0, 0, 0, 0]
-            zobj=[0, 10, 20, 30, 40, 50]
+            xobj = [0, 0, 0, 0, 0, 0]
+            yobj = [0, 0, 0, 0, 0, 0]
+            zobj = [0, 10, 20, 30, 40, 50]
             Q = [10,25,25,25,25,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
             tempxobj = []
             tempyobj = []
@@ -64,17 +63,17 @@ class Movement:
             robot_namespaces.remove(self.serv_helper.robot_ns) #remove own name from list of arms to avoid
             for obstacle_arm_ns in robot_namespaces:
                 for obs in range(0,7):
-                    if obs==0:
-                        obs_link="base_link"
+                    if obs == 0:
+                        obs_link = "base_link"
                     else:
-                        obs_link="link"+str(obs)
+                        obs_link = "link"+str(obs)
 
                     pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
                     pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
 
-                    tempxobj.append(pos_obstacle.position.x *SF) #obstacle arm joint positions relative to other arm
-                    tempyobj.append(pos_obstacle.position.y *SF)
-                    tempzobj.append(pos_obstacle.position.z *SF)
+                    tempxobj.append(pos_obstacle.position.x * SF) #obstacle arm joint positions relative to other arm
+                    tempyobj.append(pos_obstacle.position.y * SF)
+                    tempzobj.append(pos_obstacle.position.z * SF)
                     tempQ.append(10)
 
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
@@ -87,10 +86,10 @@ class Movement:
                 Q = Q + tempQ_linked
 
             if self.serv_helper.is_obsarm_in_zone(robot_namespaces ,pos.position.x,pos.position.y): #working in world frame
-                xobj + [xgoal, xgoal, xgoal, xgoal, xgoal, xgoal]
-                yobj + [ygoal, ygoal, ygoal, ygoal, ygoal, ygoal]
-                zobj + [0, 10, 20, 30, 40, 50]
-                Q + ([15,15,15,15,15,15])
+                xobj = xobj + [xgoal, xgoal, xgoal, xgoal, xgoal, xgoal]
+                yobj = yobj + [ygoal, ygoal, ygoal, ygoal, ygoal, ygoal]
+                zobj = zobj + [0, 10, 20, 30, 40, 50]
+                Q= Q + ([15,15,15,15,15,15])
                 rospy.logwarn("Path Planner - Forcefield activated to repel %s",self.serv_helper.robot_ns)
 
             ##X,Y,Z path the End effector will take
@@ -113,12 +112,13 @@ class Movement:
             rospy.loginfo('Distance: %.2f', d)
             if allow_imprecise_orientation and d > 5:
                 precise_angle_flag = 0
-                if arm_pos.position.z < 0.05:
-                    arm_pos.position.z = 0.05
             else:
                 precise_angle_flag = 1
+
+            if arm_pos.position.z < 0.05:
+                arm_pos.position.z = 0.05
                 
-            rospy.loginfo("Path Planner - Move - Publishing %s to\t%.2f\t%.2f\t%.2f\t\t%.2f\t%.2f\t%.2f\t%.2f", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w)
+            rospy.loginfo("Path Planner - Moving %s to X: %.3f Y: %.3f Z: %.3f x: %.2f y: %.2fz: %.2f w: %.2f Precision: %s", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w,bool(precise_angle_flag))
 
             #rospy.loginfo("Potential Fields - Step Calculation Time: %.4f",time()-start_time)
             #deltax =  startx - arm_pos.position.x*SF
@@ -135,7 +135,7 @@ class Movement:
             if precise_angle_flag:
                 CloseEnough = 0.5
             else:
-                CloseEnough =5
+                CloseEnough = 5
             if not(status):
                 #rospy.logerr("Path Planner - Error, Target position unreachable.")
                 pass

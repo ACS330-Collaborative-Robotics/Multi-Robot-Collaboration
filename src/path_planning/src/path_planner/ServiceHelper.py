@@ -218,9 +218,9 @@ class ServiceHelper:
         Att_Change_SF = self.APFyamlData["Att_Change_SF"] #scaling factor
         d= self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
-            PotentialChange = [Att_Change_SF*x-Att_Change_SF*xgoal,Att_Change_SF*y-Att_Change_SF*ygoal,Att_Change_SF*z-Att_Change_SF*zgoal]
+            PotentialChange = [Att_Change_SF * x-Att_Change_SF * xgoal,Att_Change_SF * y-Att_Change_SF * ygoal,Att_Change_SF * z-Att_Change_SF * zgoal]
         if d > D:
-            PotentialChange = [(Att_Change_SF*x-Att_Change_SF*xgoal)/d,(Att_Change_SF*y-Att_Change_SF*ygoal)/d,(Att_Change_SF*z-Att_Change_SF*zgoal)/d]
+            PotentialChange = [(Att_Change_SF * x-Att_Change_SF * xgoal)/d,(Att_Change_SF * y-Att_Change_SF * ygoal)/d, (Att_Change_SF * z-Att_Change_SF * zgoal)/d]
         #rospy.loginfo('attraction change:',PotentialChange)
         return PotentialChange
 
@@ -232,18 +232,18 @@ class ServiceHelper:
         Att_SF = self.APFyamlData["Att_SF"] #scaling factor
         d = self.EuclidianDistance(x,y,z,xgoal,ygoal,zgoal)
         if d <= D:
-            PotentialAtt = 0.5*Att_SF*(d**2)
+            PotentialAtt = 0.5 * Att_SF * (d**2)
         else:
-            PotentialAtt = D*Att_SF*d - 0.5*Att_SF*D
+            PotentialAtt = D * Att_SF * d - 0.5 * Att_SF * D
         return PotentialAtt
 
     def PotentialAttraction2d(self,x,y,xgoal,ygoal,D):
         Att_SF = self.APFyamlData["Att_SF"] #scaling factor
         d = self.EuclidianDistance2d(self,x,y,xgoal,ygoal)
         if d <= D:
-            PotentialAtt = 0.5*Att_SF*(d**2)
+            PotentialAtt = 0.5 * Att_SF * (d**2)
         else:
-            PotentialAtt = D*Att_SF*d - 0.5*Att_SF*D
+            PotentialAtt = D * Att_SF * d - 0.5 * Att_SF * D
         return PotentialAtt
     
     def PotentialRepulsion(self,x,y,z,xobj,yobj,zobj,Q): #Repulsive field as a whole (used to display)
@@ -270,7 +270,7 @@ class ServiceHelper:
         for objNum in range(len(xobj)):
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             if d <= Q[objNum]:
-                PotentialRepcurrent = Rep_SF*((1/d)-(1/Q[objNum]))
+                PotentialRepcurrent = Rep_SF * ((1/d)-(1/Q[objNum]))
             else:
                 PotentialRepcurrent = 0
             if PotentialRepcurrent > 100:
@@ -292,39 +292,39 @@ class ServiceHelper:
         zrep = 0
         for objNum in range(len(xobj)):
             #generate the vectors and angles
-            homevect = [xgoal-x,ygoal-y,zgoal-z]
-            objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z) # angles are ebcoming negative which causes wrogn ddirection
-            anglegoal = math.atan2(homevect[1],homevect[0])
-            angleobj = math.atan2(objvect[1],objvect[0])
+            homevect = [xgoal - x ,ygoal - y ,zgoal - z]
+            objvect = (xobj[objNum] - x ,yobj[objNum] - y ,zobj[objNum] - z) # angles are ebcoming negative which causes wrogn ddirection
+            anglegoal = math.atan2(homevect[1] ,homevect[0])
+            angleobj = math.atan2(objvect[1] ,objvect[0])
             angle =  anglegoal-angleobj   
             #rospy.loginfo("ANGLE - %.2f",angle)
             zheight = z-zobj[objNum]
-            d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
-            D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
+            d = self.EuclidianDistance2d(x ,y ,xobj[objNum] ,yobj[objNum])
+            D = self.EuclidianDistance(x ,y ,z ,xobj[objNum] ,yobj[objNum] ,zobj[objNum])
             zangle = math.atan2(zheight,d)
             # deciding the direction of the tangent
             ##rospy.logwarn("Distance; %.2f",d)
             if d == 0:
                 d = 0.0001
-            scalings = (1/d**2) *(1/Q[objNum] - 1/d)
+            scalings = (1 / d**2) *(1 / Q[objNum] - 1/d)
             if scalings == 0:
                 0.00001
             if angle < 0:
                 #rospy.logwarn("GO LEFT")
                 repulsionangle = anglegoal + 100
-                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(100) - objvect[1]*math.sin(100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(100) + objvect[1]*math.cos(100))
+                repulsionvect = -Rep_Change_SF * scalings * (objvect[0] * math.cos(100) - objvect[1] * math.sin(100)),- Rep_Change_SF * scalings * (objvect[0] * math.sin(100) + objvect[1] * math.cos(100))
             if angle > 0 or angle == 0:
                 #rospy.logwarn("GO RIGHT")
                 repulsionangle = anglegoal - 100
-                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(-100) - objvect[1]*math.sin(-100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(-100) + objvect[1]*math.cos(-100))
+                repulsionvect = - Rep_Change_SF * scalings * (objvect[0]*math.cos(-100) - objvect[1]*math.sin(-100)),-Rep_Change_SF * scalings * (objvect[0]*math.sin(-100) + objvect[1] * math.cos(-100))
             if zheight >= 0:
                 #rospy.loginfo("GO UP")
                 zrepangle = zangle - 100
-                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.cos(100)
+                zrep = - Rep_Change_SF * (1/D**2) * (1/Q[objNum] -1/D) * zrep * math.cos(100)
             if zheight < 0:
                 #rospy.loginfo("GO DOWN")
                 zrepangle = zangle + 100
-                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.cos(-100)
+                zrep = -Rep_Change_SF * (1/D**2) * (1/Q[objNum] -1/D) * zrep * math.cos(-100)
             #deciding whether the obstacle is in range
             #if D<Q[objNum]:
                 #rospy.logwarn("in influence")
@@ -399,9 +399,9 @@ class ServiceHelper:
         #diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
         diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
         if any(diffrep) != 0:
-            difx = diffrep[0]  + 0.25*diffatt[0]
-            dify = diffrep[1]  + 0.25*diffatt[1]
-            difz = diffrep[2]  + 0.25*diffatt[2]
+            difx = diffrep[0] + 0.25*diffatt[0]
+            dify = diffrep[1] + 0.25*diffatt[1]
+            difz = diffrep[2] + 0.25*diffatt[2]
                 #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
             #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
 
@@ -448,6 +448,7 @@ class ServiceHelper:
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
         self.publish_path_points(x,y,z)
+        rospy.logerr("STEP_SIZE = %.1f", Step_Size)
         return x, y, z
 
     def publish_path_points(self,x,y,z):
@@ -456,9 +457,9 @@ class ServiceHelper:
         OUTPUT: publishes point to be used by gui
         """
         point = Point()
-        point.x=x
-        point.y=y
-        point.z=z
+        point.x = x
+        point.y = y
+        point.z = z
 
         self.point_pub.publish(point)
         return
@@ -478,14 +479,13 @@ class ServiceHelper:
             d_obs_to_goal = self.EuclidianDistance2d(pos_obs_world.position.x, pos_obs_world.position.y, xgoal, ygoal) #distance of other arm to zone
 
             if d_obs_to_goal <= forcefield_dist:
-                obs_in_zone_flag=1
+                obs_in_zone_flag =1
                 if d_own_to_goal <= forcefield_dist:
                     rospy.logerr("Path Planner - Both arms in forcefield area")
 
         return obs_in_zone_flag
 
     def fix_block_pose_orientation(self, pose):
-        rospy.logerr("running fix block pose thing")
         model_state = ModelState()
         model_state.pose = pose
 
