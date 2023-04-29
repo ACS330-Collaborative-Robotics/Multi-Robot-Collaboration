@@ -220,7 +220,7 @@ class ServiceHelper:
         if d <= D:
             PotentialChange = [Att_Change_SF*x-Att_Change_SF*xgoal,Att_Change_SF*y-Att_Change_SF*ygoal,Att_Change_SF*z-Att_Change_SF*zgoal]
         if d > D:
-            PotentialChange = [(Att_Change_SF*x-Att_Change_SF*xgoal)/d,(Att_Change_SF*y-Att_Change_SF*ygoal)/d,(Att_Change_SF*z-Att_Change_SF*zgoal)/d]
+            PotentialChange = [(Att_Change_SF*x-Att_Change_SF*xgoal)/d,(Att_Change_SF*y-Att_Change_SF*ygoal)/d, (Att_Change_SF*z-Att_Change_SF*zgoal)/d]
         #rospy.loginfo('attraction change:',PotentialChange)
         return PotentialChange
 
@@ -234,7 +234,7 @@ class ServiceHelper:
         if d <= D:
             PotentialAtt = 0.5*Att_SF*(d**2)
         else:
-            PotentialAtt = D*Att_SF*d - 0.5*Att_SF*D
+            PotentialAtt = D*Att_SF*d-0.5*Att_SF*D
         return PotentialAtt
 
     def PotentialAttraction2d(self,x,y,xgoal,ygoal,D):
@@ -243,7 +243,7 @@ class ServiceHelper:
         if d <= D:
             PotentialAtt = 0.5*Att_SF*(d**2)
         else:
-            PotentialAtt = D*Att_SF*d - 0.5*Att_SF*D
+            PotentialAtt = D*Att_SF*d-0.5*Att_SF*D
         return PotentialAtt
     
     def PotentialRepulsion(self,x,y,z,xobj,yobj,zobj,Q): #Repulsive field as a whole (used to display)
@@ -270,7 +270,7 @@ class ServiceHelper:
         for objNum in range(len(xobj)):
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
             if d <= Q[objNum]:
-                PotentialRepcurrent = Rep_SF*((1/d)-(1/Q[objNum]))
+                PotentialRepcurrent = Rep_SF * ((1/d)-(1/Q[objNum]))
             else:
                 PotentialRepcurrent = 0
             if PotentialRepcurrent > 100:
@@ -294,37 +294,38 @@ class ServiceHelper:
             #generate the vectors and angles
             homevect = [xgoal-x,ygoal-y,zgoal-z]
             objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z) # angles are ebcoming negative which causes wrogn ddirection
-            anglegoal = math.atan2(homevect[1],homevect[0])
-            angleobj = math.atan2(objvect[1],objvect[0])
+            anglegoal = math.atan2(homevect[1] ,homevect[0])
+            angleobj = math.atan2(objvect[1] ,objvect[0])
+            #IS THIS THE RIGHT WAY ROUND? - NEEDS TO BE OBJ - GOAL
             angle =  angleobj-anglegoal   
             #rospy.loginfo("ANGLE - %.2f",angle)
             zheight = z-zobj[objNum]
-            d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])
-            D = self.EuclidianDistance(x,y,z,xobj[objNum],yobj[objNum],zobj[objNum])
+            d = self.EuclidianDistance2d(x ,y ,xobj[objNum] ,yobj[objNum])
+            D = self.EuclidianDistance(x ,y ,z ,xobj[objNum] ,yobj[objNum] ,zobj[objNum])
             zangle = math.atan2(zheight,d)
             # deciding the direction of the tangent
             ##rospy.logwarn("Distance; %.2f",d)
             if d == 0:
                 d = 0.0001
-            scalings = (1/d**2) *(1/Q[objNum] - 1/d)
+            scalings = (1/d**2)*(1/Q[objNum]-1/d)
             if scalings == 0:
                 0.00001
             if angle < 0:
                 #rospy.logwarn("GO LEFT")
-                repulsionangle = anglegoal + 100
-                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(100) - objvect[1]*math.sin(100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(100) + objvect[1]*math.cos(100))
+                repulsionangle =anglegoal+100
+                repulsionvect =-Rep_Change_SF*scalings*(objvect[0]*math.cos(100)-objvect[1]*math.sin(100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(100)+objvect[1]*math.cos(100))
             if angle > 0 or angle == 0:
                 #rospy.logwarn("GO RIGHT")
-                repulsionangle = anglegoal - 100
-                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(-100) - objvect[1]*math.sin(-100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(-100) + objvect[1]*math.cos(-100))
+                repulsionangle = anglegoal-100
+                repulsionvect = -Rep_Change_SF*scalings*(objvect[0]*math.cos(-100)-objvect[1]*math.sin(-100)),-Rep_Change_SF*scalings*(objvect[0]*math.sin(-100)+objvect[1]*math.cos(-100))
             if zheight >= 0:
                 #rospy.loginfo("GO UP")
                 zrepangle = zangle - 100
-                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.cos(100)
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum]-1/D)*zrep*math.cos(100)
             if zheight < 0:
                 #rospy.loginfo("GO DOWN")
-                zrepangle = zangle + 100
-                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum] -1/D)*zrep*math.cos(-100)
+                zrepangle = zangle+100
+                zrep = -Rep_Change_SF*(1/D**2)*(1/Q[objNum]-1/D)*zrep*math.cos(-100)
             #deciding whether the obstacle is in range
             #if D<Q[objNum]:
                 #rospy.logwarn("in influence")
@@ -349,39 +350,32 @@ class ServiceHelper:
     def is_block_reachable_APF(self, X, Y, Z):
         rospy.wait_for_service('/inverse_kinematics_reachability')
         inv_kin_is_reachable = rospy.ServiceProxy('/inverse_kinematics_reachability', InvKin)
-
+        
         inv_kin_request = InvKinRequest()
-    
-         # Create Initial Pose object
-        pose_object = Pose()
-        pose_object.position.x = X/100
-        pose_object.position.y = Y/100
-        pose_object.position.z = Z/100
+        model_state = ModelState()
 
-        #pose_object.position.z += 0.15 #not 100% sure this should be in as constant z additions are added at higher levels
+        model_state.pose.position.x = X/100
+        model_state.pose.position.y = Y/100
+        model_state.pose.position.z = Z/100
 
-        block_orientation_quaternion = [pose_object.orientation.x, pose_object.orientation.y, pose_object.orientation.z, pose_object.orientation.w]
+        block_orientation_quaternion = [model_state.pose.orientation.x, model_state.pose.orientation.y, model_state.pose.orientation.z, model_state.pose.orientation.w]
         block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
 
-        orientation_in_euler = [0, math.pi, block_orientation_euler[2]]
-        orientation = tf.transformations.quaternion_from_euler(orientation_in_euler[0], orientation_in_euler[1], orientation_in_euler[2])
+        orientation_euler = [0, math.pi, block_orientation_euler[2]]
+        orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
         
-        pose_object.orientation.x = orientation[0]
-        pose_object.orientation.y = orientation[1]
-        pose_object.orientation.z = orientation[2]
-        pose_object.orientation.w = orientation[3]
+        model_state.pose.orientation.x = orientation_quaternion[0]
+        model_state.pose.orientation.y = orientation_quaternion[1]
+        model_state.pose.orientation.z = orientation_quaternion[2]
+        model_state.pose.orientation.w = orientation_quaternion[3]
 
-        inv_kin_request.state.model_name=self.robot_ns
-        
-        inv_kin_request.state.pose = pose_object
-        inv_kin_request.precise_orientation = False
-        #return True #config thing to turn this function off
+        inv_kin_request.state = model_state
+        inv_kin_request.precise_orientation = True
+
         if inv_kin_is_reachable(inv_kin_request).success:
-            #rospy.loginfo("APF Planner - Point is reachable by %s", self.robot_ns)
             return True
-        else:
-            #rospy.loginfo("APF Planner - Point is not reachable by %s", self.robot_ns)
-            return False
+            
+        return False
         
     def PathPlanner(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj,Q,D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag): #you are currently trying to add this in, this is the path from a poiint using position and force ads velocity
         """   ## make temp inside of move)()
@@ -406,9 +400,9 @@ class ServiceHelper:
         #diffreptemp = self.PotentialRepulsionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],tempxobj,tempyobj,tempzobj,xgoal,ygoal,zgoal,tempQ)
         diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
         if any(diffrep) != 0:
-            difx = diffrep[0]  + 0.25*diffatt[0]
-            dify = diffrep[1]  + 0.25*diffatt[1]
-            difz = diffrep[2]  + 0.25*diffatt[2]
+            difx = diffrep[0] + 0.25*diffatt[0]
+            dify = diffrep[1] + 0.25*diffatt[1]
+            difz = diffrep[2] + 0.25*diffatt[2]
                 #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
             #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
 
@@ -455,6 +449,7 @@ class ServiceHelper:
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
         self.publish_path_points(x,y,z)
+        rospy.logerr("STEP_SIZE = %.1f", Step_Size)
         return x, y, z
 
     def publish_path_points(self,x,y,z):
@@ -463,9 +458,9 @@ class ServiceHelper:
         OUTPUT: publishes point to be used by gui
         """
         point = Point()
-        point.x=x
-        point.y=y
-        point.z=z
+        point.x = x
+        point.y = y
+        point.z = z
 
         self.point_pub.publish(point)
         return
@@ -485,17 +480,11 @@ class ServiceHelper:
             d_obs_to_goal = self.EuclidianDistance2d(pos_obs_world.position.x, pos_obs_world.position.y, xgoal, ygoal) #distance of other arm to zone
 
             if d_obs_to_goal <= forcefield_dist:
-                obs_in_zone_flag=1
+                obs_in_zone_flag =1
                 if d_own_to_goal <= forcefield_dist:
                     rospy.logerr("Path Planner - Both arms in forcefield area")
 
         return obs_in_zone_flag
-
-
-
-
-        
-
 
     def fix_block_pose_orientation(self, pose):
         model_state = ModelState()
@@ -514,14 +503,15 @@ class ServiceHelper:
             model_state.pose.orientation.z = orientation_quaternion[2]
             model_state.pose.orientation.w = orientation_quaternion[3]
 
-            model_state.pose = self.frameConverter(self.robot_ns, "world", model_state.pose)
+            model_state.pose = self.frameConverter(self.robot_ns+"/base_link", "world", model_state.pose)
 
             # Test at two heights above the block
             model_state.pose.position.z += 0.15
-            if self.inv_kin_reachable(model_state).success:
- 
+
+            if self.inv_kin_reachable(model_state,1).success:
+
                 model_state.pose.position.z -= 0.06
-                if self.inv_kin_reachable(model_state).success:
+                if self.inv_kin_reachable(model_state,1).success:
                     return angle_offset
         
         return None
