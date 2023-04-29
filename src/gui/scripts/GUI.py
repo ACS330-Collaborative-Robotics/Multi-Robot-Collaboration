@@ -74,7 +74,7 @@ class GUI:
         self.Pi_light = tk.Label(master,bg="red", width=2, height=1)
         self.Pi_light.grid(row=4, column=1)
         self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected")
-        self.Pi_label.grid(row=4, column=2, sticky="w", padx=(150,0))
+        self.Pi_label.grid(row=4, column=2, sticky="w", padx=(165,0))
         piServices = ['/mover6_a_p/JointJog', '/mover6_b_p/JointJog']
         try:
             output = subprocess.check_output(['rosservice', 'find'] + piServices)
@@ -97,7 +97,7 @@ class GUI:
         self.nodes_light = tk.Label(master, bg="red", width=2, height=1)
         self.nodes_light.grid(row=5, column=1)
         self.nodes_label = tk.Label(master, text="Core nodes configured")
-        self.nodes_label.grid(row=5, column=2, sticky="w", padx=(150,0))
+        self.nodes_label.grid(row=5, column=2, sticky="w", padx=(165,0))
         ik_service = '/inverse_kinematics'
         try:
             output = subprocess.check_output(['rosservice', 'list'])
@@ -137,9 +137,9 @@ class GUI:
         self.error_light = tk.Label(self.master, bg="yellow", width=2, height=1)
         self.error_light.grid(row=6, column=1)
         self.error_label = tk.Label(self.master, text="Error status")
-        self.error_label.grid(row=6, column=2, sticky="w", padx=(150,0))
+        self.error_label.grid(row=6, column=2, sticky="w", padx=(165,0))
         self.error_msg = tk.Text(self.master, height=5, width=50)
-        self.error_msg.grid(row=7, column=1, columnspan=2, sticky="w", padx=(150,0))
+        self.error_msg.grid(row=7, column=1, columnspan=2, sticky="w", padx=(165,0))
         # subscribe to rosout 
         rospy.Subscriber('/rosout', Log, self.callback_error, callback_args=(self.error_msg, self.error_light))
         # Initialize the ROS publisher for the gui
