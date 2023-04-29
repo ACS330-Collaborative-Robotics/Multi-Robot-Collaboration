@@ -46,8 +46,8 @@ class Movement:
         startz = start_pose.position.z*SF
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         while PathComplete == 0 and not rospy.is_shutdown():
-            rospy.logerr("Target World: %.2f %.2f %.2f, Target base: %.1f %.1f %.1f",pos.position.x, pos.position.y, pos.position.z, xgoal,ygoal,zgoal)
-            rospy.logerr("Arm World: %.2f %.2f %.2f, Arm base: %.1f %.1f %.1f",start_pose_world.position.x, start_pose_world.position.y, start_pose_world.position.z, startx,starty,startz)
+            #rospy.logerr("Target World: %.2f %.2f %.2f, Target base: %.1f %.1f %.1f",pos.position.x, pos.position.y, pos.position.z, xgoal,ygoal,zgoal)
+            #rospy.logerr("Arm World: %.2f %.2f %.2f, Arm base: %.1f %.1f %.1f",start_pose_world.position.x, start_pose_world.position.y, start_pose_world.position.z, startx,starty,startz)
             start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
@@ -110,7 +110,7 @@ class Movement:
             arm_pos.orientation.y = pos_robot_base_frame.orientation.y 
             arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
             arm_pos.orientation.w = pos_robot_base_frame.orientation.w
-            rospy.loginfo('Current: %.2f, %.2f, %.2f, Goal: %.2f, %.2f, %.2f,',arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
+            #rospy.loginfo('Current: %.2f, %.2f, %.2f, Goal: %.2f, %.2f, %.2f,',arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             d = self.serv_helper.EuclidianDistance(arm_pos.position.x*SF,arm_pos.position.y*SF,arm_pos.position.z*SF,xgoal,ygoal,zgoal)
             rospy.loginfo('Distance: %.2f', d)
             if allow_imprecise_orientation and d > 5:
@@ -121,7 +121,7 @@ class Movement:
             if arm_pos.position.z < 0.05:
                 arm_pos.position.z = 0.05
                 
-            rospy.loginfo("Path Planner - Moving %s to X: %.3f Y: %.3f Z: %.3f x: %.2f y: %.2fz: %.2f w: %.2f Precision: %s", self.serv_helper.robot_ns, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w,bool(precise_angle_flag))
+            rospy.loginfo("Path Planner - Moving %s for %s to X: %.2f Y: %.2f Z: %.2f x: %.1f y: %.1fz: %.1f w: %.1f Precision: %s", self.serv_helper.robot_ns,self.serv_helper.target_block, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w,bool(precise_angle_flag))
 
             #rospy.loginfo("Potential Fields - Step Calculation Time: %.4f",time()-start_time)
             #deltax =  startx - arm_pos.position.x*SF

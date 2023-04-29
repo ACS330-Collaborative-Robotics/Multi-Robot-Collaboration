@@ -33,7 +33,7 @@ from math import *
 class ServiceHelper:
     def __init__(self, robot_ns,target_block):
         self.robot_ns = robot_ns
-        self.target_block=target_block
+        self.target_block = target_block
         # Setup inverse_kinematics service
         rospy.wait_for_service('/inverse_kinematics')
         self.inv_kin = rospy.ServiceProxy('/inverse_kinematics', InvKin)
@@ -449,7 +449,6 @@ class ServiceHelper:
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
         self.publish_path_points(x,y,z)
-        rospy.logerr("STEP_SIZE = %.1f", Step_Size)
         return x, y, z
 
     def publish_path_points(self,x,y,z):
