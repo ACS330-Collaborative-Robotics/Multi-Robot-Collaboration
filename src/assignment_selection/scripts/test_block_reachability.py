@@ -79,14 +79,17 @@ def build_block_list(robot_namespaces):
     for block_num in range(len(blockData.block_data)):
         block_name = "block" + str(blockData.block_data[block_num].block_number)
 
+        robots_can_reach = []
         for robot_name in robot_namespaces:
             if is_block_reachable(block_name, robot_name):
                 block_names.append(block_name)
-                rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, robot_name)
-                break
-        else:
-            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
+                robots_can_reach.append(robot_name)
 
+        if len(robots_can_reach) == 0:
+            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
+        else:
+            rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, ', '.join(robots_can_reach))
+            
     rospy.loginfo("Assignment Selection - Block list built.\n")
 
     return block_names
