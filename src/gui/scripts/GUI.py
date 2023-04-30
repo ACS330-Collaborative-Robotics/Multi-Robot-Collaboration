@@ -7,6 +7,7 @@ import subprocess
 
 import tkinter as tk
 
+from tkinter import ttk
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
 from matplotlib.figure import Figure
@@ -32,7 +33,7 @@ class GUI:
         # simulation
         self.sim_label = tk.Label(master, text="Simulation: ")
         self.sim_label.grid(row=0, column=0, sticky="w")
-        self.sim_canvas = tk.Canvas(master, width=900, height=675)
+        self.sim_canvas = tk.Canvas(master, width=540, height=380)
         self.sim_canvas.grid(row=1, column=0, sticky="nsew")
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
@@ -40,7 +41,7 @@ class GUI:
         # physical camera feed
         self.cam_label = tk.Label(master, text="Physical camera feed: ")
         self.cam_label.grid(row=0, column=2, sticky="w")
-        self.cam_canvas = tk.Canvas(master, width=900, height=675)
+        self.cam_canvas = tk.Canvas(master, width=540, height=380)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # potential field plot
@@ -59,7 +60,6 @@ class GUI:
         global ax
         canvas.draw()
         ax = fig.add_subplot(111, projection="3d")
-        rospy.init_node('listener', anonymous=True)
         rospy.Subscriber('/APF_Point', Point, self.apf_callback)
         new_coord=tk.StringVar()
         new_coord.trace_add('write', self.apf_callback)
@@ -173,7 +173,7 @@ class GUI:
         self.gui_pub = rospy.Publisher('/gui', Bool, queue_size=10)
 
     def apf_callback(self, data):
-        print(data)
+        # print(data)
         global coord, coord_x, coord_y, coord_z
         coord_x=data.x
         coord_y=data.y
