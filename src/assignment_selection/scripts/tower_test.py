@@ -105,7 +105,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
         x = x_initial*math.cos(block_angle) - y_initial*math.sin(block_angle)
         y = x_initial*math.sin(block_angle) + y_initial*math.cos(block_angle)
 
-        tower_block_positions.append([x, y, z, euler_x, euler_y, block_angle])
+        tower_block_positions.append([x, y, z, euler_x, euler_y, block_angle+math.pi/2])
         
     return tower_block_positions
 

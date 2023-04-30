@@ -58,7 +58,7 @@ def assignment_selector():
     manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
     manual_block_location_euler_rotation = [0, 0, 0]
 
-    enable_home_between_assignments = False
+    enable_home_between_assignments = True
     home_joint_positions = [90*math.pi/180, 0, 0, 0, 0, 0] #these are wrong as it makes them go to opposite sides
 
     block_width = 0.035
@@ -172,7 +172,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
         x = x_initial*math.cos(block_angle) - y_initial*math.sin(block_angle)
         y = x_initial*math.sin(block_angle) + y_initial*math.cos(block_angle)
 
-        tower_block_positions.append([x, y, z, euler_x, euler_y, block_angle])
+        tower_block_positions.append([x, y, z, euler_x, euler_y, block_angle+math.pi/2])
         
     return tower_block_positions
 
@@ -233,11 +233,12 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
     robot_base_coordinates = getRobotBaseCoordinates([robot_name])[0]
 
     for block_name in build_block_list([robot_name]):
-        available_block_names.append(block_name)
+        if block_name in block_names:
+            available_block_names.append(block_name)
 
-        block_pose = specific_block_pose(block_name, "world") # TODO: Test with using link6 instead of base
-        block_coordinates = [block_pose.position.x, block_pose.position.y]
-        available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
+            block_pose = specific_block_pose(block_name, "world") # TODO: Test with using link6 instead of base
+            block_coordinates = [block_pose.position.x, block_pose.position.y]
+            available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
 
     if len(available_block_names) == 0:
         rospy.logwarn("Assignment Selection - Cannot reach a block to place with %s.", robot_name)
