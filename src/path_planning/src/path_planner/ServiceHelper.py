@@ -294,7 +294,7 @@ class ServiceHelper:
             objvect = (xobj[objNum]-x,yobj[objNum]-y,zobj[objNum]-z) # angles are ebcoming negative which causes wrogn ddirection
             anglegoal = math.atan2(homevect[1],homevect[0])
             angleobj = math.atan2(objvect[1],objvect[0])
-            angle =  angleobj-anglegoal   
+            angle =  anglegoal-angleobj 
             #rospy.loginfo("ANGLE - %.2f",angle)
             zheight = z-zobj[objNum]
             d = self.EuclidianDistance2d(x,y,xobj[objNum],yobj[objNum])

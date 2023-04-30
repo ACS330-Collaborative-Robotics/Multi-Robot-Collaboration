@@ -5,7 +5,7 @@ import subprocess
 import threading
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import*
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
 from matplotlib.figure import Figure
@@ -21,9 +21,6 @@ from geometry_msgs.msg import Point
 from custom_msgs.msg import Joints
 from std_msgs.msg import String, Float64
 
-coord_x = 0
-coord_y = 0
-coord_z = 0
 class GUI:
     def __init__(self, master):
         # simulation
@@ -45,17 +42,22 @@ class GUI:
         #    rospy.loginfo("Waiting for data")
         #    rospy.sleep(0.05)
         # Create a listener for the Potential Field plot
-        rospy.init_node('listener', anonymous=True)
-        rospy.Subscriber('/APF_Point', Point, self.apf_callback)
+        #rospy.init_node('listener', anonymous=True)
+        #rospy.Subscriber('/APF_Point', Point, self.apf_callback)
 
         self.plot_label = tk.Label(master, text="Potential Field Plot: ")
         self.plot_label.grid(row=0, column=3, sticky="w")
         self.plot_canvas = tk.Canvas(master, width=540, height=380)
         fig = Figure(figsize=(5, 4), dpi=100)
         canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+        global ax
         canvas.draw()
         ax = fig.add_subplot(111, projection="3d")
-        ax.scatter(coord_x, coord_y, coord_z, cmap='Greens')
+        rospy.init_node('listener', anonymous=True)
+        rospy.Subscriber('/APF_Point', Point, self.apf_callback)
+        new_coord=StringVar()
+        new_coord.trace_add('write', self.apf_callback)
+        #ax.scatter(coord_x, coord_y, coord_z, cmap='Greens')
         canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
 
 
@@ -135,14 +137,13 @@ class GUI:
     
     def apf_callback(self, data):
         print(data)
-        global coord_x
-        global coord_y
-        global coord_z
-        coord_x=data.Point[0]
-        coord_y=data.Point[1]
-        coord_z=data.Point[2]
-
-
+        global coord, coord_x, coord_y, coord_z
+        coord_x=data.x
+        coord_y=data.y
+        coord_z=data.z
+        ax.scatter(coord_x, coord_y, coord_z, cmap='Greens')
+        global new_coord
+        new_coord = 'True'
     
     def camera_callback(self, msg):
         # Convert the ROS message to an OpenCV image
