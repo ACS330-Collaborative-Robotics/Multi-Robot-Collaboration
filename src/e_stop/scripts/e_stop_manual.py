@@ -7,6 +7,8 @@ import rospy
 from std_msgs.msg import Bool
 from sys import argv
 
+print("Emergency stop script started.")
+
 def main():
     rospy.init_node('e_stop', anonymous=True)
 
