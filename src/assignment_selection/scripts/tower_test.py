@@ -39,14 +39,6 @@ def assignment_selector():
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
 
-    update_block_positions()
-
-    # Setup path_planner action client
-    path_clients = []
-    for robot_name in robot_namespaces:
-        path_clients.append(actionlib.SimpleActionClient(robot_name+'/path_planner', PathPlanAction))
-        path_clients[-1].wait_for_server()
-
     #############################
     ## Configurable Parameters ##
     #############################
@@ -54,26 +46,11 @@ def assignment_selector():
     # tower_origin_coordinates = [x, y, z]
     tower_origin_coordinates = [-0.10, 0.365, 0.02]
 
-    use_manual_block_locations = False
-    manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
-    manual_block_location_euler_rotation = [0, 0, 0]
-
-    enable_home_between_assignments = False
-    home_joint_positions = [90*math.pi/180, 0, 0, 0, 0, 0] #these are wrong as it makes them go to opposite sides
-
     block_width = 0.035
     block_height = 0.035
     block_length = 0.105
 
-    maximum_simulatenous_robots = 2 #Configurable constant
-    #maximum_simulatenous_robots = len(robot_namespaces)
-
     #############################
-
-    joint_pubs = []
-    if enable_home_between_assignments:
-        for robot_name in robot_namespaces:
-            joint_pubs.append(rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10))
     
     ## Making array of block names
     block_names = build_block_list(robot_namespaces, True)
@@ -113,7 +90,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
     tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
     height = 0 #height of blocks
 
-    euler_c =  +90*(math.pi/180) #causes issues!!
+    euler_c =  90*(math.pi/180)
     # Generate coordinates
     for i in range(number_layers):
         width = 0 #width of blocks
@@ -126,9 +103,10 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
 
         height = height + block_height
 
-        if euler_c == 0: #what does this do?
-            euler_c = -90*(math.pi/180)
-        elif euler_c == -90*(math.pi/180):
+        # Rotate blocks after each layer
+        if euler_c == 0: 
+            euler_c = 90*(math.pi/180)
+        elif euler_c == 90*(math.pi/180):
             euler_c = 0
     
     return tower_block_positions
