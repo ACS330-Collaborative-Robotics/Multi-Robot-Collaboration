@@ -52,7 +52,7 @@ def assignment_selector():
     #############################
 
     # tower_origin_coordinates = [x, y, z]
-    tower_origin_coordinates = [-0.10, 0.365, 0.02]
+    tower_origin_coordinates = [0, 0.365, 0.02]
 
     use_manual_block_locations = False
     manual_block_location_xyz = [[0.1, -0.1, 0], [0.1, 0, 0], [0.1, 0.1, 0], [0.1, -0.1+0.72, 0], [0.1, 0+0.72, 0], [0.1, 0.1+0.72, 0]]
@@ -85,6 +85,18 @@ def assignment_selector():
         #tower_blocks_positions = [x, y, z, euler_a, euler_b, euler_c]
     else:
         tower_block_positions = [block_position + manual_block_location_euler_rotation for block_position in manual_block_location_xyz]
+
+    for tower_block_position in tower_block_positions:
+        print(tower_block_position)
+        for robot_name in robot_namespaces:
+            x = tower_block_position[0] + tower_origin_coordinates[0]
+            y = tower_block_position[1] + tower_origin_coordinates[1]
+            z = tower_block_position[2] + tower_origin_coordinates[2]
+
+            # Ensure end position is reachable
+            if not is_block_position_reachable(x, y, z, tower_block_position[3],tower_block_position[4],tower_block_position[5], robot_name, [0.1, 0.2]):
+                rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
+
 
     robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
     robots_busy = [False for x in range(len(robot_namespaces))]
@@ -160,7 +172,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
     circle_radius = 0.15
 
     x_initial = circle_radius
-    y_initial = 0
+    y_initial = -block_length/2
 
     z = 0
     euler_x = 0
