@@ -237,11 +237,12 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
     robot_base_coordinates = getRobotBaseCoordinates([robot_name])[0]
 
     for block_name in build_block_list([robot_name]):
-        available_block_names.append(block_name)
+        if block_name in block_names:
+            available_block_names.append(block_name)
 
-        block_pose = specific_block_pose(block_name, "world") # TODO: Test with using link6 instead of base
-        block_coordinates = [block_pose.position.x, block_pose.position.y]
-        available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
+            block_pose = specific_block_pose(block_name, "world") # TODO: Test with using link6 instead of base
+            block_coordinates = [block_pose.position.x, block_pose.position.y]
+            available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
 
     if len(available_block_names) == 0:
         rospy.logwarn("Assignment Selection - Cannot reach a block to place with %s.", robot_name)
