@@ -51,6 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
     FILES
     Joints.msg
+    apf_coords.msg
 )
 
 ## Generate services in the 'srv' folder

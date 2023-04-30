@@ -4,16 +4,20 @@ import subprocess
 import threading
 
 import tkinter as tk
-from tkinter import ttk
+
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 
 from PIL import Image, ImageTk
 from sensor_msgs.msg import Image as ImageMsg
 from cv_bridge import CvBridge
 import cv2
 
+from geometry_msgs.msg import Point
 from custom_msgs.msg import Joints
 from std_msgs.msg import String, Float64, Float64MultiArray
-
 
 class GUI:
     def __init__(self, master):
@@ -30,6 +34,29 @@ class GUI:
         self.cam_label.grid(row=0, column=2, sticky="w")
         self.cam_canvas = tk.Canvas(master, width=640, height=480)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
+
+        # potential field plot
+        #while(coord_x is None and coord_y is None and coord_z is None) and not rospy.is_shutdown():
+        #    rospy.loginfo("Waiting for data")
+        #    rospy.sleep(0.05)
+        # Create a listener for the Potential Field plot
+        #rospy.init_node('listener', anonymous=True)
+        #rospy.Subscriber('/APF_Point', Point, self.apf_callback)
+
+        self.plot_label = tk.Label(master, text="Potential Field Plot: ")
+        self.plot_label.grid(row=0, column=3, sticky="w")
+        self.plot_canvas = tk.Canvas(master, width=540, height=380)
+        fig = Figure(figsize=(5, 4), dpi=100)
+        canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+        global ax
+        canvas.draw()
+        ax = fig.add_subplot(111, projection="3d")
+        rospy.init_node('listener', anonymous=True)
+        rospy.Subscriber('/APF_Point', Point, self.apf_callback)
+        new_coord=tk.StringVar()
+        new_coord.trace_add('write', self.apf_callback)
+        #ax.scatter(coord_x, coord_y, coord_z, cmap='Greens')
+        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
 
         # buttons
         self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
@@ -104,6 +131,18 @@ class GUI:
 
         # Create a listener for the physical camera 
         rospy.Subscriber('/tag_detections_image', ImageMsg, self.camera_callback)
+
+        rospy.Subscriber('/usb_cam/image_raw', ImageMsg, self.camera_callback)
+
+    def apf_callback(self, data):
+        print(data)
+        global coord, coord_x, coord_y, coord_z
+        coord_x=data.x
+        coord_y=data.y
+        coord_z=data.z
+        ax.scatter(coord_x, coord_y, coord_z, cmap='Greens')
+        global new_coord
+        new_coord = 'True'
     
     
     def camera_callback(self, msg):

@@ -297,7 +297,7 @@ class ServiceHelper:
             anglegoal = math.atan2(homevect[1] ,homevect[0])
             angleobj = math.atan2(objvect[1] ,objvect[0])
             #IS THIS THE RIGHT WAY ROUND? - NEEDS TO BE OBJ - GOAL
-            angle =  angleobj-anglegoal   
+            angle =  anglegoal-angleobj
             #rospy.loginfo("ANGLE - %.2f",angle)
             zheight = z-zobj[objNum]
             d = self.EuclidianDistance2d(x ,y ,xobj[objNum] ,yobj[objNum])
@@ -454,7 +454,7 @@ class ServiceHelper:
     def publish_path_points(self,x,y,z):
         """  publish path points
         INPUT: xyz points   
-        OUTPUT: publishes point to be used by gui
+        OUTPUT: publish point to be used by gui
         """
         point = Point()
         point.x = x
