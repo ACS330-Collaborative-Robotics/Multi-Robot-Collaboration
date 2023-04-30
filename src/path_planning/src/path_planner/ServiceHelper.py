@@ -488,33 +488,3 @@ class ServiceHelper:
                     obs_in_zone_flag = 1
 
         return obs_in_zone_flag
-
-    def fix_block_pose_orientation(self, pose):
-        model_state = ModelState()
-        model_state.pose = pose
-
-        block_orientation_quaternion = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
-        block_orientation_euler = tf_conversions.transformations.euler_from_quaternion(block_orientation_quaternion)
-
-        for angle_offset in [0, -pi, pi]:#, -pi, pi]:
-            #print(angle_offset)
-            orientation_euler = [0, pi, block_orientation_euler[2]+angle_offset]
-            orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
-            
-            model_state.pose.orientation.x = orientation_quaternion[0]
-            model_state.pose.orientation.y = orientation_quaternion[1]
-            model_state.pose.orientation.z = orientation_quaternion[2]
-            model_state.pose.orientation.w = orientation_quaternion[3]
-
-            model_state.pose = self.frameConverter(self.robot_ns+"/base_link", "world", model_state.pose)
-
-            # Test at two heights above the block
-            model_state.pose.position.z += 0.15
-
-            if self.inv_kin_reachable(model_state,1).success:
-
-                model_state.pose.position.z -= 0.06
-                if self.inv_kin_reachable(model_state,1).success:
-                    return angle_offset
-        
-        return None

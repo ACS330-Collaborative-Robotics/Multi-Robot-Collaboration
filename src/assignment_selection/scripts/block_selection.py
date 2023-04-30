@@ -76,7 +76,8 @@ def assignment_selector():
             joint_pubs.append(rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10))
     
     ## Making array of block names
-    block_names = build_block_list(robot_namespaces)
+    block_names = build_block_list(robot_namespaces, True)
+    print()
 
     ## Generate tower block positions
     if not use_manual_block_locations:
@@ -136,18 +137,6 @@ def assignment_selector():
             
         rospy.sleep(0.05)
 
-'''while (path_clients[robot_number].get_state() == 1) and not rospy.is_shutdown():
-    rospy.loginfo_once("Assignment Selection - Waiting for robot %s to complete action.", goal.robot_name)
-    rospy.sleep(0.01)
-
-status = path_clients[robot_number].get_result()
-if status == None:
-    rospy.logfatal("\n\nAssignment Selection - Path Client returned None. Investigate Source.\n\n")
-elif status.success:
-    rospy.loginfo("Assignment Selection - Robot %s action completed successfully.\n", goal.robot_name)
-else:
-    rospy.logerr("Assignment Selection - Robot %s action failed with status %i.\n", goal.robot_name, status.success)'''  
-
 def drive_joints(robot_name, joint_positions):
     pub = rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10)  
     pub.publish(joint_positions)
@@ -191,27 +180,29 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
     
     return tower_block_positions
 
-def build_block_list(robot_namespaces):
+def build_block_list(robot_namespaces, debug=False):
     # Wait for blockData to read in by subscriber
     while (blockData is None) and not(rospy.is_shutdown()):
         rospy.loginfo_once("Assignment Selection - Waiting for data.")
-        rospy.sleep(0.05)
-    rospy.loginfo("Assignment Selection - Got block data.")
+        rospy.sleep(0.2)
+    #rospy.loginfo("Assignment Selection - Got block data.")
 
     # Iterate through blockData and retrieve list of block names
     block_names = []
     for block_num in range(len(blockData.block_data)):
         block_name = "block" + str(blockData.block_data[block_num].block_number)
 
+        robots_can_reach = []
         for robot_name in robot_namespaces:
             if is_block_reachable(block_name, robot_name, [0.09, 0.15]):
                 block_names.append(block_name)
-                rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, robot_name)
-                break
-        else:
-            rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
+                robots_can_reach.append(robot_name)
 
-    rospy.loginfo("Assignment Selection - Block list built.\n")
+        if debug:
+            if len(robots_can_reach) == 0:
+                rospy.logwarn("Assignment Selection - Ignoring %s as it is unreachable.", block_name)
+            else:
+                rospy.loginfo("Assignment Selection - Adding %s as it is reachable by %s.", block_name, ', '.join(robots_can_reach))
 
     return block_names
 
@@ -245,13 +236,12 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
 
     robot_base_coordinates = getRobotBaseCoordinates([robot_name])[0]
 
-    for block_name in block_names:
-        if is_block_reachable(block_name, robot_name, [0.09, 0.15]):
-            available_block_names.append(block_name)
+    for block_name in build_block_list([robot_name]):
+        available_block_names.append(block_name)
 
-            block_pose = specific_block_pose(block_name, "world") # TODO: Test with using link6 instead of base
-            block_coordinates = [block_pose.position.x, block_pose.position.y]
-            available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
+        block_pose = specific_block_pose(block_name, "world") # TODO: Test with using link6 instead of base
+        block_coordinates = [block_pose.position.x, block_pose.position.y]
+        available_block_distances.append(math.sqrt((block_coordinates[0] - robot_base_coordinates[0])**2 + (block_coordinates[1] - robot_base_coordinates[1])**2))
 
     if len(available_block_names) == 0:
         rospy.logwarn("Assignment Selection - Cannot reach a block to place with %s.", robot_name)
@@ -286,45 +276,36 @@ def is_block_reachable(block_name, robot_name, z_offsets) -> bool:
     return is_block_position_reachable(pose.position.x, pose.position.y, pose.position.z, block_orientation_euler[0], block_orientation_euler[1], block_orientation_euler[2], robot_name, z_offsets)
 
 def is_block_position_reachable(x, y, z, euler_x, euler_y, euler_z, robot_name, z_offsets):
-    rospy.wait_for_service('inverse_kinematics_reachability')
-    inv_kin_is_reachable = rospy.ServiceProxy('inverse_kinematics_reachability', InvKin)
+    rospy.wait_for_service('/inverse_kinematics_reachability')
+    inv_kin_is_reachable = rospy.ServiceProxy('/inverse_kinematics_reachability', InvKin)
     
     inv_kin_request = InvKinRequest()
-    model_state = ModelState()
 
-    model_state.pose.position.x = x
-    model_state.pose.position.y = y
-    model_state.pose.position.z = z
+    inv_kin_request.state.pose.position.x = x
+    inv_kin_request.state.pose.position.y = y
+    inv_kin_request.state.pose.position.z = z
 
-    block_orientation_euler = [euler_x, euler_y, euler_z]
+    orientation_euler = [0, math.pi, euler_z]
+    orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
+    
+    inv_kin_request.state.pose.orientation.x = orientation_quaternion[0]
+    inv_kin_request.state.pose.orientation.y = orientation_quaternion[1]
+    inv_kin_request.state.pose.orientation.z = orientation_quaternion[2]
+    inv_kin_request.state.pose.orientation.w = orientation_quaternion[3]
 
-    for angle_offset in [0, -math.pi, math.pi]: #could just be -pi? rounding?
-        orientation_euler = [0, math.pi, block_orientation_euler[2]+angle_offset]
-        orientation_quaternion = tf_conversions.transformations.quaternion_from_euler(orientation_euler[0], orientation_euler[1], orientation_euler[2])
-        
-        model_state.pose.orientation.x = orientation_quaternion[0]
-        model_state.pose.orientation.y = orientation_quaternion[1]
-        model_state.pose.orientation.z = orientation_quaternion[2]
-        model_state.pose.orientation.w = orientation_quaternion[3]
+    inv_kin_request.state.pose = frameConverter(robot_name, "world", inv_kin_request.state.pose)
 
-        model_state.pose = frameConverter(robot_name, "world", model_state.pose)
+    inv_kin_request.precise_orientation = True
 
-        inv_kin_request.state = model_state
-        inv_kin_request.precise_orientation = True
+    converted_z_height = inv_kin_request.state.pose.position.z
 
-        converted_z_height = inv_kin_request.state.pose.position.z
+    for z_offset in z_offsets:
+        inv_kin_request.state.pose.position.z = converted_z_height + z_offset
+        if not inv_kin_is_reachable(inv_kin_request).success:
+            break
+    else:
+        return True
 
-        # Test at two heights above the block
-        inv_kin_request.state.pose.position.z = converted_z_height + z_offsets[0]
-        if inv_kin_is_reachable(inv_kin_request).success:
-
-            inv_kin_request.state.pose.position.z = converted_z_height + z_offsets[0]
-            if inv_kin_is_reachable(inv_kin_request).success:
-                #if angle_offset != 0:
-                    #rospy.loginfo("Assignment Selector - is_block_reachable - Angle Offset - %.0f", angle_offset*180/math.pi)
-                return True
-            converted_z_height = model_state.pose.position.z
-        
     return False
     
 def getRobotBaseCoordinates(robot_namespaces):
