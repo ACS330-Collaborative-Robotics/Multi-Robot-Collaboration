@@ -155,29 +155,25 @@ def update_block_positions():
         rospy.logwarn("Assignment Selection - Block update service call failed.")
 
 def generate_tower_block_positions(number_of_blocks, block_width, block_height, block_length):
-    # Setup tower block locations
-    number_layers = math.floor(number_of_blocks/4) #num of layers
-    tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
-    height = 0 #height of blocks
+    tower_block_positions = []
+    number_of_blocks_per_circle = 8
+    circle_radius = 0.15
 
-    euler_c =  +90*(math.pi/180) #causes issues!!
-    # Generate coordinates
-    for i in range(number_layers):
-        width = 0 #width of blocks
-        home_pos = [width, 0, height, 0, 0, euler_c]
+    x_initial = circle_radius
+    y_initial = 0
 
-        for j in range(4):
-            home_pos = [width, 0, height, 0, 0, euler_c]
-            tower_block_positions.append(home_pos)
-            width = width + 2*block_width
+    z = 0
+    euler_x = 0
+    euler_y = 0
+    euler_z = 0
+    for block_angle_multiplier in range(number_of_blocks_per_circle):
+        block_angle = block_angle_multiplier * 2 * math.pi / number_of_blocks_per_circle
 
-        height = height + block_height
+        x = x_initial*math.cos(block_angle) - y_initial*math.sin(block_angle)
+        y = x_initial*math.sin(block_angle) + y_initial*math.cos(block_angle)
 
-        if euler_c == 0: #what does this do?
-            euler_c = -90*(math.pi/180)
-        elif euler_c == -90*(math.pi/180):
-            euler_c = 0
-    
+        tower_block_positions.append([x, y, z, euler_x, euler_y, block_angle])
+        
     return tower_block_positions
 
 def build_block_list(robot_namespaces, debug=False):

@@ -4,8 +4,6 @@
 # Author: Tom Richards (tomtommrichards@gmail.com), Conor Nichols (cjnichols1@sheffield.ac.uk), Annanthavel Santhanavel Ramesh(asanthanavelramesh1@sheffield.ac.uk)
 
 import rospy
-import actionlib
-import tf
 import tf2_ros
 import tf_conversions
 
@@ -16,11 +14,11 @@ from gazebo_msgs.srv import GetModelState
 from block_controller.msg import Blocks
 from geometry_msgs.msg import Pose
 from tf2_geometry_msgs import PoseStamped
-from gazebo_msgs.msg import ModelState
 from inv_kinematics.srv import InvKin, InvKinRequest
-from path_planning.msg import PathPlanAction, PathPlanGoal
 from block_controller.srv import UpdateBlocks
-from custom_msgs.msg import Joints
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 # Global variable to store blockData as it appears from subscriber
 blockData = None
@@ -44,7 +42,7 @@ def assignment_selector():
     #############################
 
     # tower_origin_coordinates = [x, y, z]
-    tower_origin_coordinates = [-0.10, 0.365, 0.02]
+    tower_origin_coordinates = [0, 0.365, 0.02]
 
     block_width = 0.035
     block_height = 0.035
@@ -58,18 +56,23 @@ def assignment_selector():
 
     tower_block_positions = generate_tower_block_positions(len(block_names), block_width, block_height, block_length)
 
-    for tower_block_position in tower_block_positions:
-        for robot_name in robot_namespaces:
-            print(tower_block_position)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
 
+    for tower_block_position in tower_block_positions:
+        print(tower_block_position)
+        for robot_name in robot_namespaces:
             x = tower_block_position[0] + tower_origin_coordinates[0]
             y = tower_block_position[1] + tower_origin_coordinates[1]
             z = tower_block_position[2] + tower_origin_coordinates[2]
 
+            ax.scatter(x, y, z, c='k')
+
             # Ensure end position is reachable
             if not is_block_position_reachable(x, y, z, tower_block_position[3],tower_block_position[4],tower_block_position[5], robot_name, [0.1, 0.2]):
                 rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
-                return False
+
+    plt.show()
 
 def update_block_positions():
     try:
@@ -85,29 +88,44 @@ def update_block_positions():
         rospy.logwarn("Assignment Selection - Block update service call failed.")
 
 def generate_tower_block_positions(number_of_blocks, block_width, block_height, block_length):
+    tower_block_positions = []
+    number_of_blocks_per_circle = 8
+    circle_radius = 0.15
+
+    x_initial = circle_radius
+    y_initial = 0
+
+    z = 0
+    euler_x = 0
+    euler_y = 0
+    euler_z = 0
+    for block_angle_multiplier in range(number_of_blocks_per_circle):
+        block_angle = block_angle_multiplier * 2 * math.pi / number_of_blocks_per_circle
+
+        x = x_initial*math.cos(block_angle) - y_initial*math.sin(block_angle)
+        y = x_initial*math.sin(block_angle) + y_initial*math.cos(block_angle)
+
+        tower_block_positions.append([x, y, z, euler_x, euler_y, block_angle])
+        
+    return tower_block_positions
+
+def generate_tower_block_positions_old(number_of_blocks, block_width, block_height, block_length):
     # Setup tower block locations
     number_layers = math.floor(number_of_blocks/4) #num of layers
     tower_block_positions = [] #this has to be a 3 column * layers(value) matrix
     height = 0 #height of blocks
 
-    euler_c =  90*(math.pi/180)
     # Generate coordinates
     for i in range(number_layers):
         width = 0 #width of blocks
-        home_pos = [width, 0, height, 0, 0, euler_c]
+        home_pos = [width, 0, height, 0, 0, math.pi/2]
 
         for j in range(4):
-            home_pos = [width, 0, height, 0, 0, euler_c]
+            home_pos = [width, 0, height, 0, 0, math.pi/2]
             tower_block_positions.append(home_pos)
             width = width + 2*block_width
 
         height = height + block_height
-
-        # Rotate blocks after each layer
-        if euler_c == 0: 
-            euler_c = 90*(math.pi/180)
-        elif euler_c == 90*(math.pi/180):
-            euler_c = 0
     
     return tower_block_positions
 
