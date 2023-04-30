@@ -204,18 +204,22 @@ class GUI:
     # SIM PREVIEW button clicked
     def sim_preview_clicked(self):
         # this button will use the play pause service
-        # when it is clicked, the physical system will stop but the simulation will continue
+        # when it is clicked, the physical system will pause but the simulation will continue
         # after being clicked, the 'pause' string will be passed to the play_pause_demo_service
         # then the button will change to say "STOP PREVIEW" 
         # when that is clicked, the 'play' string will be passed to the service and the button will return to say "SIM PREVIEW"
-        play_pause_proxy = rospy.ServiceProxy('play_pause_demo_service', PlayPause)
-        if self.sim_preview_button['text'] == 'Sim Preview': # determine state of button
-            desired_state = 'pause'
-            self.sim_preview_button.config(text='Stop Preview', bg='red', fg='black')
+       
+        # service proxy to communicate with the play pause service
+        play_pause_proxy = rospy.ServiceProxy('play_pause_demo_service', PlayPause) 
+
+        if self.sim_preview_button['text'] == 'Sim Preview': # if simulation is currently running and is not paused
+            desired_state = 'pause' # then pause the simulation 
+            self.sim_preview_button.config(text='Stop Preview', bg='red', fg='black') # change the button text for stopping the preview
             self.sim_preview_info.config(text="Resume physical system.")
         else:
-            desired_state = 'play'
+            desired_state = 'play' # if the physical system is paused 
             self.sim_preview_button.config(text='Sim Preview', bg='yellow', fg='black')
+        
         try: # call service with desired state
             response = play_pause_proxy(desired_state)
             if response.success:
