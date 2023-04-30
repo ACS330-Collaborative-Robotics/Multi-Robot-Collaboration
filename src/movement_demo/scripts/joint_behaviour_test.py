@@ -45,7 +45,7 @@ def talker():
     ## Configurable Parameters ##
     #############################
 
-    robot_name = "mover6_b"
+    robot_name = "mover6_a"
     joint_number = 6 # Range: 1-6
 
     # Initial Angle -> Time Delay -> Final Angle -> Time Delay
