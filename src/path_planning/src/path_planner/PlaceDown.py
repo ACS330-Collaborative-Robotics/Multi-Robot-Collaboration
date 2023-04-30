@@ -30,31 +30,32 @@ class PlaceDown(PickUp.PickUp):
         end_pose.orientation.z = orientation[2]
         end_pose.orientation.w = orientation[3]
 
-        # Move above block
-        rospy.loginfo("Path Planner - Place Down - Moving above.")
-        end_pose.position.z += 0.15
-        if not self.move(end_pose):
+        # Move above drop point
+        rospy.loginfo("Path Planner - %s - Place Down - Moving above location.", self.serv_helper.robot_ns)
+        end_pose.position.z += 0.20
+        if not self.move(end_pose, True):
             return False
+        rospy.sleep(5)
         
-        # Move down onto block
-        rospy.loginfo("Path Planner - Place Down - Lowering onto.")
-        end_pose.position.z -= 0.05
-        if not self.move(end_pose):
+        # Move down onto drop point
+        rospy.loginfo("Path Planner - %s - Place Down - Lowering block.", self.serv_helper.robot_ns)
+        end_pose.position.z -= 0.10
+        if not self.move(end_pose, False):
             return False
         
         # Open Gripper
-        rospy.loginfo("Path Planner - Place Down - Opening Gripper.")
+        rospy.loginfo("Path Planner - %s - Place Down - Opening Gripper.", self.serv_helper.robot_ns)
         self.serv_helper.moveGripper(1)
-        rospy.sleep(1)
+        rospy.sleep(3)
 
-        # Move down onto block
-        rospy.loginfo("Path Planner - Place Down - Lifting up.")
+        # Move away from block
+        rospy.loginfo("Path Planner - %s - Place Down - Lifting up.", self.serv_helper.robot_ns)
         end_pose.position.z += 0.05
-        if not self.move(end_pose):
+        if not self.move(end_pose, False):
             return False
         
         # Close Gripper
-        rospy.loginfo("Path Planner - Place Down - Closing Gripper.")
+        rospy.loginfo("Path Planner - %s - Place Down - Closing Gripper.", self.serv_helper.robot_ns)
         self.serv_helper.moveGripper(0)
         rospy.sleep(2)
 
