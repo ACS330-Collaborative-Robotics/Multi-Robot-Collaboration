@@ -211,7 +211,6 @@ class GUI:
        
         # service proxy to communicate with the play pause service
         play_pause_proxy = rospy.ServiceProxy('play_pause_demo_service', PlayPause) 
-
         if self.sim_preview_button['text'] == 'Sim Preview': # if simulation is currently running and is not paused
             desired_state = 'pause' # then pause the simulation 
             self.sim_preview_button.config(text='Stop Preview', bg='red', fg='black') # change the button text for stopping the preview
@@ -219,8 +218,8 @@ class GUI:
         else:
             desired_state = 'play' # if the physical system is paused 
             self.sim_preview_button.config(text='Sim Preview', bg='yellow', fg='black')
-        
-        try: # call service with desired state
+        # call service with desired state
+        try:
             response = play_pause_proxy(desired_state)
             if response.success:
                 rospy.loginfo('Play/Pause service successfully executed')
