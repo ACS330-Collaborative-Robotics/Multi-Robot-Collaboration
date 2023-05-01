@@ -44,7 +44,7 @@ class GUI:
 
         # buttons
         # emergency stop
-        self.emergency_stop_button = tk.Button(master, text="Safety Stop", bg="red", fg="black", font=("Sans-serif", 10, "bold"), command=self.emergency_stop_clicked, width=15, height=2)
+        self.emergency_stop_button = tk.Button(master, text="Safety Stop", bg="red", fg="black", font=("Sans-serif", 10, "bold"), command=self.emergency_stop_clicked, width=10, height=1)
         self.emergency_stop_button.grid(row=4, column=0)
         self.emergency_stop_info = tk.Label(master, text="Safety stop physical and simulated robots.")
         self.emergency_stop_info.grid(row=4, column=0, sticky="e")
@@ -57,7 +57,7 @@ class GUI:
         self.emergency_stop_button.bind("<Leave>", hide_emergencyinfo)
         
         # sim preview
-        self.sim_preview_button = tk.Button(master, text="Sim Preview", bg="yellow", fg="black", font=("Sans-serif", 10, "bold"), command=self.sim_preview_clicked, width=15, height=2)
+        self.sim_preview_button = tk.Button(master, text="Sim Preview", bg="yellow", fg="black", font=("Sans-serif", 10, "bold"), command=self.sim_preview_clicked, width=10, height=1)
         self.sim_preview_button.grid(row=6, column=0)
         self.sim_preview_info = tk.Label(master, text="Pause physical robot and continue simulation.")
         self.sim_preview_info.grid(row=6, column=0, sticky="e")
@@ -68,6 +68,19 @@ class GUI:
             self.sim_preview_info.grid_remove()  # hide the label when the mouse leaves the button
         self.sim_preview_button.bind("<Enter>", show_previewinfo)
         self.sim_preview_button.bind("<Leave>", hide_previewinfo)
+
+        # potential fields visualiser button 
+        self.pot_visual_button = tk.Button(master, text="Visualise Algorithm", bg="yellow", fg="black", font=("Sans-serif", 10, "bold"), command=self.pot_clicked, width=10, height=1)
+        self.pot_visual_button.grid(row=7, column=0)
+        self.pot_visual_info = tk.Label(master, text="Viualise potential fields algorithm.")
+        self.pot_visual_info.grid(row=7, column=0, sticky="e")
+        self.pot_visual_info.grid_remove()  # hide the label initially
+        def show_previewinfo(event):
+            self.pot_visual_info.grid()  # show the label when the mouse enters the button
+        def hide_previewinfo(event):
+            self.pot_visual_info.grid_remove()  # hide the label when the mouse leaves the button
+        self.pot_visual_button.bind("<Enter>", show_previewinfo)
+        self.pot_visual_button.bind("<Leave>", hide_previewinfo)
     
         # status indicator lights
         # raspberry Pis connected light
@@ -230,6 +243,18 @@ class GUI:
                 rospy.logerr('Play/Pause service failed to execute')
         except rospy.ServiceException as e:
             rospy.logerr(f"Service call failed: {e}")
+
+    # pot fields visualiser button clicked
+    def pot_clicked(self):
+        if self.pot_visual_button['text'] == 'Visualise Algorithm': # determine state of button
+            self.pot_visual_button.config(text='Close graph', bg='red', fg='black')
+            self.gui_pub.publish(True) # publish the message to the /gui topic
+            self.pot_visual_info.config(text="Close visualiser.")
+        else:
+            self.pot_visual_button.config(text='Safety Stop', bg='red', fg='black')
+            self.gui_pub.publish(False) # publish the message to the /gui topic
+            self.pot_visual_info.config(text="Viualise potential fields algorithm.")
+
             
 if __name__ == '__main__':
     root = tk.Tk()
