@@ -60,7 +60,7 @@ class ServiceHelper:
         # Setup gripper publisher
         self.gripper_publisher = rospy.Publisher("gripper_state", Bool, queue_size=10)
 
-        self.point_pub = rospy.Publisher('/APF_Point', APFPlot, queue_size=10)
+        self.point_pub = rospy.Publisher('APF_point', APFPlot, queue_size=10)
 
     def move(self, pos:Pose, final_link_name:str, precise_orientation:bool):
         """ Move arm to specified position.
@@ -469,7 +469,7 @@ class ServiceHelper:
             obj_point.x = xobj[objNum]
             obj_point.y = yobj[objNum]
             obj_point.z = zobj[objNum]
-            data.objects[objNum] = obj_point
+            data.objects.append(obj_point)
 
         self.point_pub.publish(data)
         return
