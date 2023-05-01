@@ -44,26 +44,17 @@ class GUI:
         self.cam_canvas = tk.Canvas(master, width=540, height=380)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
-        # potential field plot
-        #while(coord_x is None and coord_y is None and coord_z is None) and not rospy.is_shutdown():
-        #    rospy.loginfo("Waiting for data")
-        #    rospy.sleep(0.05)
-        # Create a listener for the Potential Field plot
-        #rospy.init_node('listener', anonymous=True)
-        #rospy.Subscriber('/APF_Point', Point, self.apf_callback)
-
+        global ax
         self.plot_label = tk.Label(master, text="Potential Field Plot: ")
         self.plot_label.grid(row=0, column=3, sticky="w")
         self.plot_canvas = tk.Canvas(master, width=540, height=380)
         fig = Figure(figsize=(5, 4), dpi=100)
-        canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
-        global ax
+        canvas = FigureCanvasTkAgg(fig, master=root) 
         canvas.draw()
         ax = fig.add_subplot(111, projection="3d")
         rospy.Subscriber('/APF_Point', Point, self.apf_callback)
         new_coord=tk.StringVar()
         new_coord.trace_add('write', self.apf_callback)
-        #ax.scatter(coord_x, coord_y, coord_z, cmap='Greens')
         canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
         
         # blank space
@@ -174,13 +165,11 @@ class GUI:
 
     def apf_callback(self, data):
         # print(data)
-        global coord, coord_x, coord_y, coord_z
+        global coord_x, coord_y, coord_z
         coord_x=data.x
         coord_y=data.y
         coord_z=data.z
-        ax.scatter(coord_x, coord_y, coord_z, cmap='Greens')
-        global new_coord
-        new_coord = 'True'
+        ax.scatter(coord_x, coord_y, coord_z, c='blue')
     # error status light
     # checks the status of the most recent error
     # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
