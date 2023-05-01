@@ -261,6 +261,18 @@ class GUI:
         except rospy.ServiceException as e:
             rospy.logerr(f"Service call failed: {e}")
             
+    # pot fields visualiser button clicked
+    def pot_clicked(self):
+        if self.pot_visual_button['text'] == 'Visualise Algorithm': # determine state of button
+            self.pot_visual_button.config(text='Close graph', bg='red', fg='black')
+            self.gui_pub.publish(True) # publish the message to the /gui topic
+            self.pot_visual_info.config(text="Close visualiser.")
+            # code for graph here 
+        else:
+            self.pot_visual_button.config(text='Safety Stop', bg='red', fg='black')
+            self.gui_pub.publish(False) # publish the message to the /gui topic
+            self.pot_visual_info.config(text="Viualise potential fields algorithm.")
+            
 if __name__ == '__main__':
     root = tk.Tk()
     root.geometry("{}x{}+0+0".format(1920, 1080))
