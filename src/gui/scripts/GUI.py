@@ -250,6 +250,7 @@ class GUI:
             self.pot_visual_button.config(text='Close graph', bg='red', fg='black')
             self.gui_pub.publish(True) # publish the message to the /gui topic
             self.pot_visual_info.config(text="Close visualiser.")
+            # code for graph here 
         else:
             self.pot_visual_button.config(text='Safety Stop', bg='red', fg='black')
             self.gui_pub.publish(False) # publish the message to the /gui topic
