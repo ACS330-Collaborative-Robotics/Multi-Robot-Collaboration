@@ -19,7 +19,7 @@ from cv_bridge import CvBridge
 import cv2
 
 from geometry_msgs.msg import Point
-from custom_msgs.msg import Joints
+from custom_msgs.msg import Joints, APFPlot
 from custom_msgs.srv import PlayPause
 from std_msgs.msg import String, Float64, Float64MultiArray, Bool
 from rosgraph_msgs.msg import Log
@@ -33,7 +33,7 @@ class GUI:
         # simulation
         self.sim_label = tk.Label(master, text="Simulation: ")
         self.sim_label.grid(row=0, column=0, sticky="w")
-        self.sim_canvas = tk.Canvas(master, width=900, height=675)
+        self.sim_canvas = tk.Canvas(master, width=540, height=380)
         self.sim_canvas.grid(row=1, column=0, sticky="nsew")
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
@@ -41,8 +41,21 @@ class GUI:
         # physical camera feed
         self.cam_label = tk.Label(master, text="Physical camera feed: ")
         self.cam_label.grid(row=0, column=2, sticky="w")
-        self.cam_canvas = tk.Canvas(master, width=900, height=675)
+        self.cam_canvas = tk.Canvas(master, width=540, height=380)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
+
+        #APF Plot
+        global ax, canvas
+        self.plot_label = tk.Label(master, text="Potential Field Plot: ")
+        self.plot_label.grid(row=0, column=3, sticky="w")
+        self.plot_canvas = tk.Canvas(master, width=540, height=380)
+        fig = Figure(figsize=(5, 4), dpi=100)
+        canvas = FigureCanvasTkAgg(fig, master=root) 
+        ax = fig.add_subplot(111, projection="3d")
+        rospy.Subscriber('/mover6_a/APF_point', APFPlot, self.apf_callback_a)
+        rospy.Subscriber('/mover6_b/APF_point', APFPlot, self.apf_callback_b)
+        canvas.draw()
+        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
         
         # blank space
         self.blank_label = tk.Label(master, text="")
@@ -74,19 +87,6 @@ class GUI:
             self.sim_preview_info.grid_remove()  # hide the label when the mouse leaves the button
         self.sim_preview_button.bind("<Enter>", show_previewinfo)
         self.sim_preview_button.bind("<Leave>", hide_previewinfo)
-
-        # potential fields visualiser button 
-        self.pot_visual_button = tk.Button(master, text="Visualise Algorithm", bg="yellow", fg="black", font=("Sans-serif", 10, "bold"), command=self.pot_clicked, width=10, height=1)
-        self.pot_visual_button.grid(row=7, column=0)
-        self.pot_visual_info = tk.Label(master, text="Viualise potential fields algorithm.")
-        self.pot_visual_info.grid(row=7, column=0, sticky="e")
-        self.pot_visual_info.grid_remove()  # hide the label initially
-        def show_previewinfo(event):
-            self.pot_visual_info.grid()  # show the label when the mouse enters the button
-        def hide_previewinfo(event):
-            self.pot_visual_info.grid_remove()  # hide the label when the mouse leaves the button
-        self.pot_visual_button.bind("<Enter>", show_previewinfo)
-        self.pot_visual_button.bind("<Leave>", hide_previewinfo)
     
         # status indicator lights
         # raspberry Pis connected light
@@ -163,13 +163,34 @@ class GUI:
         # Initialize the ROS publisher for the gui
         self.gui_pub = rospy.Publisher('/gui', Bool, queue_size=10)
 
-    def apf_callback(self, data):
+    def apf_callback_a(self, data):
         # print(data)
-        global coord_x, coord_y, coord_z
-        coord_x=data.x
-        coord_y=data.y
-        coord_z=data.z
-        ax.scatter(coord_x, coord_y, coord_z, c='blue')
+        goal_x=data.goal.x
+        goal_y=data.goal.y
+        goal_z=data.goal.z
+        ax.scatter(goal_x, goal_y, goal_z, c='green')
+        path_x=data.path.x
+        path_y=data.path.y
+        path_z=data.path.z
+        ax.scatter(path_x, path_y, path_z, c='blue')
+        for n in range(len(data.objects)):
+            ax.scatter(data.objects[n].x, data.objects[n].y, data.objects[n].z, c='red')
+
+
+    def apf_callback_b(self, data):
+        # print(data)
+        goal_x=data.goal.x
+        goal_y=data.goal.y
+        goal_z=data.goal.z
+        ax.scatter(goal_x, goal_y, goal_z, c='green')
+        path_x=data.path.x
+        path_y=data.path.y
+        path_z=data.path.z
+        ax.scatter(path_x, path_y, path_z, c='blue')
+        for n in range(len(data.objects)):
+            ax.scatter(data.objects[n].x, data.objects[n].y, data.objects[n].z, c='red')
+
+        
     # error status light
     # checks the status of the most recent error
     # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
@@ -260,27 +281,6 @@ class GUI:
                 rospy.logerr('Play/Pause service failed to execute')
         except rospy.ServiceException as e:
             rospy.logerr(f"Service call failed: {e}")
-            
-    # pot fields visualiser button clicked
-    def pot_clicked(self):
-        if self.pot_visual_button['text'] == 'Visualise Algorithm': # determine state of button
-            self.pot_visual_button.config(text='Close graph', bg='red', fg='black')
-            self.gui_pub.publish(True) # publish the message to the /gui topic
-            self.pot_visual_info.config(text="Close visualiser.")
-            global ax
-            self.plot_label = tk.Label(master, text="Potential Field Plot: ")
-            self.plot_label.grid(row=0, column=3, sticky="w")
-            self.plot_canvas = tk.Canvas(master, width=540, height=380)
-            fig = Figure(figsize=(5, 4), dpi=100)
-            canvas = FigureCanvasTkAgg(fig, master=root) 
-            canvas.draw()
-            ax = fig.add_subplot(111, projection="3d")
-            rospy.Subscriber('/APF_Point', Point, self.apf_callback)
-            canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
-        else:
-            self.pot_visual_button.config(text='Safety Stop', bg='red', fg='black')
-            self.gui_pub.publish(False) # publish the message to the /gui topic
-            self.pot_visual_info.config(text="Viualise potential fields algorithm.")
             
 if __name__ == '__main__':
     root = tk.Tk()
