@@ -87,6 +87,19 @@ class GUI:
             self.sim_preview_info.grid_remove()  # hide the label when the mouse leaves the button
         self.sim_preview_button.bind("<Enter>", show_previewinfo)
         self.sim_preview_button.bind("<Leave>", hide_previewinfo)
+
+        # potential fields visualiser button 
+        self.pot_visual_button = tk.Button(master, text="Visualise Algorithm", bg="yellow", fg="black", font=("Sans-serif", 10, "bold"), command=self.pot_clicked, width=10, height=1)
+        self.pot_visual_button.grid(row=7, column=0)
+        self.pot_visual_info = tk.Label(master, text="Viualise potential fields algorithm.")
+        self.pot_visual_info.grid(row=7, column=0, sticky="e")
+        self.pot_visual_info.grid_remove()  # hide the label initially
+        def show_previewinfo(event):
+            self.pot_visual_info.grid()  # show the label when the mouse enters the button
+        def hide_previewinfo(event):
+            self.pot_visual_info.grid_remove()  # hide the label when the mouse leaves the button
+        self.pot_visual_button.bind("<Enter>", show_previewinfo)
+        self.pot_visual_button.bind("<Leave>", hide_previewinfo)
     
         # status indicator lights
         # raspberry Pis connected light
