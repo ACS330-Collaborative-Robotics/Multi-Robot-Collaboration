@@ -3,7 +3,6 @@ import rospy
 rospy.init_node('listener_gui_publisher', anonymous=True) # initialize the ROS node
 import subprocess
 import threading 
-import subprocess
 
 import tkinter as tk
 from tkinter import ttk
@@ -70,17 +69,17 @@ class GUI:
         self.sim_preview_button.bind("<Leave>", hide_previewinfo)
 
         # potential fields visualiser button 
-        self.pot_visual_button = tk.Button(master, text="Visualise Algorithm", bg="yellow", fg="black", font=("Sans-serif", 10, "bold"), command=self.pot_clicked, width=10, height=1)
+        self.pot_visual_button = tk.Button(master, text="Visualise Algorithm", bg="yellow", fg="black", font=("Sans-serif", 10, "bold"), command=self.pot_clicked, width=15, height=1)
         self.pot_visual_button.grid(row=7, column=0)
         self.pot_visual_info = tk.Label(master, text="Viualise potential fields algorithm.")
         self.pot_visual_info.grid(row=7, column=0, sticky="e")
         self.pot_visual_info.grid_remove()  # hide the label initially
-        def show_previewinfo(event):
+        def show_potinfo(event):
             self.pot_visual_info.grid()  # show the label when the mouse enters the button
-        def hide_previewinfo(event):
+        def hide_potinfo(event):
             self.pot_visual_info.grid_remove()  # hide the label when the mouse leaves the button
-        self.pot_visual_button.bind("<Enter>", show_previewinfo)
-        self.pot_visual_button.bind("<Leave>", hide_previewinfo)
+        self.pot_visual_button.bind("<Enter>", show_potinfo)
+        self.pot_visual_button.bind("<Leave>", hide_potinfo)
     
         # status indicator lights
         # raspberry Pis connected light
