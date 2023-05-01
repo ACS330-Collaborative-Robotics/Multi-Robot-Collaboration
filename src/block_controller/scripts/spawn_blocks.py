@@ -29,7 +29,7 @@ def spawner():
 
     # Spawn blocks in radius around each robot base with a minimum and maximum distance
 
-    robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_namespaces = ["mover6_a", "mover6_b", "mover6_c"]
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
 
     x_lower_limit = -0.3

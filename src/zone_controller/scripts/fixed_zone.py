@@ -32,7 +32,7 @@ def talker():
 
     zone_data = [[corner_a1, corner_a2, corner_a3, corner_a4], [corner_b1, corner_b2, corner_b3, corner_b4]]
 
-    robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_namespaces = ["mover6_a", "mover6_b", "mover6_c"]
     
     r = rospy.Rate(1)
         
