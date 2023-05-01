@@ -52,6 +52,7 @@ add_message_files(
     FILES
     Joints.msg
     apf_coords.msg
+    APFPlot.msg
 )
 
 ## Generate services in the 'srv' folder
