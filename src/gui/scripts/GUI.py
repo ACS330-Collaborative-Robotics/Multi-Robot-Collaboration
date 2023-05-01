@@ -44,9 +44,9 @@ class GUI:
 
         # buttons
         # emergency stop
-        self.emergency_stop_button = tk.Button(master, text="Emergency Stop", bg="red", fg="black", font=("Sans-serif", 10, "bold"), command=self.emergency_stop_clicked, width=15, height=2)
+        self.emergency_stop_button = tk.Button(master, text="Safety Stop", bg="red", fg="black", font=("Sans-serif", 10, "bold"), command=self.emergency_stop_clicked, width=15, height=2)
         self.emergency_stop_button.grid(row=4, column=0)
-        self.emergency_stop_info = tk.Label(master, text="Emergency stop physical and simulated robots.")
+        self.emergency_stop_info = tk.Label(master, text="Safety stop physical and simulated robots.")
         self.emergency_stop_info.grid(row=4, column=0, sticky="e")
         self.emergency_stop_info.grid_remove()  # hide the label initially
         def show_emergencyinfo(event):
@@ -192,14 +192,14 @@ class GUI:
 
     # emergency stop button clicked
     def emergency_stop_clicked(self):
-        if self.emergency_stop_button['text'] == 'Emergency Stop': # determine state of button
+        if self.emergency_stop_button['text'] == 'Safety Stop': # determine state of button
             self.emergency_stop_button.config(text='Start', bg='green', fg='black')
             self.gui_pub.publish(True) # publish the message to the /gui topic
             self.emergency_stop_info.config(text="Start physical and simulated robots.")
         else:
-            self.emergency_stop_button.config(text='Emergency Stop', bg='red', fg='black')
+            self.emergency_stop_button.config(text='Safety Stop', bg='red', fg='black')
             self.gui_pub.publish(False) # publish the message to the /gui topic
-            self.emergency_stop_info.config(text="Emergency stop physical and simulated robots.")
+            self.emergency_stop_info.config(text="Safety stop physical and simulated robots.")
 
     # SIM PREVIEW button clicked
     def sim_preview_clicked(self):
