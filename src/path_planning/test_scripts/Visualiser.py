@@ -33,7 +33,7 @@ def plotAPF(X,Y, xline, yline, PotentialEnergy,EnergyPathTaken):
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     ax.plot_surface(X, Y, PotentialEnergy)
-    ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=4.5)
+    ax.plot(xline, yline, EnergyPathTaken, color='red', linewidth=8.5)
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_title('X, Y Potential Fields Representation')
