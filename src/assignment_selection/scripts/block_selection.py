@@ -38,6 +38,7 @@ def assignment_selector():
 
     # Define robot namespaces being used - also defines number of robots
     robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_namespaces_copy = robot_namespaces.copy()
 
     update_block_positions()
 
@@ -93,25 +94,22 @@ def assignment_selector():
                     rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
 
     for tower_block_positions in tower_block_positions_layers:
-        robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
+        robot_namespaces = robot_namespaces_copy.copy()
         robots_busy = [False for x in range(len(robot_namespaces))]
 
         while len(tower_block_positions) > 0 and len(block_names) > 0 and not rospy.is_shutdown():
             # Check if each robot is busy
             for robot_number_iterator in range(len(robot_namespaces)):
-                # actionlib states: https://get-help.robotigniteacademy.com/t/get-state-responses-are-incorrect/6680
-                #TODO: Add error handling 
                 robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() in [0, 3, 4, 9]) 
 
                 if enable_home_between_assignments and not robots_busy[robot_number_iterator]:
                     drive_joints(robot_namespaces[robot_number_iterator], home_joint_positions)
             
-            unavailable_robots = list(np.logical_or(robots_cannot_place_next_block, robots_busy))
             number_robots_busy = robots_busy.count(True)
 
             # IF a robot is availible, attempt to allocate a task
-            if (not all(unavailable_robots)) and number_robots_busy < maximum_simulatenous_robots:
-                robot_number = unavailable_robots.index(False)
+            if (not all(robots_busy)) and number_robots_busy < maximum_simulatenous_robots:
+                robot_number = robots_busy.index(False)
                 
                 update_block_positions()
                 
@@ -120,27 +118,18 @@ def assignment_selector():
                 if task_allocation_success == None:
                     rospy.logfatal("Assignment Selection - Removing %s from selection as no blocks can be picked up by it.", robot_namespaces[robot_number])
                     robot_namespaces.pop(robot_number)
-                    if len(robot_namespaces) == 0:
-                        rospy.logfatal("Assignment Selection - No robots remaining. Terminating assignment selection.\n\n\n")
-                        break
-
-                    robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
-                    robots_busy = [False for x in range(len(robot_namespaces))]
 
                 elif not task_allocation_success:
-                    robots_cannot_place_next_block[robot_number] = True
-
-                else:
-                    robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
+                    rospy.logfatal("Assignment Selection - Removing %s from selection as it cannot reach any end positions.", robot_namespaces[robot_number])
+                    robot_namespaces.pop(robot_number)
+                
+                if len(robot_namespaces) == 0:
+                        rospy.logfatal("Assignment Selection - No robots remaining. Terminating assignment selection.\n\n\n")
+                        break
 
             elif number_robots_busy >= maximum_simulatenous_robots:
                 rospy.loginfo_throttle(30, "Assignment Selection - All robots busy, waiting till one is free.")
                 rospy.sleep(0.5)
-
-            elif all(robots_cannot_place_next_block):
-                rospy.logerr("Assignment Selection - No robots available for next assignment. Skipping block.")
-                tower_block_positions.pop(0)
-                robots_cannot_place_next_block = [False for x in range(len(robot_namespaces))]
                 
             rospy.sleep(0.05)
 
@@ -173,7 +162,6 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
     x_initial = circle_radius
     y_initial = -block_length/2
 
-    z = 0
     euler_x = 0
     euler_y = 0
     euler_z = 0
@@ -185,7 +173,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
             x = x_initial*math.cos(block_angle) - y_initial*math.sin(block_angle)
             y = x_initial*math.sin(block_angle) + y_initial*math.cos(block_angle)
 
-            tower_block_positions_layer.append([x, y, z, euler_x, euler_y, block_angle+math.pi/2])
+            tower_block_positions_layer.append([x, y, layer_number*block_height, euler_x, euler_y, block_angle+math.pi/2])
         tower_block_positions.append(tower_block_positions_layer)
         
     return tower_block_positions
@@ -220,24 +208,27 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
     goal = PathPlanGoal()
     goal.robot_name = robot_name
 
-    # Setup End Position
-    end_pos = Pose()
-    end_pos.position.x = tower_block_positions[0][0] + tower_origin_coordinates[0]
-    end_pos.position.y = tower_block_positions[0][1] + tower_origin_coordinates[1]
-    end_pos.position.z = tower_block_positions[0][2] + tower_origin_coordinates[2]
+    for tower_block_position in tower_block_positions:
+        # Setup End Position
+        end_pos = Pose()
+        end_pos.position.x = tower_block_position[0] + tower_origin_coordinates[0]
+        end_pos.position.y = tower_block_position[1] + tower_origin_coordinates[1]
+        end_pos.position.z = tower_block_position[2] + tower_origin_coordinates[2]
 
-    quat = tf.transformations.quaternion_from_euler(tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5])
-    
-    end_pos.orientation.x = quat[0]
-    end_pos.orientation.y = quat[1]
-    end_pos.orientation.z = quat[2]
-    end_pos.orientation.w = quat[3]
+        quat = tf.transformations.quaternion_from_euler(tower_block_position[3],tower_block_position[4],tower_block_position[5])
+        
+        end_pos.orientation.x = quat[0]
+        end_pos.orientation.y = quat[1]
+        end_pos.orientation.z = quat[2]
+        end_pos.orientation.w = quat[3]
 
-    goal.end_pos = end_pos
+        goal.end_pos = end_pos
 
-    # Ensure end position is reachable
-    if not is_block_position_reachable(end_pos.position.x, end_pos.position.y, end_pos.position.z, tower_block_positions[0][3],tower_block_positions[0][4],tower_block_positions[0][5], robot_name, [0.1, 0.2]):
-        rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
+        # Ensure end position is reachable
+        if is_block_position_reachable(end_pos.position.x, end_pos.position.y, end_pos.position.z, tower_block_position[3],tower_block_position[4],tower_block_position[5], robot_name, [0.1, 0.2]):
+            break
+    else:
+        rospy.logwarn("Assignment Selection - Cannot reach any final block positions with %s.", robot_name)
         return False
     
     # Find optimal block to move
@@ -262,7 +253,7 @@ def allocate_task(block_names, robot_name, robot_number, tower_block_positions, 
     goal.block_name = available_block_names[block_name_index]
 
     path_clients[robot_number].send_goal(goal)
-    tower_block_positions.pop(0)
+    tower_block_positions.remove(tower_block_position)
     block_names.remove(goal.block_name)
 
     rospy.sleep(0.01)
