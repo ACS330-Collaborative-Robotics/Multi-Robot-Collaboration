@@ -403,7 +403,7 @@ class ServiceHelper:
             difx = diffrep[0] + 0.25*diffatt[0]
             dify = diffrep[1] + 0.25*diffatt[1]
             difz = diffrep[2] + 0.25*diffatt[2]
-                #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
+            rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
             #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
 
         else:
@@ -470,7 +470,7 @@ class ServiceHelper:
         OUTPUT: publishes point to be used by gui
         """
         obs_in_zone_flag = 0
-        forcefield_dist = 0.20
+        forcefield_dist = 0.15
         pos_own_world = self.getLinkPos(self.robot_ns,"link6") #own arm joint positions relative to world
         d_own_to_goal = self.EuclidianDistance2d(pos_own_world.position.x, pos_own_world.position.y, xgoal, ygoal)
 

@@ -79,7 +79,7 @@ class Movement:
                     tempxobj.append(pos_obstacle.position.x * SF) #obstacle arm joint positions relative to other arm
                     tempyobj.append(pos_obstacle.position.y * SF)
                     tempzobj.append(pos_obstacle.position.z * SF)
-                    tempQ.append(10)
+                    tempQ.append(20)
 
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
                 tempxobj_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
@@ -94,7 +94,7 @@ class Movement:
                 xobj = xobj + [xgoal, xgoal, xgoal, xgoal, xgoal, xgoal, xgoal, xgoal]
                 yobj = yobj + [ygoal, ygoal, ygoal, ygoal, ygoal, ygoal, ygoal, ygoal]
                 zobj = zobj + [0, 10, 20, 30, 40, 50, 60, 70]
-                Q = Q + ([25, 25, 25, 25, 25, 25, 25, 25])
+                Q = Q + ([20, 20, 20, 20, 20, 20, 20, 20])
                 rospy.logwarn("Path Planner - Forcefield activated to repel %s",self.serv_helper.robot_ns)
 
             ##X,Y,Z path the End effector will take

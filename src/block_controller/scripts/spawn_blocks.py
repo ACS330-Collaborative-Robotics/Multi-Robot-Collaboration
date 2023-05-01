@@ -35,9 +35,11 @@ def spawner():
     x_lower_limit = -0.3
     x_upper_limit = 0.3
 
-    robot_a_block_coordinates = [[x_lower_limit, 0], [x_lower_limit, 0.1], [x_lower_limit, 0.2], [x_upper_limit, 0], [x_upper_limit, 0.1], [x_upper_limit, 0.2]]
+    #robot_a_block_coordinates = [[x_lower_limit, 0], [x_lower_limit, 0.1], [x_lower_limit, 0.2], [x_upper_limit, 0], [x_upper_limit, 0.1], [x_upper_limit, 0.2]]
+    #this is for APF slide
+    robot_a_block_coordinates = [[x_lower_limit-0.05,0.35],[x_lower_limit,0.35],[x_lower_limit+0.05,0.35],[x_lower_limit+0.15,0.35]]
 
-    y_offset = 0.73
+    y_offset = 0.05
 
     robot_b_block_coordinates = []
     for block_coordinates in robot_a_block_coordinates:
@@ -52,7 +54,7 @@ def spawner():
         pos.position.y = block_coordinates[block_num][1]
         pos.position.z = 0.01
 
-        quat = tf.transformations.quaternion_from_euler(0, 0, block_num*pi/4)
+        quat = tf.transformations.quaternion_from_euler(0, 0, block_num*pi/4 - 45)
         pos.orientation.x = quat[0]
         pos.orientation.y = quat[1]
         pos.orientation.z = quat[2]

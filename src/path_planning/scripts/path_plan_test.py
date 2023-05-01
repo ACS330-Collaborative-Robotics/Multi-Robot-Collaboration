@@ -5,7 +5,7 @@ import rospy
 import actionlib
 from pathlib import Path
 import tf
-
+from path_planner import PathPlanner
 from path_planning.msg import PathPlanAction, PathPlanGoal
 from geometry_msgs.msg import Pose
 from gazebo_msgs.msg import ModelState
@@ -142,7 +142,8 @@ def path_plan_test():
     final_pose.orientation.w = quat[3]
 
     goal.end_pos = final_pose
-
+    #pathPlanner = PathPlanner.PathPlanner(goal.robot_name, goal.block_name, [-0.25, 0.2, 0.05])
+    #path_planner_status = pathPlanner.pathPlan()
     path_client.send_goal(goal)
 
     rospy.sleep(0.01)
