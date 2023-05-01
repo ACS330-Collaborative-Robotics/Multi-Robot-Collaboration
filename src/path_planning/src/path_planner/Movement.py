@@ -29,7 +29,7 @@ class Movement:
         D = self.serv_helper.APFyamlData["D"]
         CloseEnough = 0.5
         PathComplete = 0
-        robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
+        robot_namespaces = ["mover6_a", "mover6_b", "mover6_c"] #TODO: will be changed to a service to get names of connected arms
         # Get block coordinates relative to robot instead of world
         
         pos_robot_base_frame = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos)
@@ -50,7 +50,7 @@ class Movement:
             #rospy.logerr("Arm World: %.2f %.2f %.2f, Arm base: %.1f %.1f %.1f",start_pose_world.position.x, start_pose_world.position.y, start_pose_world.position.z, startx,starty,startz)
             start_time = time()
             #Obstacle positions relative to world then arm
-            robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
+            robot_namespaces = ["mover6_a", "mover6_b", "mover6_c"] #TODO: will be changed to a service to get names of connected arms
 
             xobj = [0, 0, 0, 0, 0, 0, 0, 0]
             yobj = [0, 0, 0, 0, 0, 0, 0, 0]

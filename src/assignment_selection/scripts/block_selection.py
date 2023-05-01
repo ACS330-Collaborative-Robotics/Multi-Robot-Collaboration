@@ -37,7 +37,7 @@ def assignment_selector():
     rospy.Subscriber('/blocks_pos', Blocks, callback)
 
     # Define robot namespaces being used - also defines number of robots
-    robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_namespaces = ["mover6_a", "mover6_b", "mover6_c"]
     robot_namespaces_copy = robot_namespaces.copy()
 
     update_block_positions()
@@ -63,8 +63,7 @@ def assignment_selector():
     block_height = 0.035
     block_length = 0.105
 
-    maximum_simulatenous_robots = 2 #Configurable constant
-    #maximum_simulatenous_robots = len(robot_namespaces)
+    maximum_simulatenous_robots = len(robot_namespaces)
 
     #############################
 

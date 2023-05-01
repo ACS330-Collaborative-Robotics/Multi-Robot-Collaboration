@@ -157,7 +157,7 @@ def main():
     s2 = rospy.Service('inverse_kinematics_reachability', InvKin, inverse_kinematics_reachability_service)
 
     # Setup publish topics to avoid missing messages
-    robot_namespaces = ["mover6_a", "mover6_b"]
+    robot_namespaces = ["mover6_a", "mover6_b", "mover6_c"]
     for robot_name in robot_namespaces:
       pub = rospy.Publisher(robot_name + "/joint_angles", Joints, queue_size=10)  
 
