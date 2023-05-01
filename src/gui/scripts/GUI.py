@@ -162,6 +162,9 @@ class GUI:
         self.error_msgs = data.msg.split("\n")
         most_recent_error = self.error_msgs[0]
         most_recent_severity = int(data.level)
+        # Only display errors of severity level 4 or 5
+        if most_recent_severity < 4:
+            return
         # update the error message box
         self.master.after(0, lambda: error_msg.delete(1.0, tk.END))
         self.master.after(0, lambda: error_msg.insert(tk.END, most_recent_error))
