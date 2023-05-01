@@ -18,7 +18,7 @@ from inv_kinematics.srv import InvKin
 from inv_kinematics.srv import InvKinRequest
 from std_msgs.msg import Header
 from std_msgs.msg import Bool
-
+from custom_msgs.msg import APFPlot
 
 #from APF dependancies
 import numpy as np
@@ -60,7 +60,7 @@ class ServiceHelper:
         # Setup gripper publisher
         self.gripper_publisher = rospy.Publisher("gripper_state", Bool, queue_size=10)
 
-        self.point_pub = rospy.Publisher('/APF_Point', Point, queue_size=10)
+        self.point_pub = rospy.Publisher('/APF_Point', APFPlot, queue_size=10)
 
     def move(self, pos:Pose, final_link_name:str, precise_orientation:bool):
         """ Move arm to specified position.
@@ -448,20 +448,30 @@ class ServiceHelper:
                 #i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
-        self.publish_path_points(x,y,z)
+        self.publish_path_points(x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj)
         return x, y, z
 
-    def publish_path_points(self,x,y,z):
+    def publish_path_points(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj):
         """  publish path points
         INPUT: xyz points   
         OUTPUT: publish point to be used by gui
         """
-        point = Point()
-        point.x = x
-        point.y = y
-        point.z = z
+        data = APFPlot()
+        obj_point = Point()
+        data.path.x = x
+        data.path.y = y
+        data.path.z = z
+        data.goal.x = xgoal
+        data.goal.y = ygoal
+        data.goal.z = zgoal
 
-        self.point_pub.publish(point)
+        for objNum in range(len(xobj)):
+            obj_point.x = xobj[objNum]
+            obj_point.y = yobj[objNum]
+            obj_point.z = zobj[objNum]
+            data.objects[objNum] = obj_point
+
+        self.point_pub.publish(data)
         return
 
     def is_obsarm_in_zone(self,robot_namespaces,xgoal,ygoal):
