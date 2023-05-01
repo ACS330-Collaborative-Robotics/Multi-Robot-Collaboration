@@ -33,7 +33,7 @@ class GUI:
         # simulation
         self.sim_label = tk.Label(master, text="Simulation: ")
         self.sim_label.grid(row=0, column=0, sticky="w")
-        self.sim_canvas = tk.Canvas(master, width=540, height=380)
+        self.sim_canvas = tk.Canvas(master, width=900, height=675)
         self.sim_canvas.grid(row=1, column=0, sticky="nsew")
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
@@ -41,21 +41,8 @@ class GUI:
         # physical camera feed
         self.cam_label = tk.Label(master, text="Physical camera feed: ")
         self.cam_label.grid(row=0, column=2, sticky="w")
-        self.cam_canvas = tk.Canvas(master, width=540, height=380)
+        self.cam_canvas = tk.Canvas(master, width=900, height=675)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
-
-        global ax
-        self.plot_label = tk.Label(master, text="Potential Field Plot: ")
-        self.plot_label.grid(row=0, column=3, sticky="w")
-        self.plot_canvas = tk.Canvas(master, width=540, height=380)
-        fig = Figure(figsize=(5, 4), dpi=100)
-        canvas = FigureCanvasTkAgg(fig, master=root) 
-        canvas.draw()
-        ax = fig.add_subplot(111, projection="3d")
-        rospy.Subscriber('/APF_Point', Point, self.apf_callback)
-        new_coord=tk.StringVar()
-        new_coord.trace_add('write', self.apf_callback)
-        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
         
         # blank space
         self.blank_label = tk.Label(master, text="")
@@ -280,7 +267,16 @@ class GUI:
             self.pot_visual_button.config(text='Close graph', bg='red', fg='black')
             self.gui_pub.publish(True) # publish the message to the /gui topic
             self.pot_visual_info.config(text="Close visualiser.")
-            # code for graph here 
+            global ax
+            self.plot_label = tk.Label(master, text="Potential Field Plot: ")
+            self.plot_label.grid(row=0, column=3, sticky="w")
+            self.plot_canvas = tk.Canvas(master, width=540, height=380)
+            fig = Figure(figsize=(5, 4), dpi=100)
+            canvas = FigureCanvasTkAgg(fig, master=root) 
+            canvas.draw()
+            ax = fig.add_subplot(111, projection="3d")
+            rospy.Subscriber('/APF_Point', Point, self.apf_callback)
+            canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
         else:
             self.pot_visual_button.config(text='Safety Stop', bg='red', fg='black')
             self.gui_pub.publish(False) # publish the message to the /gui topic
