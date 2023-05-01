@@ -1,0 +1,5 @@
+<launch>
+  <node name="block_talker" pkg="block_controller" type="block_pos_talker.py" output="screen"/>
+  <node name="tower_test" pkg="assignment_selection" type="tower_test.py" output="screen"/>
+  <node name="inv_kin" pkg="inv_kinematics" type="inv_kin_srv.py" output="screen"/>
+</launch>

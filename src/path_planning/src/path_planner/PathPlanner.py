@@ -34,13 +34,13 @@ class PathPlanner:
         if not self.pickUp.pick(self.target_block):
             return False
 
-        rospy.logfatal("Path Planner - Pick Up Complete.")
+        rospy.loginfo("Path Planner - Pick Up Complete.")
 
         # Put down block
         if not self.placeDown.place(self.end_pos):
             return False
         
-        rospy.logfatal("Path Planner - Place Down Complete.")
+        rospy.loginfo("Path Planner - Place Down Complete.")
 
         return True
     
