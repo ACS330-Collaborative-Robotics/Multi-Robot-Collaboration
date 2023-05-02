@@ -45,7 +45,7 @@ class PickUp(Movement.Movement):
         pose.position.z = 0.15
         if not self.move(pose, True):
             return False
-        rospy.sleep(10)
+        rospy.sleep(2)
         
         # Move down onto block
         rospy.loginfo("Path Planner - %s - Pick Up - Lowering onto %s.", self.serv_helper.robot_ns, block_name)

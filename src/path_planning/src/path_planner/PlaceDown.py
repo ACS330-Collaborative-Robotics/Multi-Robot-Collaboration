@@ -35,7 +35,7 @@ class PlaceDown(PickUp.PickUp):
         end_pose.position.z = 0.20
         if not self.move(end_pose, True):
             return False
-        rospy.sleep(5)
+        rospy.sleep(2)
         
         # Move down onto drop point
         rospy.loginfo("Path Planner - %s - Place Down - Lowering block.", self.serv_helper.robot_ns)
