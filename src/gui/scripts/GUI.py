@@ -106,7 +106,7 @@ class GUI:
         self.bridge = CvBridge() 
         rospy.Subscriber('/camera1/image_raw', ImageMsg, self.callback_video)
         # physical camera feed listener
-        rospy.Subscriber()
+        rospy.Subscriber('/tag_detections_image', ImageMsg, self.camera_callback)
 
         # ROS spin loop
         self.thread = threading.Thread(target=rospy.spin) 
