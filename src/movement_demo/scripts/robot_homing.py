@@ -94,9 +94,9 @@ def talker(robot_name, angle, joint,GripperState):
 
 if __name__ == '__main__':
     try:
-        talker("mover6_b",90,1,True)
+        talker("mover6_b",-90,1,True)
         talker("mover6_a",90,1,True)
-        #talker("mover6_a",90,1)
-        #talker("mover6_a",0,2)
+        rospy.sleep(10)
+        talker("mover6_b",90,1,True)
     except rospy.ROSInterruptException:
         pass
