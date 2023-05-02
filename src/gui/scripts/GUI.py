@@ -3,7 +3,6 @@ import rospy
 rospy.init_node('listener_gui_publisher', anonymous=True) # initialize the ROS node
 import subprocess
 import threading 
-import subprocess
 
 import tkinter as tk
 from tkinter import ttk
@@ -77,7 +76,7 @@ class GUI:
         piServices = ['/mover6_a_p/JointJog', '/mover6_b_p/JointJog']
         try:
             output = subprocess.check_output(['rosservice', 'find'] + piServices)
-            return_code = 0
+            # return_code = 0
             # check if service name is found in output
             if all(service in output.decode('utf-8') for service in piServices):
                 self.Pi_light.config(bg="green")
@@ -85,10 +84,9 @@ class GUI:
                 self.Pi_light.config(bg="green")
         except subprocess.CalledProcessError as e:
             output = e.output
-            return_code = e.returncode
+            # return_code = e.returncode
             self.Pi_light.config(bg="green")
-
-        print(f"Output: {output}, return code: {return_code}")
+        # print(f"Output: {output}, return code: {return_code}")
 
         # nodes configured light
         # the aim of these lights is to firstly check that the inverse_kinematics service is running (includes controllers)
@@ -163,7 +161,7 @@ class GUI:
         ik_service = '/inverse_kinematics'
         try:
             output = subprocess.check_output(['rosservice', 'list'])
-            return_code = 0
+            # return_code = 0
             # check if service name is found in output
             if ik_service in output.decode('utf-8'):
                 self.nodes_light.config(bg="green")
@@ -171,9 +169,9 @@ class GUI:
                 self.nodes_light.config(bg="red")
         except subprocess.CalledProcessError as e:
             output = e.output
-            return_code = e.returncode
+            # return_code = e.returncode
             self.nodes_light.config(bg="red")
-        print(f"Output: {output}, return code: {return_code}")
+        # print(f"Output: {output}, return code: {return_code}")
     
     # update physical camera data
     def camera_callback(self, msg):
