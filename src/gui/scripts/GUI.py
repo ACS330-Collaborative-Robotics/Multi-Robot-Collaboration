@@ -105,6 +105,8 @@ class GUI:
         # sim listener
         self.bridge = CvBridge() 
         rospy.Subscriber('/camera1/image_raw', ImageMsg, self.callback_video)
+        # physical camera feed listener
+        rospy.Subscriber()
 
         # ROS spin loop
         self.thread = threading.Thread(target=rospy.spin) 
