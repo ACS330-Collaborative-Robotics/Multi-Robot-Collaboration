@@ -52,10 +52,10 @@ class Movement:
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
 
-            xobj = [0, 0, 0, 0, 0, 0, 0, 0]
-            yobj = [0, 0, 0, 0, 0, 0, 0, 0]
-            zobj = [0, 10, 20, 30, 40, 50, 60, 70]
-            Q = [10, 18, 18, 18, 18, 18, 18, 18] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+            xobj = [0,0,0]
+            yobj = [0,0,0]
+            zobj = [0,5,10]
+            Q = [12,18,18] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
             tempxobj = []
             tempyobj = []
             tempzobj = []
@@ -97,12 +97,12 @@ class Movement:
                 zobj = zobj + tempzobj_linked
                 Q = Q + tempQ_linked
 
-            if self.serv_helper.is_obsarm_in_zone(robot_namespaces ,pos.position.x,pos.position.y): #working in world frame
-                xobj = xobj + [xgoal]
-                yobj = yobj + [ygoal]
-                zobj = zobj + [0]
-                Q = Q + ([18])
-                rospy.logwarn("Path Planner - Forcefield activated to repel %s",self.serv_helper.robot_ns)
+            #if self.serv_helper.is_obsarm_in_zone(robot_namespaces ,pos.position.x,pos.position.y): #working in world frame
+             #   xobj = xobj + [xgoal]
+             #   yobj = yobj + [ygoal]
+             #   zobj = zobj + [0]
+             #   Q = Q + ([18])
+             #   rospy.logwarn("Path Planner - Forcefield activated to repel %s",self.serv_helper.robot_ns)
 
             ##X,Y,Z path the End effector will take
             X, Y, Z, = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag)
