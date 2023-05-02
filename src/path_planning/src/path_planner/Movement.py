@@ -74,12 +74,15 @@ class Movement:
                         obs_link = "link"+str(obs)
 
                     pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
-                    pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
+                    if pos_obstacle_world == None:
+                        rospy.logfatal("Path Planner - getLinkPos")
+                    else:
+                        pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
 
-                    tempxobj.append(pos_obstacle.position.x * SF) #obstacle arm joint positions relative to other arm
-                    tempyobj.append(pos_obstacle.position.y * SF)
-                    tempzobj.append(pos_obstacle.position.z * SF)
-                    tempQ.append(20)
+                        tempxobj.append(pos_obstacle.position.x * SF) #obstacle arm joint positions relative to other arm
+                        tempyobj.append(pos_obstacle.position.y * SF)
+                        tempzobj.append(pos_obstacle.position.z * SF)
+                        tempQ.append(20)
 
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
                 tempxobj_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
