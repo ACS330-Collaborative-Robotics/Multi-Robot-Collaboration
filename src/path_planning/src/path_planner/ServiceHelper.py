@@ -175,13 +175,15 @@ class ServiceHelper:
         # TODO: Replace with data from /blocks
         rospy.wait_for_service('/gazebo/get_link_state')
 
-        try:
-            # Extract Pose() object
-            specific_link_name=arm_name+"::"+link_name
-            data = self.link_state_service(specific_link_name, "world").link_state.pose
-        except rospy.ServiceException:
-            rospy.logfatal("Path Planner - Service Helper - getLinkPos failed.")
-            data = None
+        data = None
+        while data == None:
+            try:
+                # Extract Pose() object
+                specific_link_name=arm_name+"::"+link_name
+                data = self.link_state_service(specific_link_name, "world").link_state.pose
+            except rospy.ServiceException:
+                rospy.loginfo("Path Planner - Service Helper - getLinkPos failed. Retrying now.")
+                data = None
 
         return data
 
@@ -196,7 +198,7 @@ class ServiceHelper:
     def Link_Midpoints(self,xobj,yobj,zobj,Q): #interpolate points to reat
         Link_Granularity=self.APFyamlData["Link_Granularity"]
         no_links = len(xobj) -1
-        newxobj = []
+        newxobj = []getLinkPos
         newyobj = []
         newzobj = []
         newQ = []
