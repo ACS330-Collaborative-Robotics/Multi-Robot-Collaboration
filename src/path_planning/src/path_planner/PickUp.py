@@ -42,14 +42,14 @@ class PickUp(Movement.Movement):
 
         # Move above block
         rospy.loginfo("Path Planner - %s - Pick Up - Moving above %s.", self.serv_helper.robot_ns, block_name)
-        pose.position.z += 0.15
+        pose.position.z = 0.15
         if not self.move(pose, True):
             return False
         rospy.sleep(10)
         
         # Move down onto block
         rospy.loginfo("Path Planner - %s - Pick Up - Lowering onto %s.", self.serv_helper.robot_ns, block_name)
-        pose.position.z -= 0.06
+        pose.position.z = 0.09
         if not self.move(pose, False):
             return False
         
@@ -60,7 +60,7 @@ class PickUp(Movement.Movement):
 
         # Move down onto block
         rospy.loginfo("Path Planner - %s - Pick Up - Lifting up %s.", self.serv_helper.robot_ns, block_name)
-        pose.position.z += 0.15
+        pose.position.z = 0.15
         if not self.move(pose, False):
             return False
         

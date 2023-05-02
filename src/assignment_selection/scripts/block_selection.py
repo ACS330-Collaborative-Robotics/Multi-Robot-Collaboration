@@ -93,7 +93,7 @@ def assignment_selector():
                 if not is_block_position_reachable(x, y, z, tower_block_position[3],tower_block_position[4],tower_block_position[5], robot_name, [0.1, 0.2]):
                     rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
     print()
-    
+
     for tower_block_positions in tower_block_positions_layers:
         robot_namespaces = robot_namespaces_copy.copy()
 
@@ -266,10 +266,16 @@ def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Use service to get position of specific block named
     rospy.wait_for_service('gazebo/get_model_state')
     model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
-    data = model_state_service(specific_model_name, reference_model_name).pose
+    data = None
+    while data == None and not rospy.is_shutdown():
+        try:
+            data = model_state_service(specific_model_name, reference_model_name)
+        except rospy.ServiceException:
+            rospy.loginfo("Assignment Selection - specific_block_pose - Try/Except triggered. Retrying now.")
+            data = None
 
     # Return ModelState object with position relative to world 
-    return data
+    return data.pose
 
 def is_block_reachable(block_name, robot_name, z_offsets) -> bool:
     pose = specific_block_pose(block_name, "world")
