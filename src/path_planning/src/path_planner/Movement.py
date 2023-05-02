@@ -94,10 +94,10 @@ class Movement:
                 Q = Q + tempQ_linked
 
             if self.serv_helper.is_obsarm_in_zone(robot_namespaces ,pos.position.x,pos.position.y): #working in world frame
-                xobj = xobj + [xgoal, xgoal, xgoal, xgoal, xgoal, xgoal, xgoal, xgoal]
-                yobj = yobj + [ygoal, ygoal, ygoal, ygoal, ygoal, ygoal, ygoal, ygoal]
-                zobj = zobj + [0, 10, 20, 30, 40, 50, 60, 70]
-                Q = Q + ([10, 20, 20, 20, 20, 20, 20, 20])
+                xobj = xobj + [xgoal]
+                yobj = yobj + [ygoal]
+                zobj = zobj + [0]
+                Q = Q + ([10])
                 rospy.logwarn("Path Planner - Forcefield activated to repel %s",self.serv_helper.robot_ns)
 
             ##X,Y,Z path the End effector will take
