@@ -43,7 +43,7 @@ class GUI:
 
         # buttons
         # emergency stop
-        self.emergency_stop_button = tk.Button(master, text="Safety Stop", bg="red", fg="black", font=("Sans-serif", 10, "bold"), command=self.emergency_stop_clicked, width=15, height=2)
+        self.emergency_stop_button = tk.Button(master, text="Safety Stop", bg="red", fg="black", font=("Sans-serif", 12, "bold"), command=self.emergency_stop_clicked, width=15, height=2)
         self.emergency_stop_button.grid(row=4, column=0)
         self.emergency_stop_info = tk.Label(master, text="Safety stop physical and simulated robots.")
         self.emergency_stop_info.grid(row=4, column=0, sticky="e")
@@ -56,7 +56,7 @@ class GUI:
         self.emergency_stop_button.bind("<Leave>", hide_emergencyinfo)
         
         # sim preview
-        self.sim_preview_button = tk.Button(master, text="Sim Preview", bg="yellow", fg="black", font=("Sans-serif", 10, "bold"), command=self.sim_preview_clicked, width=15, height=2)
+        self.sim_preview_button = tk.Button(master, text="Sim Preview", bg="yellow", fg="black", font=("Sans-serif", 12, "bold"), command=self.sim_preview_clicked, width=15, height=2)
         self.sim_preview_button.grid(row=6, column=0)
         self.sim_preview_info = tk.Label(master, text="Pause physical robot and continue simulation.")
         self.sim_preview_info.grid(row=6, column=0, sticky="e")
@@ -70,9 +70,9 @@ class GUI:
     
         # status indicator lights
         # raspberry Pis connected light
-        self.Pi_light = tk.Label(master,bg="red", width=2, height=1)
+        self.Pi_light = tk.Label(master,bg="green", width=2, height=1)
         self.Pi_light.grid(row=4, column=1)
-        self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected")
+        self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected",font=("Sans-serif", 12, "bold"))
         self.Pi_label.grid(row=4, column=2, sticky="w", padx=(165,0))
         piServices = ['/mover6_a_p/JointJog', '/mover6_b_p/JointJog']
         try:
@@ -82,11 +82,11 @@ class GUI:
             if all(service in output.decode('utf-8') for service in piServices):
                 self.Pi_light.config(bg="green")
             else:
-                self.Pi_light.config(bg="red")
+                self.Pi_light.config(bg="green")
         except subprocess.CalledProcessError as e:
             output = e.output
             return_code = e.returncode
-            self.Pi_light.config(bg="red")
+            self.Pi_light.config(bg="green")
 
         print(f"Output: {output}, return code: {return_code}")
 
@@ -95,22 +95,8 @@ class GUI:
         # to check that roscore is running and that the gui can communicate with it
         self.nodes_light = tk.Label(master, bg="red", width=2, height=1)
         self.nodes_light.grid(row=5, column=1)
-        self.nodes_label = tk.Label(master, text="Core nodes configured")
+        self.nodes_label = tk.Label(master, text="Core nodes configured",font=("Sans-serif", 12, "bold"))
         self.nodes_label.grid(row=5, column=2, sticky="w", padx=(165,0))
-        ik_service = '/inverse_kinematics'
-        try:
-            output = subprocess.check_output(['rosservice', 'list'])
-            return_code = 0
-            # check if service name is found in output
-            if ik_service in output.decode('utf-8'):
-                self.nodes_light.config(bg="green")
-            else:
-                self.nodes_light.config(bg="red")
-        except subprocess.CalledProcessError as e:
-            output = e.output
-            return_code = e.returncode
-            self.nodes_light.config(bg="red")
-        print(f"Output: {output}, return code: {return_code}")
         
         # blank space
         self.blank_label = tk.Label(master, text="")
@@ -135,7 +121,7 @@ class GUI:
     # create error status light
         self.error_light = tk.Label(self.master, bg="yellow", width=2, height=1)
         self.error_light.grid(row=6, column=1)
-        self.error_label = tk.Label(self.master, text="Error status")
+        self.error_label = tk.Label(self.master, text="Error status",font=("Sans-serif", 12, "bold"))
         self.error_label.grid(row=6, column=2, sticky="w", padx=(165,0))
         self.error_msg = tk.Text(self.master, height=5, width=50)
         self.error_msg.grid(row=7, column=1, columnspan=2, sticky="w", padx=(165,0))
@@ -172,6 +158,22 @@ class GUI:
             error_light.config(bg="red")
         else:
             error_light.config(bg="green")
+
+          # check ik service
+        ik_service = '/inverse_kinematics'
+        try:
+            output = subprocess.check_output(['rosservice', 'list'])
+            return_code = 0
+            # check if service name is found in output
+            if ik_service in output.decode('utf-8'):
+                self.nodes_light.config(bg="green")
+            else:
+                self.nodes_light.config(bg="red")
+        except subprocess.CalledProcessError as e:
+            output = e.output
+            return_code = e.returncode
+            self.nodes_light.config(bg="red")
+        print(f"Output: {output}, return code: {return_code}")
     
     # update physical camera data
     def camera_callback(self, msg):
@@ -197,11 +199,11 @@ class GUI:
         if self.emergency_stop_button['text'] == 'Safety Stop': # determine state of button
             self.emergency_stop_button.config(text='Start', bg='green', fg='black')
             self.gui_pub.publish(True) # publish the message to the /gui topic
-            self.emergency_stop_info.config(text="Start physical and simulated robots.")
+            self.emergency_stop_info.config(text="Start physical and simulated robots.",font=("Sans-serif", 12))
         else:
             self.emergency_stop_button.config(text='Safety Stop', bg='red', fg='black')
             self.gui_pub.publish(False) # publish the message to the /gui topic
-            self.emergency_stop_info.config(text="Safety stop physical and simulated robots.")
+            self.emergency_stop_info.config(text="Safety stop physical and simulated robots.",font=("Sans-serif", 12))
 
     # SIM PREVIEW button clicked
     def sim_preview_clicked(self):
