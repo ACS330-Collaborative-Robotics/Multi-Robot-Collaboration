@@ -27,7 +27,7 @@ class Movement:
         precise_angle_flag = 0
         SF = 100 #distance scale factor
         D = self.serv_helper.APFyamlData["D"]
-        CloseEnough = 0.5
+        CloseEnough = 1
         PathComplete = 0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
         # Get block coordinates relative to robot instead of world
