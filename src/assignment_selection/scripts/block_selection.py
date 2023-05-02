@@ -83,7 +83,7 @@ def assignment_selector():
 
     for tower_block_positions in tower_block_positions_layers:
         for tower_block_position in tower_block_positions:
-            rospy.loginfo("%.2f\t%.2f\%.2f", tower_block_position[0], tower_block_position[1], tower_block_position[2])
+            rospy.loginfo("Assignment Selection -  Cheaking tower block loaction %.2f\t%.2f\t%.2f", tower_block_position[0], tower_block_position[1], tower_block_position[2])
             for robot_name in robot_namespaces:
                 x = tower_block_position[0]
                 y = tower_block_position[1]
