@@ -67,9 +67,13 @@ class Movement:
 
             robot_namespaces.remove(self.serv_helper.robot_ns) #remove own name from list of arms to avoid
             for obstacle_arm_ns in robot_namespaces:
-                for obs in range(0,7):
+                for obs in range(0,10):
                     if obs == 0:
                         obs_link = "base_link"
+                    elif obs == 8:
+                        obs_link = "gripper_a"
+                    elif obs == 9:
+                        obs_link = "gripper_b"
                     else:
                         obs_link = "link"+str(obs)
 
