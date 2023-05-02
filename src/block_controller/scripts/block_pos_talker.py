@@ -81,9 +81,17 @@ def specific_block_pos(specific_model_name):
     # Use service to get position of specific block named
     rospy.wait_for_service('gazebo/get_model_state')
     model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
+    
+    data = None
+    while data == None and not rospy.is_shutdown():
+        try:
+            data = model_state_service(specific_model_name, "world")
+        except rospy.ServiceException:
+            rospy.loginfo("Block Talker - Try/Except caught specific_block_pos error. Retrying now.")
+            data = None
 
     # Return ModelState object with position relative to world 
-    return model_state_service(specific_model_name, "world")
+    return data
 
 if __name__ == '__main__':
     try:

@@ -174,10 +174,18 @@ class ServiceHelper:
         """
         # TODO: Replace with data from /blocks
         rospy.wait_for_service('/gazebo/get_link_state')
-        # Extract Pose() object
-        specific_link_name=arm_name+"::"+link_name
-        data = self.link_state_service(specific_link_name, "world").link_state.pose
-        return data
+
+        data = None
+        while data == None and not rospy.is_shutdown():
+            try:
+                # Extract Pose() object
+                specific_link_name=arm_name+"::"+link_name
+                data = self.link_state_service(specific_link_name, "world")
+            except rospy.ServiceException:
+                rospy.loginfo("Path Planner - Service Helper - getLinkPos failed. Retrying now.")
+                data = None
+
+        return data.link_state.pose
 
     def EuclidianDistance(self,x,y,z,xgoal,ygoal,zgoal):
         d = ((x-xgoal)**2+(y-ygoal)**2+(z-zgoal)**2)**0.5 #absolute distance
@@ -480,7 +488,7 @@ class ServiceHelper:
 
             if d_obs_to_goal <= forcefield_dist: #if other arm is in forcefield
                 if d_own_to_goal <= forcefield_dist: #if own arm is also in forcefield
-                    rospy.logwarn("Path Planner - Both arms in forcefield area")
+                    rospy.loginfo_throttle(2, "Path Planner - Both arms in forcefield area")
                     if d_own_to_goal >= d_obs_to_goal: #if other arm nearer
                         obs_in_zone_flag = 1
 

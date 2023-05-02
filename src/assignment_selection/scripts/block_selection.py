@@ -78,26 +78,28 @@ def assignment_selector():
     print()
 
     ## Generate tower block positions
-    tower_block_positions_layers = generate_tower_block_positions(len(block_names), block_width, block_height, block_length)
-        #tower_blocks_positions = [x, y, z, euler_a, euler_b, euler_c]
+    tower_block_positions_layers = generate_tower_block_positions(len(block_names), block_width, block_height, block_length, tower_origin_coordinates)
+    #tower_blocks_positions = [x, y, z, euler_a, euler_b, euler_c]
 
     for tower_block_positions in tower_block_positions_layers:
         for tower_block_position in tower_block_positions:
-            print(tower_block_position)
+            rospy.loginfo("Assignment Selection -  Cheaking tower block loaction %.2f\t%.2f\t%.2f", tower_block_position[0], tower_block_position[1], tower_block_position[2])
             for robot_name in robot_namespaces:
-                x = tower_block_position[0] + tower_origin_coordinates[0]
-                y = tower_block_position[1] + tower_origin_coordinates[1]
-                z = tower_block_position[2] + tower_origin_coordinates[2]
+                x = tower_block_position[0]
+                y = tower_block_position[1]
+                z = tower_block_position[2]
 
                 # Ensure end position is reachable
                 if not is_block_position_reachable(x, y, z, tower_block_position[3],tower_block_position[4],tower_block_position[5], robot_name, [0.1, 0.2]):
                     rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
 
+    print()
+
     for tower_block_positions in tower_block_positions_layers:
         robot_namespaces = robot_namespaces_copy.copy()
-        robots_busy = [False for x in range(len(robot_namespaces))]
 
         while len(tower_block_positions) > 0 and len(block_names) > 0 and not rospy.is_shutdown():
+            robots_busy = [False for x in range(len(robot_namespaces))]
             # Check if each robot is busy
             for robot_number_iterator in range(len(robot_namespaces)):
                 robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() in [0, 3, 4, 9]) 
@@ -113,7 +115,7 @@ def assignment_selector():
                 
                 update_block_positions()
                 
-                task_allocation_success = allocate_task(block_names, robot_namespaces[robot_number], robot_number, tower_block_positions, tower_origin_coordinates, path_clients)
+                task_allocation_success = allocate_task(block_names, robot_namespaces[robot_number], robot_number, tower_block_positions, path_clients)
 
                 if task_allocation_success == None:
                     rospy.logfatal("Assignment Selection - Removing %s from selection as no blocks can be picked up by it.", robot_namespaces[robot_number])
@@ -150,7 +152,7 @@ def update_block_positions():
     except rospy.ServiceException:
         rospy.logwarn("Assignment Selection - Block update service call failed.")
 
-def generate_tower_block_positions(number_of_blocks, block_width, block_height, block_length):
+def generate_tower_block_positions(number_of_blocks, block_width, block_height, block_length, tower_origin_coordinates):
     tower_block_positions = []
 
     number_of_blocks_per_circle = 8
@@ -170,10 +172,13 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
         for block_angle_multiplier in range(number_of_blocks_per_circle):
             block_angle = block_angle_multiplier * 2 * math.pi / number_of_blocks_per_circle + layer_number*layer_angle_offset
 
-            x = x_initial*math.cos(block_angle) - y_initial*math.sin(block_angle)
-            y = x_initial*math.sin(block_angle) + y_initial*math.cos(block_angle)
+            x = x_initial*math.cos(block_angle) - y_initial*math.sin(block_angle) + tower_origin_coordinates[0]
+            y = x_initial*math.sin(block_angle) + y_initial*math.cos(block_angle) + tower_origin_coordinates[1]
+            z = layer_number*block_height + tower_origin_coordinates[2]
 
-            tower_block_positions_layer.append([x, y, layer_number*block_height, euler_x, euler_y, block_angle+math.pi/2])
+            if not (x > -0.1 and x < 0):
+                tower_block_positions_layer.append([x, y, z, euler_x, euler_y, block_angle+math.pi/2])
+
         tower_block_positions.append(tower_block_positions_layer)
         
     return tower_block_positions
@@ -204,16 +209,16 @@ def build_block_list(robot_namespaces, debug=False):
 
     return block_names
 
-def allocate_task(block_names, robot_name, robot_number, tower_block_positions, tower_origin_coordinates, path_clients) -> bool:
+def allocate_task(block_names, robot_name, robot_number, tower_block_positions, path_clients) -> bool:
     goal = PathPlanGoal()
     goal.robot_name = robot_name
 
     for tower_block_position in tower_block_positions:
         # Setup End Position
         end_pos = Pose()
-        end_pos.position.x = tower_block_position[0] + tower_origin_coordinates[0]
-        end_pos.position.y = tower_block_position[1] + tower_origin_coordinates[1]
-        end_pos.position.z = tower_block_position[2] + tower_origin_coordinates[2]
+        end_pos.position.x = tower_block_position[0]
+        end_pos.position.y = tower_block_position[1]
+        end_pos.position.z = tower_block_position[2]
 
         quat = tf.transformations.quaternion_from_euler(tower_block_position[3],tower_block_position[4],tower_block_position[5])
         
@@ -264,10 +269,16 @@ def specific_block_pose(specific_model_name, reference_model_name) -> Pose:
     # Use service to get position of specific block named
     rospy.wait_for_service('gazebo/get_model_state')
     model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
-    data = model_state_service(specific_model_name, reference_model_name).pose
+    data = None
+    while data == None and not rospy.is_shutdown():
+        try:
+            data = model_state_service(specific_model_name, reference_model_name)
+        except rospy.ServiceException:
+            rospy.loginfo("Assignment Selection - specific_block_pose - Try/Except triggered. Retrying now.")
+            data = None
 
     # Return ModelState object with position relative to world 
-    return data
+    return data.pose
 
 def is_block_reachable(block_name, robot_name, z_offsets) -> bool:
     pose = specific_block_pose(block_name, "world")
