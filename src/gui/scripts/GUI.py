@@ -32,11 +32,11 @@ class GUI:
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         # buttons
-        self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.emergency_stop_clicked)
+        self.emergency_stop_button = tk.Button(master, text="STOP", bg="red", fg="black", font=("Calibri", 20, "bold"), command=self.emergency_stop_clicked)
         self.emergency_stop_button.grid(row=3, column=0, )
-        self.pause_button = tk.Button(master, text="PAUSE", bg="red", fg="black", font=("Calibri", 10, "bold"), command=self.pause_physical_clicked)
+        self.pause_button = tk.Button(master, text="PAUSE", bg="red", fg="black", font=("Calibri", 20, "bold"), command=self.pause_physical_clicked)
         self.pause_button.grid(row=4, column=0, )
-        self.sim_preview_button = tk.Button(master, text="SIM PREVIEW", bg="yellow", fg="black", font=("Calibri", 10, "bold"), command=self.sim_preview_clicked)
+        self.sim_preview_button = tk.Button(master, text="SIM PREVIEW", bg="yellow", fg="black", font=("Calibri", 20, "bold"), command=self.sim_preview_clicked)
         self.sim_preview_button.grid(row=5, column=0, )
     
         # status indicator lights
