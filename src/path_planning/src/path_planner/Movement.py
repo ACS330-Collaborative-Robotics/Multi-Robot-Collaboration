@@ -103,8 +103,16 @@ class Movement:
 
             ##X,Y,Z path the End effector will take
             X, Y, Z, = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag)
-              #rescale back to meters
+            
+            path_points = Pose()
+            path_points.position.x = X
+            path_points.position.y = Y
+            path_points.position.z = Z
 
+            path_points_world=self.serv_helper.frameConverter("world",(self.serv_helper.robot_ns+"/base_link"), path_points)
+            self.serv_helper.publish_path_points(path_points_world.position.x,path_points_world.position.y,path_points_world.position.z,xgoal,ygoal,zgoal,pos_obstacle_world.position.x,pos_obstacle_world.position.y,pos_obstacle_world.position.z)
+
+              #rescale back to meters
             arm_pos = Pose() #pose for next coordinate
             arm_pos.position.x = X/SF
             arm_pos.position.y = Y/SF

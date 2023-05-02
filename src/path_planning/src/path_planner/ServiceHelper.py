@@ -448,7 +448,7 @@ class ServiceHelper:
                 #i += 1
             #rospy.loginfo(PathPointsx[i],PathPointsy[i])
         #PathPoints = list(zip(PathPointsx,PathPointsy))
-        self.publish_path_points(x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj)
+        
         return x, y, z
 
     def publish_path_points(self,x,y,z,xgoal,ygoal,zgoal,xobj,yobj,zobj):
