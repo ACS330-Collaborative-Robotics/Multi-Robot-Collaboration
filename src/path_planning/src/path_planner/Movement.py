@@ -27,7 +27,7 @@ class Movement:
         precise_angle_flag = 0
         SF = 100 #distance scale factor
         D = self.serv_helper.APFyamlData["D"]
-        CloseEnough = 1
+        CloseEnough = 2.5
         PathComplete = 0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
         # Get block coordinates relative to robot instead of world
@@ -52,10 +52,10 @@ class Movement:
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
 
-            xobj = [0,0,0]
-            yobj = [0,0,0]
-            zobj = [0,5,10]
-            Q = [12,18,18] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+            xobj = [0,0,0,0,0]
+            yobj = [0,0,0,0,0]
+            zobj = [0,5,10,20,50]
+            Q = [12,18,18,22,30] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
             tempxobj = []
             tempyobj = []
             tempzobj = []
@@ -86,7 +86,7 @@ class Movement:
                         tempxobj.append(pos_obstacle.position.x * SF) #obstacle arm joint positions relative to other arm
                         tempyobj.append(pos_obstacle.position.y * SF)
                         tempzobj.append(pos_obstacle.position.z * SF)
-                        tempQ.append(15)
+                        tempQ.append(10)
 
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
                 tempxobj_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)

@@ -409,9 +409,9 @@ class ServiceHelper:
         diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
         if any(diffrep) != 0:
             if precise_angle_flag:
-                diffrep[0] = 0
-                diffrep[1] = 0
-                diffrep[2] = 0
+                diffrep[0] = diffrep[0]*0
+                diffrep[1] = diffrep[1]*0
+                diffrep[2] = diffrep[2]*0
                 diffatt[0] = diffatt[0] *4
                 diffatt[1] = diffatt[1] *4
                 diffatt[2] = diffatt[2] *4
