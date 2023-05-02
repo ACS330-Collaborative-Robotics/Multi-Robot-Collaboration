@@ -75,7 +75,22 @@ class GUI:
         self.Pi_light.grid(row=4, column=1)
         self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected")
         self.Pi_label.grid(row=4, column=2, sticky="w", padx=(165,0))
-
+        #pi checker
+        piServices = ['/mover6_a_p/JointJog', '/mover6_b_p/JointJog']
+        try:
+            output = subprocess.check_output(['rosservice', 'find'] + piServices)
+            return_code = 0
+            # check if service name is found in output
+            if all(service in output.decode('utf-8') for service in piServices):
+                self.Pi_light.config(bg="green")
+            else:
+                self.Pi_light.config(bg="red")
+        except subprocess.CalledProcessError as e:
+            output = e.output
+            return_code = e.returncode
+            self.Pi_light.config(bg="red")
+        #print(f"Output: {output}, return code: {return_code}")
+        
         # nodes configured light
         # the aim of these lights is to firstly check that the inverse_kinematics service is running (includes controllers)
         # to check that roscore is running and that the gui can communicate with it
@@ -146,21 +161,6 @@ class GUI:
             self.nodes_light.config(bg="red")
         #print(f"Output: {output}, return code: {return_code}")
 
-        #pi checker
-        piServices = ['/mover6_a_p/JointJog', '/mover6_b_p/JointJog']
-        try:
-            output = subprocess.check_output(['rosservice', 'find'] + piServices)
-            return_code = 0
-            # check if service name is found in output
-            if all(service in output.decode('utf-8') for service in piServices):
-                self.Pi_light.config(bg="green")
-            else:
-                self.Pi_light.config(bg="red")
-        except subprocess.CalledProcessError as e:
-            output = e.output
-            return_code = e.returncode
-            self.Pi_light.config(bg="red")
-        #print(f"Output: {output}, return code: {return_code}")
 
         # get the most recent error message and severity level
         self.error_msgs = data.msg.split("\n")
