@@ -80,10 +80,14 @@ class Movement:
                     pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
                     pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
 
+
                     tempxobj.append(pos_obstacle.position.x * SF) #obstacle arm joint positions relative to other arm
                     tempyobj.append(pos_obstacle.position.y * SF)
                     tempzobj.append(pos_obstacle.position.z * SF)
                     tempQ.append(10)
+                    plot_objects_x=tempxobj
+                    plot_objects_y=tempyobj
+                    plot_objects_z=tempzobj
 
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
                 tempxobj_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
@@ -110,7 +114,7 @@ class Movement:
             path_points.position.z = Z
 
             path_points_world=self.serv_helper.frameConverter("world",(self.serv_helper.robot_ns+"/base_link"), path_points)
-            self.serv_helper.publish_path_points(path_points_world.position.x,path_points_world.position.y,path_points_world.position.z,xgoal,ygoal,zgoal,pos_obstacle_world.position.x,pos_obstacle_world.position.y,pos_obstacle_world.position.z)
+            self.serv_helper.publish_path_points(path_points_world.position.x,path_points_world.position.y,path_points_world.position.z,xgoal,ygoal,zgoal,plot_objects_x,plot_objects_y,plot_objects_z)
 
               #rescale back to meters
             arm_pos = Pose() #pose for next coordinate
