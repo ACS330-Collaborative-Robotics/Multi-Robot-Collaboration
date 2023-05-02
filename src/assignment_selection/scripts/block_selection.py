@@ -173,7 +173,8 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
             x = x_initial*math.cos(block_angle) - y_initial*math.sin(block_angle)
             y = x_initial*math.sin(block_angle) + y_initial*math.cos(block_angle)
 
-            tower_block_positions_layer.append([x, y, layer_number*block_height, euler_x, euler_y, block_angle+math.pi/2])
+            if abs(x) > 0.1:
+                tower_block_positions_layer.append([x, y, layer_number*block_height, euler_x, euler_y, block_angle+math.pi/2])
         tower_block_positions.append(tower_block_positions_layer)
         
     return tower_block_positions
