@@ -488,7 +488,7 @@ class ServiceHelper:
 
             if d_obs_to_goal <= forcefield_dist: #if other arm is in forcefield
                 if d_own_to_goal <= forcefield_dist: #if own arm is also in forcefield
-                    rospy.loginfo("Path Planner - Both arms in forcefield area")
+                    rospy.loginfo_throttle(2, "Path Planner - Both arms in forcefield area")
                     if d_own_to_goal >= d_obs_to_goal: #if other arm nearer
                         obs_in_zone_flag = 1
 
