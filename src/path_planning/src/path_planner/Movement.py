@@ -55,7 +55,7 @@ class Movement:
             xobj = [0, 0, 0, 0, 0, 0, 0, 0]
             yobj = [0, 0, 0, 0, 0, 0, 0, 0]
             zobj = [0, 10, 20, 30, 40, 50, 60, 70]
-            Q = [10, 12, 12, 12, 12, 12, 12, 12] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+            Q = [10, 22, 22, 22, 22, 22, 22, 22] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
             tempxobj = []
             tempyobj = []
             tempzobj = []
