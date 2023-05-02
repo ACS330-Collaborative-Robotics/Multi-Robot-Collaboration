@@ -1,0 +1,1 @@
+rosrun image_view image_view  image:=/top_cam/usb_cam/image_raw  __name:=image_view

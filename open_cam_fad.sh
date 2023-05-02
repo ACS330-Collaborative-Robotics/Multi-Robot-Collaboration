@@ -1,0 +1,1 @@
+rosrun image_view image_view image:=/tag_detections_image __name:=fiducial_cam
