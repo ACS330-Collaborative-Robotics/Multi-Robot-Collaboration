@@ -6,14 +6,20 @@ import threading
 import subprocess
 
 import tkinter as tk
+
 from tkinter import ttk
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 
 from PIL import Image, ImageTk
 from sensor_msgs.msg import Image as ImageMsg
 from cv_bridge import CvBridge
 import cv2
 
-from custom_msgs.msg import Joints
+from geometry_msgs.msg import Point
+from custom_msgs.msg import Joints, APFPlot
 from custom_msgs.srv import PlayPause
 from std_msgs.msg import String, Float64, Float64MultiArray, Bool
 from rosgraph_msgs.msg import Log
@@ -27,7 +33,7 @@ class GUI:
         # simulation
         self.sim_label = tk.Label(master, text="Simulation: ")
         self.sim_label.grid(row=0, column=0, sticky="w")
-        self.sim_canvas = tk.Canvas(master, width=900, height=675)
+        self.sim_canvas = tk.Canvas(master, width=540, height=380)
         self.sim_canvas.grid(row=1, column=0, sticky="nsew")
         self.time_label = tk.Label(master, text="")
         self.time_label.grid(row=2, column=0, sticky="w")
@@ -35,9 +41,22 @@ class GUI:
         # physical camera feed
         self.cam_label = tk.Label(master, text="Physical camera feed: ")
         self.cam_label.grid(row=0, column=2, sticky="w")
-        self.cam_canvas = tk.Canvas(master, width=900, height=675)
+        self.cam_canvas = tk.Canvas(master, width=540, height=380)
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
+        #APF Plot
+        global ax, canvas
+        self.plot_label = tk.Label(master, text="Potential Field Plot: ")
+        self.plot_label.grid(row=0, column=3, sticky="w")
+        self.plot_canvas = tk.Canvas(master, width=540, height=380)
+        fig = Figure(figsize=(5, 4), dpi=100)
+        canvas = FigureCanvasTkAgg(fig, master=root) 
+        ax = fig.add_subplot(111, projection="3d")
+        rospy.Subscriber('/mover6_a/APF_point', APFPlot, self.apf_callback_a)
+        rospy.Subscriber('/mover6_b/APF_point', APFPlot, self.apf_callback_b)
+        canvas.draw()
+        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
+        
         # blank space
         self.blank_label = tk.Label(master, text="")
         self.blank_label.grid(row=3, column=0, sticky="w")
@@ -98,20 +117,7 @@ class GUI:
         self.nodes_light.grid(row=5, column=1)
         self.nodes_label = tk.Label(master, text="Core nodes configured")
         self.nodes_label.grid(row=5, column=2, sticky="w", padx=(165,0))
-        ik_service = '/inverse_kinematics'
-        try:
-            output = subprocess.check_output(['rosservice', 'list'])
-            return_code = 0
-            # check if service name is found in output
-            if ik_service in output.decode('utf-8'):
-                self.nodes_light.config(bg="green")
-            else:
-                self.nodes_light.config(bg="red")
-        except subprocess.CalledProcessError as e:
-            output = e.output
-            return_code = e.returncode
-            self.nodes_light.config(bg="red")
-        print(f"Output: {output}, return code: {return_code}")
+        
         
         # blank space
         self.blank_label = tk.Label(master, text="")
@@ -127,13 +133,12 @@ class GUI:
         self.thread = threading.Thread(target=rospy.spin) 
         self.thread.start()
 
-    # error status light
-    # checks the status of the most recent error
-    # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
-    # green if it is 1, 2 or 3
-    # red if it is 4 or 5
-           
-    # create error status light
+        # Create a listener for the physical camera 
+        rospy.Subscriber('/tag_detections_image', ImageMsg, self.camera_callback)
+
+        #rospy.Subscriber('/usb_cam/image_raw', ImageMsg, self.camera_callback)
+
+        # create error status light
         self.error_light = tk.Label(self.master, bg="yellow", width=2, height=1)
         self.error_light.grid(row=6, column=1)
         self.error_label = tk.Label(self.master, text="Error status")
@@ -144,6 +149,42 @@ class GUI:
         rospy.Subscriber('/rosout', Log, self.callback_error, callback_args=(self.error_msg, self.error_light))
         # Initialize the ROS publisher for the gui
         self.gui_pub = rospy.Publisher('/gui', Bool, queue_size=10)
+
+    def apf_callback_a(self, data):
+        # print(data)
+        goal_x=data.goal.x
+        goal_y=data.goal.y
+        goal_z=data.goal.z
+        ax.scatter(goal_x, goal_y, goal_z, c='green')
+        path_x=data.path.x
+        path_y=data.path.y
+        path_z=data.path.z
+        ax.scatter(path_x, path_y, path_z, c='blue')
+        for n in range(len(data.objects)):
+            ax.scatter(data.objects[n].x, data.objects[n].y, data.objects[n].z, c='red')
+
+
+    def apf_callback_b(self, data):
+        # print(data)
+        goal_x=data.goal.x
+        goal_y=data.goal.y
+        goal_z=data.goal.z
+        ax.scatter(goal_x, goal_y, goal_z, c='green')
+        path_x=data.path.x
+        path_y=data.path.y
+        path_z=data.path.z
+        ax.scatter(path_x, path_y, path_z, c='blue')
+        for n in range(len(data.objects)):
+            ax.scatter(data.objects[n].x, data.objects[n].y, data.objects[n].z, c='red')
+
+        
+    # error status light
+    # checks the status of the most recent error
+    # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
+    # green if it is 1, 2 or 3
+    # red if it is 4 or 5
+           
+
     
     # error display
     def error_display(master):
@@ -158,6 +199,23 @@ class GUI:
     # update error log
     def callback_error(self, data, args):
         error_msg, error_light = args
+
+        ik_service = '/inverse_kinematics'
+        try:
+            output = subprocess.check_output(['rosservice', 'list'])
+            return_code = 0
+            # check if service name is found in output
+            if ik_service in output.decode('utf-8'):
+                self.nodes_light.config(bg="green")
+            else:
+                self.nodes_light.config(bg="red")
+        except subprocess.CalledProcessError as e:
+            output = e.output
+            return_code = e.returncode
+            self.nodes_light.config(bg="red")
+        #print(f"Output: {output}, return code: {return_code}")
+
+
         # get the most recent error message and severity level
         self.error_msgs = data.msg.split("\n")
         most_recent_error = self.error_msgs[0]

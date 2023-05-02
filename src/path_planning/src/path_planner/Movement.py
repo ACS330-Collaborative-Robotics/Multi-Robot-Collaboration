@@ -59,6 +59,9 @@ class Movement:
             tempxobj = []
             tempyobj = []
             tempzobj = []
+            plot_objects_x = []
+            plot_objects_y = []
+            plot_objects_z = []
             tempQ = []
             tempxobj_linked = []
             tempyobj_linked = []
@@ -67,20 +70,29 @@ class Movement:
 
             robot_namespaces.remove(self.serv_helper.robot_ns) #remove own name from list of arms to avoid
             for obstacle_arm_ns in robot_namespaces:
-                for obs in range(0,7):
+                for obs in range(0,10):
                     if obs == 0:
                         obs_link = "base_link"
+                    elif obs == 8:
+                        obs_link = "gripper_a"
+                    elif obs == 9:
+                        obs_link = "gripper_b"
                     else:
                         obs_link = "link"+str(obs)
 
                     pos_obstacle_world=self.serv_helper.getLinkPos(obstacle_arm_ns,obs_link) #obstacle arm joint positions relative to world
                     pos_obstacle = self.serv_helper.frameConverter((self.serv_helper.robot_ns+"/base_link"), "world", pos_obstacle_world)
 
+
                     tempxobj.append(pos_obstacle.position.x * SF) #obstacle arm joint positions relative to other arm
                     tempyobj.append(pos_obstacle.position.y * SF)
                     tempzobj.append(pos_obstacle.position.z * SF)
                     tempQ.append(10)
 
+                    plot_objects_x.append(pos_obstacle_world.position.x * SF)
+                    plot_objects_y.append(pos_obstacle_world.position.y * SF)
+                    plot_objects_z.append(pos_obstacle_world.position.z * SF)
+                    
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
                 tempxobj_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
 
@@ -99,8 +111,16 @@ class Movement:
 
             ##X,Y,Z path the End effector will take
             X, Y, Z, = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag)
-              #rescale back to meters
+            
+            path_points = Pose()
+            path_points.position.x = X
+            path_points.position.y = Y
+            path_points.position.z = Z
 
+            path_points_world=self.serv_helper.frameConverter("world",(self.serv_helper.robot_ns+"/base_link"), path_points)
+            self.serv_helper.publish_path_points(path_points_world.position.x,path_points_world.position.y,path_points_world.position.z,xgoal,ygoal,zgoal,plot_objects_x,plot_objects_y,plot_objects_z)
+
+              #rescale back to meters
             arm_pos = Pose() #pose for next coordinate
             arm_pos.position.x = X/SF
             arm_pos.position.y = Y/SF
