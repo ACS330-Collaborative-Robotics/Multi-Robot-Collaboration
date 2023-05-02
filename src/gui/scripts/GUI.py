@@ -116,8 +116,7 @@ class GUI:
     # checks the status of the most recent error
     # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
     # green if it is 1, 2 or 3
-    # red if it is 4 or 5
-           
+    # red if it is 4 or 5    
     # create error status light
         self.error_light = tk.Label(self.master, bg="yellow", width=2, height=1)
         self.error_light.grid(row=6, column=1)
@@ -143,11 +142,27 @@ class GUI:
     # update error log
     def callback_error(self, data, args):
         error_msg, error_light = args
+        
+        ik_service = '/inverse_kinematics'
+        try:
+            output = subprocess.check_output(['rosservice', 'list'])
+            return_code = 0
+            # check if service name is found in output
+            if ik_service in output.decode('utf-8'):
+                self.nodes_light.config(bg="green")
+            else:
+                self.nodes_light.config(bg="red")
+        except subprocess.CalledProcessError as e:
+            output = e.output
+            return_code = e.returncode
+            self.nodes_light.config(bg="red")
+        #print(f"Output: {output}, return code: {return_code}")
+
         # get the most recent error message and severity level
         self.error_msgs = data.msg.split("\n")
         most_recent_error = self.error_msgs[0]
         most_recent_severity = int(data.level)
-        # Only display errors of severity level 4 or 5
+        # Only display errors of severity level 4 or 5ik_service = '/inverse_kinematics'
         if most_recent_severity < 4:
             return
         # update the error message box
