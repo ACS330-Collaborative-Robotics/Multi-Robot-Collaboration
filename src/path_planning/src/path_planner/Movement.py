@@ -98,7 +98,7 @@ class Movement:
                 yobj = yobj + [ygoal, ygoal, ygoal, ygoal, ygoal, ygoal, ygoal, ygoal]
                 zobj = zobj + [0, 10, 20, 30, 40, 50, 60, 70]
                 Q = Q + ([10, 20, 20, 20, 20, 20, 20, 20])
-                rospy.logwarn("Path Planner - Forcefield activated to repel %s",self.serv_helper.robot_ns)
+                rospy.loginfo_throttle(2, "Path Planner - Forcefield activated to repel %s",self.serv_helper.robot_ns)
 
             ##X,Y,Z path the End effector will take
             X, Y, Z, = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag)
