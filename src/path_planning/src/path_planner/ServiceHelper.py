@@ -174,9 +174,15 @@ class ServiceHelper:
         """
         # TODO: Replace with data from /blocks
         rospy.wait_for_service('/gazebo/get_link_state')
-        # Extract Pose() object
-        specific_link_name=arm_name+"::"+link_name
-        data = self.link_state_service(specific_link_name, "world").link_state.pose
+
+        try:
+            # Extract Pose() object
+            specific_link_name=arm_name+"::"+link_name
+            data = self.link_state_service(specific_link_name, "world").link_state.pose
+        except rospy.ServiceException:
+            rospy.logfatal("Path Planner - Service Helper - getLinkPos failed.")
+            data = None
+
         return data
 
     def EuclidianDistance(self,x,y,z,xgoal,ygoal,zgoal):
