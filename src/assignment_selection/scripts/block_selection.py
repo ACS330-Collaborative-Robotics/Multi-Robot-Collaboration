@@ -92,7 +92,8 @@ def assignment_selector():
                 # Ensure end position is reachable
                 if not is_block_position_reachable(x, y, z, tower_block_position[3],tower_block_position[4],tower_block_position[5], robot_name, [0.1, 0.2]):
                     rospy.logwarn("Assignment Selection - Cannot reach final block position with %s.", robot_name)
-
+    print()
+    
     for tower_block_positions in tower_block_positions_layers:
         robot_namespaces = robot_namespaces_copy.copy()
 
