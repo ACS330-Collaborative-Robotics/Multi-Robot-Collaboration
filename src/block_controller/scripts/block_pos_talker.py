@@ -83,7 +83,7 @@ def specific_block_pos(specific_model_name):
     model_state_service = rospy.ServiceProxy('gazebo/get_model_state', GetModelState)
     
     data = None
-    while data == None:
+    while data == None and not rospy.is_shutdown():
         try:
             data = model_state_service(specific_model_name, "world")
         except rospy.ServiceException:
