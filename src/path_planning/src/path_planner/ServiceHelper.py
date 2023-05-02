@@ -185,7 +185,7 @@ class ServiceHelper:
                 rospy.loginfo("Path Planner - Service Helper - getLinkPos failed. Retrying now.")
                 data = None
 
-        return data
+        return data.link_state.pose
 
     def EuclidianDistance(self,x,y,z,xgoal,ygoal,zgoal):
         d = ((x-xgoal)**2+(y-ygoal)**2+(z-zgoal)**2)**0.5 #absolute distance

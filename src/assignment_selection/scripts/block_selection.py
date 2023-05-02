@@ -95,9 +95,9 @@ def assignment_selector():
 
     for tower_block_positions in tower_block_positions_layers:
         robot_namespaces = robot_namespaces_copy.copy()
-        robots_busy = [False for x in range(len(robot_namespaces))]
 
         while len(tower_block_positions) > 0 and len(block_names) > 0 and not rospy.is_shutdown():
+            robots_busy = [False for x in range(len(robot_namespaces))]
             # Check if each robot is busy
             for robot_number_iterator in range(len(robot_namespaces)):
                 robots_busy[robot_number_iterator] = not (path_clients[robot_number_iterator].get_state() in [0, 3, 4, 9]) 
