@@ -75,21 +75,6 @@ class GUI:
         self.Pi_light.grid(row=4, column=1)
         self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected")
         self.Pi_label.grid(row=4, column=2, sticky="w", padx=(165,0))
-        piServices = ['/mover6_a_p/JointJog', '/mover6_b_p/JointJog']
-        try:
-            output = subprocess.check_output(['rosservice', 'find'] + piServices)
-            return_code = 0
-            # check if service name is found in output
-            if all(service in output.decode('utf-8') for service in piServices):
-                self.Pi_light.config(bg="green")
-            else:
-                self.Pi_light.config(bg="red")
-        except subprocess.CalledProcessError as e:
-            output = e.output
-            return_code = e.returncode
-            self.Pi_light.config(bg="red")
-
-        print(f"Output: {output}, return code: {return_code}")
 
         # nodes configured light
         # the aim of these lights is to firstly check that the inverse_kinematics service is running (includes controllers)
@@ -145,6 +130,7 @@ class GUI:
     # update error log
     def callback_error(self, data, args):
         error_msg, error_light = args
+        #node checker
         ik_service = '/inverse_kinematics'
         try:
             output = subprocess.check_output(['rosservice', 'list'])
@@ -158,6 +144,22 @@ class GUI:
             output = e.output
             return_code = e.returncode
             self.nodes_light.config(bg="red")
+        #print(f"Output: {output}, return code: {return_code}")
+
+        #pi checker
+        piServices = ['/mover6_a_p/JointJog', '/mover6_b_p/JointJog']
+        try:
+            output = subprocess.check_output(['rosservice', 'find'] + piServices)
+            return_code = 0
+            # check if service name is found in output
+            if all(service in output.decode('utf-8') for service in piServices):
+                self.Pi_light.config(bg="green")
+            else:
+                self.Pi_light.config(bg="red")
+        except subprocess.CalledProcessError as e:
+            output = e.output
+            return_code = e.returncode
+            self.Pi_light.config(bg="red")
         #print(f"Output: {output}, return code: {return_code}")
 
         # get the most recent error message and severity level
@@ -216,11 +218,12 @@ class GUI:
         if self.sim_preview_button['text'] == 'Sim Preview': # if simulation is currently running and is not paused
             desired_state = 'pause' # then pause the simulation 
             self.sim_preview_button.config(text='Stop Preview', bg='red', fg='black') # change the button text for stopping the preview
-            self.sim_preview_info.config(text="Resume physical system.")
+            self.sim_preview_info.config(text="Stop simulation preview.")
         else:
             desired_state = 'play' # if the physical system is paused 
             self.sim_preview_button.config(text='Sim Preview', bg='yellow', fg='black')
-        # call service with desired state
+            self.sim_preview_info.config(text="Stop physical system and resume simulation.")
+        # call service with desired state-+-
         try:
             response = play_pause_proxy(desired_state)
             if response.success:
