@@ -59,6 +59,9 @@ class Movement:
             tempxobj = []
             tempyobj = []
             tempzobj = []
+            plot_objects_x = []
+            plot_objects_y = []
+            plot_objects_z = []
             tempQ = []
             tempxobj_linked = []
             tempyobj_linked = []
@@ -85,10 +88,11 @@ class Movement:
                     tempyobj.append(pos_obstacle.position.y * SF)
                     tempzobj.append(pos_obstacle.position.z * SF)
                     tempQ.append(10)
-                    plot_objects_x=tempxobj
-                    plot_objects_y=tempyobj
-                    plot_objects_z=tempzobj
 
+                    plot_objects_x.append(pos_obstacle_world.position.x * SF)
+                    plot_objects_y.append(pos_obstacle_world.position.y * SF)
+                    plot_objects_z.append(pos_obstacle_world.position.z * SF)
+                    
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
                 tempxobj_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
 
