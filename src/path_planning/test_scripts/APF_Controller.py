@@ -8,10 +8,10 @@ startz = 20
 xgoal = 0
 ygoal = -25
 zgoal = -20
-xobj = [0,0,0,0,0,0]
-yobj = [0,0,0,0,0,0]
-zobj = [0,10,20,30,40,50]
-Q = [30,30,30,30,30,30]
+xobj = [0,0,0,0,0]
+yobj = [0,0,0,0,0]
+zobj = [0,5,10,20,50]
+Q = [7,16,16,20,30]
 D = 5
 xobj,yobj,zobj,Q = Link_Midpoints(xobj,yobj,zobj,Q)
 ##Visual Commands

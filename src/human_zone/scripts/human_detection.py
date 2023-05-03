@@ -8,7 +8,7 @@ def callback(scan):
     human_detected = False
     for r in enumerate(scan.ranges):
         #print(r)
-        if r[1] < 2.2:
+        if r[1] < 2:
             human_detected = True
             break
         
@@ -16,7 +16,7 @@ def callback(scan):
             break
         
     if human_detected:
-        rospy.loginfo("Human detected within 2.2m!")
+        rospy.loginfo("Human detected within 2m!")
         e_stop_pub.publish(True)
     else:
         e_stop_pub.publish(False)

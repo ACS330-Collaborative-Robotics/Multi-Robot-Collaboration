@@ -50,7 +50,7 @@ class EStopController:
             
             # Print a message indicating why the emergency stop was triggered
             if self.human_detected:
-                rospy.logerr('Stopping arms as human is detected within 2.2m')
+                rospy.logerr('Stopping arms as human is detected within the workspace')
             elif self.gui_pressed:
                 rospy.logerr('Stopping arms as stop button in GUI is pressed')
             elif self.manual_pressed:

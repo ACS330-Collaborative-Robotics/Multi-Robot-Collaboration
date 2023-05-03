@@ -29,7 +29,6 @@
     <!-- Connect transforms in tree -->
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_a" type="static_tf2_broadcaster.py" args="mover6_a/world world 0 0 0.02 0 0 1.5708" output="screen"/>
     <node name="static_tf2_broadcaster" pkg="mover6_gazebo" ns="world_b" type="static_tf2_broadcaster.py" args="mover6_b/world world 0 0.73 0.02 0 0 -1.5708" output="screen"/>
-    <node name="gui" pkg="gui" type="GUI.py" output="screen"/>
 
     <!-- Estop -->
     <node name="e_stop_controller" pkg="e_stop" type="e_stop_controller.py" output="screen"/>

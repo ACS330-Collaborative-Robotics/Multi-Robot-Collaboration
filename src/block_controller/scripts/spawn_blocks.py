@@ -32,8 +32,8 @@ def spawner():
     robot_namespaces = ["mover6_a", "mover6_b"]
     robot_base_coords = getRobotBaseCoordinates(robot_namespaces)
 
-    x_lower_limit = -0.3
-    x_upper_limit = 0.3
+    x_lower_limit = -0.2
+    x_upper_limit = 0.2
 
     robot_a_block_coordinates = [[x_lower_limit, 0], [x_lower_limit, 0.1], [x_lower_limit, 0.2], [x_upper_limit, 0], [x_upper_limit, 0.1], [x_upper_limit, 0.2]]
 
