@@ -119,10 +119,12 @@ def assignment_selector():
 
                 if task_allocation_success == None:
                     rospy.logfatal("Assignment Selection - Removing %s from selection as no blocks can be picked up by it.", robot_namespaces[robot_number])
+                    drive_joints(robot_namespaces[robot_number], home_joint_positions)
                     robot_namespaces.pop(robot_number)
 
                 elif not task_allocation_success:
                     rospy.logfatal("Assignment Selection - Removing %s from selection as it cannot reach any end positions.", robot_namespaces[robot_number])
+                    drive_joints(robot_namespaces[robot_number], home_joint_positions)
                     robot_namespaces.pop(robot_number)
                 
                 if len(robot_namespaces) == 0:
@@ -174,7 +176,7 @@ def generate_tower_block_positions(number_of_blocks, block_width, block_height, 
 
             x = x_initial*math.cos(block_angle) - y_initial*math.sin(block_angle) + tower_origin_coordinates[0]
             y = x_initial*math.sin(block_angle) + y_initial*math.cos(block_angle) + tower_origin_coordinates[1]
-            z = layer_number*block_height + tower_origin_coordinates[2]
+            z = layer_number*(block_height-0.01) + tower_origin_coordinates[2]
 
             if not (x > -0.1 and x < 0):
                 tower_block_positions_layer.append([x, y, z, euler_x, euler_y, block_angle+math.pi/2])
