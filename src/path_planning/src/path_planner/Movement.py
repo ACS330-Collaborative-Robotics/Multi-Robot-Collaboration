@@ -55,7 +55,7 @@ class Movement:
             xobj = [0,0,0]
             yobj = [0,0,0]
             zobj = [0,18,50]
-            Q = [9,20,27] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+            Q = [9,21,27] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
             xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q)
             tempxobj = []
             tempyobj = []
