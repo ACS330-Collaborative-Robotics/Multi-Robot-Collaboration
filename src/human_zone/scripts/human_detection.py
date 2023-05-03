@@ -16,7 +16,7 @@ def callback(scan):
             break
         
     if human_detected:
-        rospy.loginfo("Human detected within 2.2m!")
+        rospy.loginfo("Human detected within 2m!")
         e_stop_pub.publish(True)
     else:
         e_stop_pub.publish(False)
