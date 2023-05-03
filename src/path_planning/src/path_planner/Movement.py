@@ -126,8 +126,8 @@ class Movement:
             else:
                 precise_angle_flag = 1
 
-            if arm_pos.position.z < 0.09:
-                arm_pos.position.z = 0.09
+            if arm_pos.position.z < 0.05:
+                arm_pos.position.z = 0.05
                 
             rospy.logdebug("Path Planner - Moving %s for %s to X: %.2f Y: %.2f Z: %.2f x: %.1f y: %.1fz: %.1f w: %.1f Precision: %s", self.serv_helper.robot_ns,self.serv_helper.target_block, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w,bool(precise_angle_flag))
 
