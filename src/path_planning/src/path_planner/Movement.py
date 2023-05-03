@@ -52,10 +52,11 @@ class Movement:
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
 
-            xobj = [0,0,0,0,0]
-            yobj = [0,0,0,0,0]
-            zobj = [0,5,10,20,50]
-            Q = [12,18,18,22,30] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+            xobj = [0,0,0]
+            yobj = [0,0,0]
+            zobj = [0,18,50]
+            Q = [9,17,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+            xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q)
             tempxobj = []
             tempyobj = []
             tempzobj = []
@@ -86,7 +87,7 @@ class Movement:
                         tempxobj.append(pos_obstacle.position.x * SF) #obstacle arm joint positions relative to other arm
                         tempyobj.append(pos_obstacle.position.y * SF)
                         tempzobj.append(pos_obstacle.position.z * SF)
-                        tempQ.append(10)
+                        tempQ.append(12)
 
                 #xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q) #turns joint objects into a line of objects along link
                 tempxobj_linked,tempyobj_linked,tempzobj_linked,tempQ_linked = self.serv_helper.Link_Midpoints(tempxobj,tempyobj,tempzobj,tempQ)
@@ -125,8 +126,8 @@ class Movement:
             else:
                 precise_angle_flag = 1
 
-            if arm_pos.position.z < 0.05:
-                arm_pos.position.z = 0.05
+            if arm_pos.position.z < 0.09:
+                arm_pos.position.z = 0.09
                 
             rospy.logdebug("Path Planner - Moving %s for %s to X: %.2f Y: %.2f Z: %.2f x: %.1f y: %.1fz: %.1f w: %.1f Precision: %s", self.serv_helper.robot_ns,self.serv_helper.target_block, arm_pos.position.x, arm_pos.position.y, arm_pos.position.z, arm_pos.orientation.x, arm_pos.orientation.y, arm_pos.orientation.z, arm_pos.orientation.w,bool(precise_angle_flag))
 

@@ -409,15 +409,13 @@ class ServiceHelper:
         diffatt = self.PotentialAttractionChange(PathPointsx[i],PathPointsy[i],PathPointsz[i],xgoal,ygoal,zgoal,D)
         if any(diffrep) != 0:
             if precise_angle_flag:
-                diffrep[0] = diffrep[0]*0
-                diffrep[1] = diffrep[1]*0
-                diffrep[2] = diffrep[2]*0
-                diffatt[0] = diffatt[0] *4
-                diffatt[1] = diffatt[1] *4
-                diffatt[2] = diffatt[2] *4
-            difx = diffrep[0] + 0.25*diffatt[0]
-            dify = diffrep[1] + 0.25*diffatt[1]
-            difz = diffrep[2] + 0.25*diffatt[2]
+                difx = diffatt[0]
+                dify = diffatt[1]
+                difz = diffatt[2]
+            else:
+                difx = diffrep[0] + 0.25*diffatt[0]
+                dify = diffrep[1] + 0.25*diffatt[1]
+                difz = diffrep[2] + 0.25*diffatt[2]
                 #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
             #rospy.logwarn("Potential Fields - Repulsion strength: %.2f,%.2f,%.2f dist: %.2f",-diffrep[0],-diffrep[1],-diffrep[2],d)
 
@@ -439,8 +437,8 @@ class ServiceHelper:
             x = nextx
             y = nexty
             z = nextz
-            if z < -0.2:
-                z = -0.2
+            if z < -0.17:
+                z = -0.17
             #if self.is_block_reachable_APF(x,y,z) == False:
                 #tempxobj.append(x)
                 #tempyobj.append(y)
