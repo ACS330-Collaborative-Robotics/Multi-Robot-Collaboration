@@ -8,7 +8,7 @@ def callback(scan):
     human_detected = False
     for r in enumerate(scan.ranges):
         #print(r)
-        if r[1] < 2.2:
+        if r[1] < 2:
             human_detected = True
             break
         
