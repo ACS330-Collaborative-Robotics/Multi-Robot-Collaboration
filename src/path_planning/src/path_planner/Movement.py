@@ -27,7 +27,7 @@ class Movement:
         precise_angle_flag = 0
         SF = 100 #distance scale factor
         D = self.serv_helper.APFyamlData["D"]
-        CloseEnough = 2.5
+        CloseEnough = 1.8
         PathComplete = 0
         robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
         # Get block coordinates relative to robot instead of world
@@ -55,7 +55,7 @@ class Movement:
             xobj = [0,0,0]
             yobj = [0,0,0]
             zobj = [0,18,50]
-            Q = [9,17,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
+            Q = [9,19,25] #'size' of the object #TODO(WILL CAUSE ISSUES WITH MORE ROBOTS)
             xobj,yobj,zobj,Q = self.serv_helper.Link_Midpoints(xobj,yobj,zobj,Q)
             tempxobj = []
             tempyobj = []
