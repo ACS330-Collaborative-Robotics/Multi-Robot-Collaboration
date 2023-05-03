@@ -448,13 +448,9 @@ class ServiceHelper:
                 #may need to check if it can't reach AND it's out of bounds, the IK checking is not foolproof
                 #another problem - reachability seems to fail when very close to the block on various block positions
                 #PathPointsx.append(PathPointsx[i])
-                #PathPointsy.append(PathPointsy[i])
-                #PathPointsz.append(PathPointsz[i])
-                #objdistance = 1.6*self.EuclidianDistance(PathPointsx[i],PathPointsy[i],PathPointsz[i],x,y,z) 
-                #added Q scaling factor so Q is greater than distance to next point
-                #tempQ.append(objdistance)
-                #else:
-                #PathPointsx.append(x)
+                #PathPointsy.append(PathPointsy[i])export ROS_HOSTNAME=143.167.47.162
+export ROS_MASTER_URI=http://143.167.47.236:11311/
+
                 #PathPointsy.append(y)
                 #PathPointsz.append(z)
                 #rospy.loginfo('Path Points: %.2f %.2f %.2f',x,y,z)
