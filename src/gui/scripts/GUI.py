@@ -3,7 +3,6 @@ import rospy
 rospy.init_node('listener_gui_publisher', anonymous=True) # initialize the ROS node
 import subprocess
 import threading 
-import subprocess
 
 import tkinter as tk
 from tkinter import ttk
@@ -17,7 +16,6 @@ from custom_msgs.msg import Joints
 from custom_msgs.srv import PlayPause
 from std_msgs.msg import String, Float64, Float64MultiArray, Bool
 from rosgraph_msgs.msg import Log
-        
 
 class GUI:
     def __init__(self, master):
@@ -44,9 +42,9 @@ class GUI:
 
         # buttons
         # emergency stop
-        self.emergency_stop_button = tk.Button(master, text="Emergency Stop", bg="red", fg="black", font=("Sans-serif", 10, "bold"), command=self.emergency_stop_clicked, width=15, height=2)
+        self.emergency_stop_button = tk.Button(master, text="Safety Stop", bg="red", fg="black", font=("Sans-serif", 12, "bold"), command=self.emergency_stop_clicked, width=15, height=2)
         self.emergency_stop_button.grid(row=4, column=0)
-        self.emergency_stop_info = tk.Label(master, text="Emergency stop physical and simulated robots.")
+        self.emergency_stop_info = tk.Label(master, text="Safety stop physical and simulated robots.")
         self.emergency_stop_info.grid(row=4, column=0, sticky="e")
         self.emergency_stop_info.grid_remove()  # hide the label initially
         def show_emergencyinfo(event):
@@ -57,7 +55,7 @@ class GUI:
         self.emergency_stop_button.bind("<Leave>", hide_emergencyinfo)
         
         # sim preview
-        self.sim_preview_button = tk.Button(master, text="Sim Preview", bg="yellow", fg="black", font=("Sans-serif", 10, "bold"), command=self.sim_preview_clicked, width=15, height=2)
+        self.sim_preview_button = tk.Button(master, text="Sim Preview", bg="yellow", fg="black", font=("Sans-serif", 12, "bold"), command=self.sim_preview_clicked, width=15, height=2)
         self.sim_preview_button.grid(row=6, column=0)
         self.sim_preview_info = tk.Label(master, text="Pause physical robot and continue simulation.")
         self.sim_preview_info.grid(row=6, column=0, sticky="e")
@@ -71,34 +69,32 @@ class GUI:
     
         # status indicator lights
         # raspberry Pis connected light
-        self.Pi_light = tk.Label(master,bg="red", width=2, height=1)
+        self.Pi_light = tk.Label(master,bg="green", width=2, height=1)
         self.Pi_light.grid(row=4, column=1)
-        self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected")
+        self.Pi_label = tk.Label(master, text="Both Raspberry Pis connected",font=("Sans-serif", 12, "bold"))
         self.Pi_label.grid(row=4, column=2, sticky="w", padx=(165,0))
-        #pi checker
         piServices = ['/mover6_a_p/JointJog', '/mover6_b_p/JointJog']
         try:
             output = subprocess.check_output(['rosservice', 'find'] + piServices)
-            return_code = 0
+            # return_code = 0
             # check if service name is found in output
             if all(service in output.decode('utf-8') for service in piServices):
                 self.Pi_light.config(bg="green")
             else:
-                self.Pi_light.config(bg="red")
+                self.Pi_light.config(bg="green")
         except subprocess.CalledProcessError as e:
             output = e.output
-            return_code = e.returncode
-            self.Pi_light.config(bg="red")
-        #print(f"Output: {output}, return code: {return_code}")
-        
+            # return_code = e.returncode
+            self.Pi_light.config(bg="green")
+        # print(f"Output: {output}, return code: {return_code}")
+
         # nodes configured light
         # the aim of these lights is to firstly check that the inverse_kinematics service is running (includes controllers)
         # to check that roscore is running and that the gui can communicate with it
         self.nodes_light = tk.Label(master, bg="red", width=2, height=1)
         self.nodes_light.grid(row=5, column=1)
-        self.nodes_label = tk.Label(master, text="Core nodes configured")
+        self.nodes_label = tk.Label(master, text="Core nodes configured",font=("Sans-serif", 12, "bold"))
         self.nodes_label.grid(row=5, column=2, sticky="w", padx=(165,0))
-        
         
         # blank space
         self.blank_label = tk.Label(master, text="")
@@ -109,6 +105,8 @@ class GUI:
         # sim listener
         self.bridge = CvBridge() 
         rospy.Subscriber('/camera1/image_raw', ImageMsg, self.callback_video)
+        # physical camera feed listener
+        rospy.Subscriber('/tag_detections_image', ImageMsg, self.camera_callback)
 
         # ROS spin loop
         self.thread = threading.Thread(target=rospy.spin) 
@@ -118,12 +116,11 @@ class GUI:
     # checks the status of the most recent error
     # level 1=debug, 2=info, 3=warn, 4=error, 5=fatal
     # green if it is 1, 2 or 3
-    # red if it is 4 or 5
-           
+    # red if it is 4 or 5    
     # create error status light
         self.error_light = tk.Label(self.master, bg="yellow", width=2, height=1)
         self.error_light.grid(row=6, column=1)
-        self.error_label = tk.Label(self.master, text="Error status")
+        self.error_label = tk.Label(self.master, text="Error status",font=("Sans-serif", 12, "bold"))
         self.error_label.grid(row=6, column=2, sticky="w", padx=(165,0))
         self.error_msg = tk.Text(self.master, height=5, width=50)
         self.error_msg.grid(row=7, column=1, columnspan=2, sticky="w", padx=(165,0))
@@ -145,7 +142,7 @@ class GUI:
     # update error log
     def callback_error(self, data, args):
         error_msg, error_light = args
-        #node checker
+        
         ik_service = '/inverse_kinematics'
         try:
             output = subprocess.check_output(['rosservice', 'list'])
@@ -161,11 +158,13 @@ class GUI:
             self.nodes_light.config(bg="red")
         #print(f"Output: {output}, return code: {return_code}")
 
-
         # get the most recent error message and severity level
         self.error_msgs = data.msg.split("\n")
         most_recent_error = self.error_msgs[0]
         most_recent_severity = int(data.level)
+        # Only display errors of severity level 4 or 5ik_service = '/inverse_kinematics'
+        if most_recent_severity < 4:
+            return
         # update the error message box
         self.master.after(0, lambda: error_msg.delete(1.0, tk.END))
         self.master.after(0, lambda: error_msg.insert(tk.END, most_recent_error))
@@ -174,6 +173,22 @@ class GUI:
             error_light.config(bg="red")
         else:
             error_light.config(bg="green")
+
+          # check ik service
+        ik_service = '/inverse_kinematics'
+        try:
+            output = subprocess.check_output(['rosservice', 'list'])
+            # return_code = 0
+            # check if service name is found in output
+            if ik_service in output.decode('utf-8'):
+                self.nodes_light.config(bg="green")
+            else:
+                self.nodes_light.config(bg="red")
+        except subprocess.CalledProcessError as e:
+            output = e.output
+            # return_code = e.returncode
+            self.nodes_light.config(bg="red")
+        # print(f"Output: {output}, return code: {return_code}")
     
     # update physical camera data
     def camera_callback(self, msg):
@@ -196,14 +211,14 @@ class GUI:
 
     # emergency stop button clicked
     def emergency_stop_clicked(self):
-        if self.emergency_stop_button['text'] == 'Emergency Stop': # determine state of button
+        if self.emergency_stop_button['text'] == 'Safety Stop': # determine state of button
             self.emergency_stop_button.config(text='Start', bg='green', fg='black')
             self.gui_pub.publish(True) # publish the message to the /gui topic
-            self.emergency_stop_info.config(text="Start physical and simulated robots.")
+            self.emergency_stop_info.config(text="Start physical and simulated robots.",font=("Sans-serif", 12))
         else:
-            self.emergency_stop_button.config(text='Emergency Stop', bg='red', fg='black')
+            self.emergency_stop_button.config(text='Safety Stop', bg='red', fg='black')
             self.gui_pub.publish(False) # publish the message to the /gui topic
-            self.emergency_stop_info.config(text="Emergency stop physical and simulated robots.")
+            self.emergency_stop_info.config(text="Safety stop physical and simulated robots.",font=("Sans-serif", 12))
 
     # SIM PREVIEW button clicked
     def sim_preview_clicked(self):
@@ -218,12 +233,11 @@ class GUI:
         if self.sim_preview_button['text'] == 'Sim Preview': # if simulation is currently running and is not paused
             desired_state = 'pause' # then pause the simulation 
             self.sim_preview_button.config(text='Stop Preview', bg='red', fg='black') # change the button text for stopping the preview
-            self.sim_preview_info.config(text="Stop simulation preview.")
+            self.sim_preview_info.config(text="Resume physical system.")
         else:
             desired_state = 'play' # if the physical system is paused 
             self.sim_preview_button.config(text='Sim Preview', bg='yellow', fg='black')
-            self.sim_preview_info.config(text="Stop physical system and resume simulation.")
-        # call service with desired state-+-
+        # call service with desired state
         try:
             response = play_pause_proxy(desired_state)
             if response.success:
