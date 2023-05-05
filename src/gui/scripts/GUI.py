@@ -210,9 +210,9 @@ class GUI:
             output = e.output
             return_code = e.returncode
             self.nodes_light.config(bg="red")
-        print(f"Output: {output}, return code: {return_code}")
+        #print(f"Output: {output}, return code: {return_code}")
 
-        
+
         # get the most recent error message and severity level
         self.error_msgs = data.msg.split("\n")
         most_recent_error = self.error_msgs[0]
