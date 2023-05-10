@@ -6,9 +6,14 @@ from pathlib import Path
 from geometry_msgs.msg import Pose
 from time import time
 import tf_conversions
+from math import sqrt
+import tf
 
-import yaml
+
+import yaml 
 from yaml.loader import SafeLoader
+global total_distance
+total_distance = 0.
 class Movement:
     def __init__(self, serv_helper):
         self.serv_helper = serv_helper
@@ -18,6 +23,7 @@ class Movement:
         with open(config_file_name) as yamlfile: # add right path
             self.serv_helper.APFyamlData = yaml.load(yamlfile, Loader=SafeLoader)
         #print(self.serv_helper.APFyamlData)
+
     
     def move(self, pos:Pose, allow_imprecise_orientation:bool, final_link_name=""):
         """ Safely move to desired position using IK, checking robot will stay within zone
@@ -44,6 +50,7 @@ class Movement:
         startx = start_pose.position.x*SF #start coords for end effector (now relative)
         starty = start_pose.position.y*SF
         startz = start_pose.position.z*SF
+        d_tot = self.serv_helper.EuclidianDistance(startx,starty,startz,xgoal,ygoal,zgoal)
         #print("startxyz->goalxyz:",startx,starty,startz,xgoal,ygoal,zgoal)
         while PathComplete == 0 and not rospy.is_shutdown():
             #rospy.logerr("Target World: %.2f %.2f %.2f, Target base: %.1f %.1f %.1f",pos.position.x, pos.position.y, pos.position.z, xgoal,ygoal,zgoal)
@@ -108,12 +115,14 @@ class Movement:
             ##X,Y,Z path the End effector will take
             X, Y, Z, = self.serv_helper.PathPlanner(startx,starty,startz,xgoal,ygoal,zgoal,xobj,yobj,zobj, Q, D,tempxobj,tempyobj,tempzobj,tempQ,precise_angle_flag)
               #rescale back to meters
-
             arm_pos = Pose() #pose for next coordinate
             arm_pos.position.x = X/SF
             arm_pos.position.y = Y/SF
             arm_pos.position.z = Z/SF
 
+            global total_distance
+            d_increment = self.serv_helper.EuclidianDistance(startx,starty,startz,X,Y,Z)
+            total_distance = total_distance + d_increment
             arm_pos.orientation.x = pos_robot_base_frame.orientation.x 
             arm_pos.orientation.y = pos_robot_base_frame.orientation.y 
             arm_pos.orientation.z = pos_robot_base_frame.orientation.z 
@@ -153,11 +162,15 @@ class Movement:
             else: #check if movement ran
                 if d <= CloseEnough:
                     PathComplete = 1
+                    d_tot = d_tot/SF
+                    print("Shortest distance was %3.3f." % d_tot)
+                    total_distance = total_distance/SF +d/SF
+                    print("Total distance traveled is %3.3f." % total_distance)
+                    total_distance = 0
                 else:
                     startx = arm_pos.position.x*SF #start coords for end effector (now next step)
                     starty = arm_pos.position.y*SF 
                     startz = arm_pos.position.z*SF
             #rospy.loginfo('New Position - %.3f %.3f %.3f',startx,starty,startz)
         return status #TODO: Implement zone checks
-
 

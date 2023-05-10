@@ -149,6 +149,8 @@ def update_block_positions():
     
     block_update = rospy.ServiceProxy('block_update', UpdateBlocks)
 
+    s=rospy.get_time()
+
     try:
         block_update(True)
     except rospy.ServiceException:
