@@ -30,6 +30,7 @@ class Movement:
         INPUT: Pose pos
         OUTPUT: bool Success - Returns True is movement succesful, False if not possible or failed.
         """
+        start_time = rospy.get_time()
         precise_angle_flag = 0
         SF = 100 #distance scale factor
         D = self.serv_helper.APFyamlData["D"]
@@ -55,7 +56,6 @@ class Movement:
         while PathComplete == 0 and not rospy.is_shutdown():
             #rospy.logerr("Target World: %.2f %.2f %.2f, Target base: %.1f %.1f %.1f",pos.position.x, pos.position.y, pos.position.z, xgoal,ygoal,zgoal)
             #rospy.logerr("Arm World: %.2f %.2f %.2f, Arm base: %.1f %.1f %.1f",start_pose_world.position.x, start_pose_world.position.y, start_pose_world.position.z, startx,starty,startz)
-            start_time = time()
             #Obstacle positions relative to world then arm
             robot_namespaces = ["mover6_a", "mover6_b"] #TODO: will be changed to a service to get names of connected arms
 
@@ -166,7 +166,12 @@ class Movement:
                     print("Shortest distance was %3.3f." % d_tot)
                     total_distance = total_distance/SF +d/SF
                     print("Total distance traveled is %3.3f." % total_distance)
+                    efficiency = d_tot/total_distance
+                    print("Path efficiency is %3.3f." % efficiency)
                     total_distance = 0
+                    time_end = rospy.get_time()
+                    time_taken = time_end - start_time
+                    print("The movement took %3.3f seconds." % time_taken)
                 else:
                     startx = arm_pos.position.x*SF #start coords for end effector (now next step)
                     starty = arm_pos.position.y*SF 
