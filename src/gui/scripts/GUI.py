@@ -45,12 +45,18 @@ class GUI:
         self.cam_canvas.grid(row=1, column=2, sticky="nsew")
 
         #APF Plot
-        global ax, fig
-        fig = plt.figure(figsize=(4,4))
-        ax = fig.add_subplot(111, projection='3d')
+        global ax, canvas
+        self.plot_label = tk.Label(master, text="Potential Field Plot: ")
+        self.plot_label.grid(row=0, column=3, sticky="w")
+        self.plot_canvas = tk.Canvas(master, width=540, height=380)
+        fig = Figure(figsize=(5, 4), dpi=100)
+        canvas = FigureCanvasTkAgg(fig, master=root) 
+        ax = fig.add_subplot(111, projection="3d")
         rospy.Subscriber('/mover6_a/APF_point', APFPlot, self.apf_callback_a)
         rospy.Subscriber('/mover6_b/APF_point', APFPlot, self.apf_callback_b)
-        
+        canvas.draw()
+        canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
+                
         # blank space
         self.blank_label = tk.Label(master, text="")
         self.blank_label.grid(row=3, column=0, sticky="w")
@@ -151,13 +157,13 @@ class GUI:
         goal_x=data.goal.x
         goal_y=data.goal.y
         goal_z=data.goal.z
-        ax.scatter(goal_x, goal_y, goal_z, c='green')
+        ax.scatter(goal_x, goal_y, goal_z, c='green', label = "Goal")
         path_x=data.path.x
         path_y=data.path.y
         path_z=data.path.z
-        ax.scatter(path_x, path_y, path_z, c='blue')
+        ax.scatter(path_x, path_y, path_z, c='blue', label = "Path")
         for n in range(len(data.objects)):
-            ax.scatter(data.objects[n].x, data.objects[n].y, data.objects[n].z, c='red')
+            ax.scatter(data.objects[n].x, data.objects[n].y, data.objects[n].z, c='red',label = "Objects")
         
 
 
