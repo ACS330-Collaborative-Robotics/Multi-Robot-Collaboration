@@ -12,6 +12,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+
 
 from PIL import Image, ImageTk
 from sensor_msgs.msg import Image as ImageMsg
@@ -56,6 +58,11 @@ class GUI:
         rospy.Subscriber('/mover6_b/APF_point', APFPlot, self.apf_callback_b)
         canvas.draw()
         canvas.get_tk_widget().grid(row=1, column=3, sticky="nsew")
+        colors = ['b', 'g', 'r']
+        labels = ['Path', 'Goal', 'Obstacles']
+        handles = [Line2D([], [], marker='o', color='w', markerfacecolor=c, label=l) for c, l in zip(colors, labels)]
+        ax.legend(handles=handles, loc='upper left')
+
                 
         # blank space
         self.blank_label = tk.Label(master, text="")
