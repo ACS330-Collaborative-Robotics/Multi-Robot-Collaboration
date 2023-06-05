@@ -1,0 +1,1 @@
+roslaunch fiducial_recognition sensor_launch.launch

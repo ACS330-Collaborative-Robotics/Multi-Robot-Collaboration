@@ -78,11 +78,44 @@ Robot Joints - `1 -> 6`
 
 ## Startup Instructions
 
+### Sim Only Setup
+
 Run each of the following in its own terminal tab, after running `cd ~/catkin_ws`.
 
  - `roscore` - ROS Core
  - `./run_sim.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
  - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
+
+ ### Full System Setup
+
+ Run each of the following in its individual terminal tab, after running `cd ~/catkin_ws`. In each terminal tab make sure it is connected to the network.
+
+Main Machine
+ - `roscore` - ROS Core
+
+Raspberry Pis
+ - `./connect_robo_setup.sh` - Only need to run this if booting up the pis not restarting the system
+ - `./connect_mover6X.sh` - Connects to the Mover6 to the network
+
+Main Machine
+ - `./run_sim_phs.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
+
+Camera Machine
+ - `./fad_sensor_start.sh` - This runs the camera for the system
+
+Safety Stop Machine
+ - `./lidar.sh` - This connects to the lidar sensor
+ - `./safety_stop_manual.sh` - This runs the manual safety stop that can be run on any machine
+
+Main Machine
+ - `./open_cam_fad.sh` - This allows the operator of the main machine to see the fiducials
+ - `./open_overhead_cam.sh` - This allows the operator of the main machine to see the workspace
+ - `./run_demo.sh` - Block Position Publisher, Inverse Kinematics, Kinematic Movement, Near Block Assignment Selection
+
+GUI Machine
+  - `./gui.sh`
+
+
 
 ### Launching the Lidar
 
@@ -90,7 +123,7 @@ Run in terminal:
 `sudo chmod 666 /dev/ttyUSB0` (worked on laptop)
 OR:
 `sudo chmod 777 /dev/ttyUSB0` (worked on Ubuntu)
-Note: LIDAR does not appear to work through extension cable
+Note: LIDAR does not appear to work through an extension cable
 
 Then:
 `roslaunch rplidar_ros rplidar.launch`
