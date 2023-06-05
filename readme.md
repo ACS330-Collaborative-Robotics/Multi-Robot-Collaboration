@@ -99,6 +99,7 @@ Raspberry Pis
 
 Main Machine
  - `./run_sim_phs.sh` - Gazebo Simulation, Sim Robot Joint Controller, Block Spawner
+ - `./clear_workspace.sh` - sets robots to a know position
 
 Camera Machine
  - `./fad_sensor_start.sh` - This runs the camera for the system
